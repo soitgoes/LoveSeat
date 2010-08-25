@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using LoveSeat.Support;
 using Newtonsoft.Json.Linq;
 
@@ -9,16 +10,20 @@ namespace LoveSeat
 	/// </summary>
 	public class CouchClient : CouchBase
 	{
-		private CouchClient()
+		/// <summary>
+		/// This is only intended for use if your CouchDb is in Admin Party
+		/// </summary>
+		public CouchClient()
+			: this("localhost", 5984, null, null)
 		{
-			//hides ctor
 		}
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="username"></param>
 		/// <param name="password"></param>
-		public CouchClient(string username, string password) : this("localhost", 5984, username, password)
+		public CouchClient(string username, string password)
+			: this("localhost", 5984, username, password)
 		{
 		}
 
@@ -90,6 +95,50 @@ namespace LoveSeat
 			return new CouchDatabase(baseUri, databaseName, username, password);
 		}
 
+		public JObject CreateAdminUser(string usernameToCreate, string passwordToCreate)
+		{
+			try
+			{
+				//Creates the user in the local.ini
+				var iniResult = GetRequest(baseUri + "_config/admins/" + HttpUtility.UrlEncode(usernameToCreate))
+					.Put().Json().Data("\"" + passwordToCreate + "\"").GetResponse();
+			}
+			catch (CouchException ce)
+			{
+				//fail silently
+			}
+			var user = @"{ ""name"": ""%name%"",
+  ""_id"": ""org.couchdb.user:%name%"", ""type"": ""user"", ""roles"": [],
+}".Replace("%name%", usernameToCreate).Replace("\r\n", "");
+			var docResult = GetRequest(baseUri + "_users/org.couchdb.user:" + HttpUtility.UrlEncode(usernameToCreate))
+				.Put().Json().Data(user).GetResponse().GetJObject();
+			return docResult;
+
+		}
+		/// <summary>
+		/// Deletes user  (if you have permission)
+		/// </summary>
+		/// <param name="userToDelete"></param>
+		public void DeleteAdminUser(string userToDelete)
+		{
+			try
+			{
+				var iniResult = GetRequest(baseUri + "_config/admins/" + HttpUtility.UrlEncode(userToDelete))
+					.Delete().Json().GetResponse();
+			}
+			catch (CouchException ce)
+			{
+				//fail silently
+			}
+
+			var userDb = this.GetDatabase("_users");
+			var userId = "org.couchdb.user:" + HttpUtility.UrlEncode(userToDelete);
+			var userDoc = userDb.GetDocument(userId);
+			if (userDoc != null)
+			{
+				userDb.DeleteDocument(userDoc.Id(), userDoc.Rev());	
+			}
+		}
 		/// <summary>
 		/// Returns a bool indicating whether or not the database exists.
 		/// </summary>

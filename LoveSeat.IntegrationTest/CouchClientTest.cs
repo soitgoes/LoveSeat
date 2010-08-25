@@ -19,12 +19,22 @@ namespace LoveSeat.IntegrationTest
 		[TestFixtureSetUp]
 		public void Setup()
 		{
-			client = new CouchClient(host , port, username, password);
+			client = new CouchClient(host, port, username, password);
 			if (!client.HasDatabase(baseDatabase))
 			{
-				client.CreateDatabase(baseDatabase);				
+				client.CreateDatabase(baseDatabase);
 			}
-		}	
+		}
+		[TestFixtureTearDown]
+		public void TearDown()
+		{
+			//delete the test database
+			if (client.HasDatabase(baseDatabase))
+			{
+				client.DeleteDatabase(baseDatabase);
+			}
+
+		}
 
 		[Test]
 		public void CanTriggerReplication()
@@ -49,18 +59,19 @@ namespace LoveSeat.IntegrationTest
 			var result = 	db.DeleteDocument(doc.Id(), doc.Rev());
 			Assert.IsNull(db.GetDocument("asdf"));
 		}
-
-
-		[TestFixtureTearDown]
-		public void TearDown()
-		{
-			//delete the test database
-			if (client.HasDatabase(baseDatabase))
-			{
-				client.DeleteDatabase(baseDatabase);
-			}
-			
+		[Test]
+		public void CanCreateAdminUser()
+		{			
+			client.CreateAdminUser("Leela", "Turanga");
 		}
+
+		[Test]
+		public void CanDeleteAdminUser()
+		{
+			client.DeleteAdminUser("Leela");
+		}
+
+		
 
 	}
 }

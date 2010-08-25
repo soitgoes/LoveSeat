@@ -70,7 +70,11 @@ namespace LoveSeat.Support
 			request.ContentType = "application/x-www-form-urlencoded";
 			return this;
 		}
-
+		public CouchRequest Json()
+		{
+			request.ContentType = "application/json";
+			return this;
+		}
 		public HttpWebResponse GetResponse()
 		{
 			try
@@ -88,5 +92,7 @@ namespace LoveSeat.Support
 				throw;
 			}
 		}
+
+		
 	}
 }

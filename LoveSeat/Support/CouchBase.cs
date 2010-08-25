@@ -21,6 +21,7 @@ namespace LoveSeat.Support
 		
 		protected Cookie GetSession()
 		{
+			if (string.IsNullOrEmpty(username)) return null; 
 			var request = new CouchRequest(baseUri + "_session");
 			var response = request.Post()
 				.ContentType("application/x-www-form-urlencoded")
