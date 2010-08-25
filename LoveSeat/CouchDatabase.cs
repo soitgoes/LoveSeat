@@ -30,9 +30,24 @@ namespace LoveSeat
 		{
 			return GetRequest(databaseBaseUri + "/" + id +"?rev=" + rev).Delete().Form().GetResponse().GetJObject();
 		}
+		/// <summary>
+		/// Returns null if document is not found
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		public JObject GetDocument(string id)
 		{
-			return GetRequest(databaseBaseUri + "/" + id).Get().Form().GetResponse().GetJObject();
+			try
+			{
+				return GetRequest(databaseBaseUri + "/" + id).Get().Form().GetResponse().GetJObject();	
+			}catch(CouchException ce)
+			{
+				if (ce.Message.Contains("not_found"))
+				{
+					return null;
+				}
+				throw;
+			}
 		}
 		
 	}

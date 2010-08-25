@@ -1,27 +1,31 @@
 using System;
 using System.Net;
+using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
 	public class CouchException : Exception
 	{
-		private readonly HttpStatusCode statusCode;
+		private readonly JObject response;
 
-		public CouchException(string message, HttpStatusCode statusCode)
-			: base(message)
+		public CouchException(JObject response): base(response.ToString())
 		{
-			this.statusCode = statusCode;
+			this.response = response;			
 		}
-		public CouchException(HttpStatusCode statusCode)
-		{
-			this.statusCode = statusCode;
-		}
-		public HttpStatusCode StatusCode
+		public string Error
 		{
 			get
 			{
-				return statusCode;
+				return response["error"].ToString();
 			}
 		}
+		public string Reason
+		{
+			get
+			{
+				return response["reason"].ToString();
+			}
+		}
+
 	}
 }

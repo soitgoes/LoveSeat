@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using NUnit.Framework;
 
 namespace LoveSeat.IntegrationTest
@@ -40,8 +41,8 @@ namespace LoveSeat.IntegrationTest
 		{
 			string obj = @"{""test"": ""prop""}";
 			var db = client.GetDatabase(baseDatabase);
-			var result = db.CreateDocument("asdf", obj);
-
+			var result = db.CreateDocument("fdas", obj);
+			Assert.IsNotNull(db.GetDocument("fdas"));
 		}
 		[Test]
 		public void CanDeleteDocument()
@@ -50,18 +51,18 @@ namespace LoveSeat.IntegrationTest
 			db.CreateDocument("asdf", "{}");
 			var doc = db.GetDocument("asdf");
 			var result = 	db.DeleteDocument(doc.Id(), doc.Rev());
-
+			Assert.IsNull(db.GetDocument("asdf"));
 		}
 
 
 		[TestFixtureTearDown]
 		public void TearDown()
 		{
-			////delete the test database
-			//if (client.HasDatabase(baseDatabase))
-			//{
-			//    client.DeleteDatabase(baseDatabase);	
-			//}
+			//delete the test database
+			if (client.HasDatabase(baseDatabase))
+			{
+				client.DeleteDatabase(baseDatabase);
+			}
 			
 		}
 

@@ -84,18 +84,7 @@ namespace LoveSeat
 				var response = (HttpWebResponse)webEx.Response;
 				if (response != null)
 				{
-					using (var stream = response.GetResponseStream())
-					{
-						using (var streamReader = new StreamReader(stream))
-						{
-							var errorMessage = streamReader.ReadToEnd();
-							if (string.IsNullOrEmpty(errorMessage))
-							{
-								throw new CouchException(response.StatusCode);
-							}
-							throw new CouchException(errorMessage, response.StatusCode);
-						}
-					}
+					throw new CouchException(response.GetJObject());					
 				}
 				throw;
 			}
