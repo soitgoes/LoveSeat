@@ -1,22 +1,22 @@
-using System;
 using System.IO;
 using System.Net;
-using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
-	internal class CouchRequest
+	public class CouchRequest
 	{
 		private readonly HttpWebRequest request;
-		public CouchRequest(string uri) : this(uri, null)
+		public CouchRequest(string uri)
+			: this(uri, null)
 		{
 		}
 		public CouchRequest(string uri, Cookie authCookie)
 		{
 			request = (HttpWebRequest)WebRequest.Create(uri);
-			request.Headers.Clear();
+		//	request.Headers.Clear(); //important
+			request.Referer = uri;
 			request.ContentType = "application/json";
 			request.KeepAlive = true;
 			if (authCookie != null)
@@ -42,7 +42,7 @@ namespace LoveSeat
 		}
 		public CouchRequest Delete()
 		{
-			request.Method = "Delete";
+			request.Method = "DELETE";
 			return this;
 		}
 		public CouchRequest Data(string data)
@@ -57,12 +57,18 @@ namespace LoveSeat
 
 		public CouchRequest Data(JObject obj)
 		{
-			return this.Data(obj.ToString());
+			return Data(obj.ToString());
 		}
 
 		public CouchRequest ContentType(string contentType)
 		{
 			request.ContentType = contentType;
+			return this;
+		}
+
+		public CouchRequest Form()
+		{
+			request.ContentType = "application/x-www-form-urlencoded";
 			return this;
 		}
 
@@ -76,18 +82,22 @@ namespace LoveSeat
 			catch (WebException webEx)
 			{
 				var response = (HttpWebResponse)webEx.Response;
-				using (var stream = response.GetResponseStream())
+				if (response != null)
 				{
-					using (var streamReader = new StreamReader(stream))
+					using (var stream = response.GetResponseStream())
 					{
-						var errorMessage = streamReader.ReadToEnd();
-						if (string.IsNullOrEmpty(errorMessage))
+						using (var streamReader = new StreamReader(stream))
 						{
-							throw new CouchException(response.StatusCode);
+							var errorMessage = streamReader.ReadToEnd();
+							if (string.IsNullOrEmpty(errorMessage))
+							{
+								throw new CouchException(response.StatusCode);
+							}
+							throw new CouchException(errorMessage, response.StatusCode);
 						}
-						throw new CouchException(errorMessage, response.StatusCode);
 					}
 				}
+				throw;
 			}
 		}
 	}

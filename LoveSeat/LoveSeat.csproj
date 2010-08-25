@@ -52,11 +52,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CouchBase.cs" />
     <Compile Include="CouchClient.cs" />
+    <Compile Include="CouchDatabase.cs" />
     <Compile Include="CouchException.cs" />
     <Compile Include="CouchRequest.cs" />
+    <Compile Include="JObjectExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplicationOptions.cs" />
+    <Compile Include="ResponseExtensionMethods.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

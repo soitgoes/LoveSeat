@@ -19,18 +19,15 @@ namespace LoveSeat.IntegrationTest
 		private readonly string username = ConfigurationManager.AppSettings["UserName"].ToString();
 		private readonly string password = ConfigurationManager.AppSettings["Password"].ToString();
 
-		[SetUp]
+		[TestFixtureSetUp]
 		public void Setup()
 		{
 			client = new CouchClient(host , port, username, password);
-		}
-
-		[Test]
-		public void CanGetSessionCookie()
-		{
-			var cookie = client.GetSession();
-			Assert.IsNotNull(cookie);
-		}
+			if (!client.HasDatabase(baseDatabase))
+			{
+				client.CreateDatabase(baseDatabase);				
+			}
+		}	
 
 		[Test]
 		public void CanTriggerReplication()
@@ -38,11 +35,34 @@ namespace LoveSeat.IntegrationTest
 			var obj  = client.TriggerReplication("http://Professor:Farnsworth@"+ host+":5984/" +replicateDatabase, baseDatabase);
 			Assert.IsTrue(obj != null);
 		}
+		[Test]
+		public void CanCreateDocumentFromString()
+		{
+			string obj = @"{""test"": ""prop""}";
+			var db = client.GetDatabase(baseDatabase);
+			var result = db.CreateDocument("asdf", obj);
 
-		[TearDown]
+		}
+		[Test]
+		public void CanDeleteDocument()
+		{
+			var db = client.GetDatabase(baseDatabase);
+			db.CreateDocument("asdf", "{}");
+			var doc = db.GetDocument("asdf");
+			var result = 	db.DeleteDocument(doc.Id(), doc.Rev());
+
+		}
+
+
+		[TestFixtureTearDown]
 		public void TearDown()
 		{
-			//delete the test database
+			////delete the test database
+			//if (client.HasDatabase(baseDatabase))
+			//{
+			//    client.DeleteDatabase(baseDatabase);	
+			//}
+			
 		}
 
 	}

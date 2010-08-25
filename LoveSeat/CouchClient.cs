@@ -1,55 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
-	public class CouchClient
+	/// <summary>
+	/// Used as the starting point for any communication with CouchDB
+	/// </summary>
+	public class CouchClient : CouchBase
 	{
-		private readonly string host;
-		private readonly int port;
-		private readonly string username;
-		private readonly string password;
-		private readonly string baseUri;
-
 		/// <summary>
 		/// Constructs the CouchClient and gets an authentication cookie (10 min)
 		/// </summary>
-		/// <param name="host"></param>
-		/// <param name="port"></param>
-		/// <param name="username"></param>
-		/// <param name="password"></param>
-		public CouchClient(string host, int port, string username, string password)
+		/// <param name="host">The hostname of the CouchDB instance</param>
+		/// <param name="port">The port of the CouchDB instance</param>
+		/// <param name="username">The username of the CouchDB instance</param>
+		/// <param name="password">The password of the CouchDB instance</param>
+		public CouchClient(string host, int port, string username, string password):base(username, password)
 		{
-			this.host = host;
-			this.port = port;
-			this.username = username;
-			this.password = password;
-			this.baseUri = "http://" + host + ":" + port + "/";
+			baseUri = "http://" + host + ":" + port + "/";
 		}
-		public Cookie GetSession()
-		{
-			var request = new CouchRequest(baseUri + "_session");
-			var response = request.Post()
-				.ContentType("application/x-www-form-urlencoded")
-				.Data("name=" + username + "&password=" + password)
-				.GetResponse();
 
-			var header = response.Headers.Get("Set-Cookie");
-			if (header != null)
-			{
-				var parts = header.Split(';')[0].Split('=');
-				var authCookie = new Cookie(parts[0], parts[1]);
-				authCookie.Domain = response.Server;
-				return authCookie;
-			}
-			return null;
-		}
 		public JObject TriggerReplication(string source, string target, bool continuous)
 		{
 			var request = GetRequest(baseUri + "_replicate");
@@ -59,23 +29,44 @@ namespace LoveSeat
 				.Data(options.ToString())
 				.GetResponse();
 
-			using ( var stream = response.GetResponseStream())
-			{
-				using (var streamReader = new StreamReader(stream))
-				{
-					var result = streamReader.ReadToEnd();
-					return JObject.Parse(result);
-				}
-			}
+			return response.GetJObject();
 		}
+
+		
+
 		public JObject TriggerReplication(string source, string target)
 		{
 			return TriggerReplication(source, target, false);
 		}
-		internal CouchRequest GetRequest(string uri)
+
+		public JObject CreateDatabase(string databaseName)
 		{
-			var request = new CouchRequest(uri, GetSession());			
-			return request;
+			return GetRequest(baseUri + databaseName).Put().GetResponse().GetJObject();
 		}
+
+		public JObject DeleteDatabase(string databaseName)
+		{
+			return GetRequest(baseUri + databaseName).Delete().GetResponse().GetJObject();
+		}
+		public CouchDatabase GetDatabase(string databaseName)
+		{
+			return new CouchDatabase(baseUri , databaseName, username, password);
+		}
+
+		public bool HasDatabase(string databaseName)
+		{
+			try
+			{
+				var result = GetRequest(baseUri + databaseName)
+					.Get()
+					.GetResponse()
+					.GetJObject()["ok"];
+				return true;
+			}catch(Exception ex)
+			{
+				return false;
+			}
+		}
+		
 	}
 }
