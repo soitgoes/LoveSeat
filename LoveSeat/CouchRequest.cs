@@ -10,11 +10,18 @@ namespace LoveSeat
 	internal class CouchRequest
 	{
 		private readonly HttpWebRequest request;
-
-		public CouchRequest(string uri)
+		public CouchRequest(string uri) : this(uri, null)
 		{
-			this.request = (HttpWebRequest)WebRequest.Create(uri);
-			this.request.ContentType = "application/json";
+		}
+		public CouchRequest(string uri, Cookie authCookie)
+		{
+			request = (HttpWebRequest)WebRequest.Create(uri);
+			request.Headers.Clear();
+			request.ContentType = "application/json";
+			request.KeepAlive = true;
+			if (authCookie != null)
+				request.Headers.Add("Cookie", "AuthSession=" + authCookie.Value);
+			request.Timeout = int.MaxValue;
 		}
 
 		public CouchRequest Put()

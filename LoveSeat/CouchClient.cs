@@ -15,8 +15,7 @@ namespace LoveSeat
 		private readonly int port;
 		private readonly string username;
 		private readonly string password;
-		private readonly CookieContainer cookieContainer;
-		private string baseUri;
+		private readonly string baseUri;
 
 		/// <summary>
 		/// Constructs the CouchClient and gets an authentication cookie (10 min)
@@ -32,13 +31,6 @@ namespace LoveSeat
 			this.username = username;
 			this.password = password;
 			this.baseUri = "http://" + host + ":" + port + "/";
-			this.cookieContainer = new CookieContainer();
-			var cookie = GetSession();
-			if (cookie != null)
-			{
-				this.cookieContainer.Add(cookie);
-			}
-
 		}
 		public Cookie GetSession()
 		{
@@ -60,7 +52,8 @@ namespace LoveSeat
 		}
 		public JObject TriggerReplication(string source, string target, bool continuous)
 		{
-			var request = new CouchRequest(baseUri + "_replicate");
+			var request = GetRequest(baseUri + "_replicate");
+			
 			var options = new ReplicationOptions(source, target, continuous);
 			var response = request.Post()
 				.Data(options.ToString())
@@ -79,6 +72,10 @@ namespace LoveSeat
 		{
 			return TriggerReplication(source, target, false);
 		}
-
+		internal CouchRequest GetRequest(string uri)
+		{
+			var request = new CouchRequest(uri, GetSession());			
+			return request;
+		}
 	}
 }
