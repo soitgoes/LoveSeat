@@ -1,0 +1,5 @@
+All it currently does is trigger replication
+
+However the architecture should lend to fast development of all other features.
+
+Most notably exceptions contain the full error returned in the body of the response from couchdb.
