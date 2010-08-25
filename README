@@ -1,5 +1,10 @@
-All it currently does is trigger replication
+Love Seat is a simply architected CouchDB wrapper with the intent to abstract away just 
+enough so that it's easy to use, but not enough so that you don't know what's going on.
 
-However the architecture should lend to fast development of all other features.
+Tested with 1.0.1
 
-Most notably exceptions contain the full error returned in the body of the response from couchdb.
+
+
+Roadmap:
+Setup a timer so that the client knows when to refetch the cookie instead of refetching it before every command
+Support Attachments

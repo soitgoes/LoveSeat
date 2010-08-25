@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json.Linq;
 
-namespace LoveSeat
+namespace LoveSeat.Support
 {
 	public class CouchException : Exception
 	{
@@ -15,14 +15,14 @@ namespace LoveSeat
 		{
 			get
 			{
-				return response["error"].ToString();
+				return response["error"].Value<string>();
 			}
 		}
 		public string Reason
 		{
 			get
 			{
-				return response["reason"].ToString();
+				return response["reason"].Value<string>();
 			}
 		}
 

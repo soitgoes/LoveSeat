@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using LoveSeat.Support;
 using NUnit.Framework;
 
 namespace LoveSeat.IntegrationTest

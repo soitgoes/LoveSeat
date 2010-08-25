@@ -1,20 +1,18 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace LoveSeat
+namespace LoveSeat.Support
 {
 	public static class JObjectExtensionMethods
 	{
 		public static string  Id (this JObject obj)
 		{
-			string s = obj["_id"].ToString();
-			return s.Replace("\"","");
+			return  obj["_id"].Value<string>();
 		}
 
 		public static string Rev(this JObject obj)
 		{
-			string s = obj["_rev"].ToString();
-			return s.Replace("\"", "");
+			return obj["_rev"].Value<string>();
 		}
 	}
 }

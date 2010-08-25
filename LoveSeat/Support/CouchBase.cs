@@ -1,6 +1,7 @@
+using System;
 using System.Net;
 
-namespace LoveSeat
+namespace LoveSeat.Support
 {
 	public abstract class CouchBase
 	{
@@ -8,6 +9,10 @@ namespace LoveSeat
 		protected readonly string password;
 		protected string baseUri;
 
+		protected CouchBase()
+		{
+			throw new Exception("Should not be used.");
+		}
 		protected CouchBase(string username, string password)
 		{
 			this.username = username;

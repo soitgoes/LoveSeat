@@ -1,4 +1,5 @@
 ﻿using System;
+using LoveSeat.Support;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
@@ -8,6 +9,19 @@ namespace LoveSeat
 	/// </summary>
 	public class CouchClient : CouchBase
 	{
+		private CouchClient()
+		{
+			//hides ctor
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="username"></param>
+		/// <param name="password"></param>
+		public CouchClient(string username, string password) : this("localhost", 5984, username, password)
+		{
+		}
+
 		/// <summary>
 		/// Constructs the CouchClient and gets an authentication cookie (10 min)
 		/// </summary>

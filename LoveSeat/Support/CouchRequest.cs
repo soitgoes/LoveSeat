@@ -2,7 +2,7 @@ using System.Net;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
-namespace LoveSeat
+namespace LoveSeat.Support
 {
 	public class CouchRequest
 	{
@@ -14,7 +14,7 @@ namespace LoveSeat
 		public CouchRequest(string uri, Cookie authCookie)
 		{
 			request = (HttpWebRequest)WebRequest.Create(uri);
-		//	request.Headers.Clear(); //important
+			//	request.Headers.Clear(); //important
 			request.Referer = uri;
 			request.ContentType = "application/json";
 			request.KeepAlive = true;

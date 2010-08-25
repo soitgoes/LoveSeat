@@ -2,7 +2,7 @@ using System.IO;
 using System.Net;
 using Newtonsoft.Json.Linq;
 
-namespace LoveSeat
+namespace LoveSeat.Support
 {
 	public static class ResponseExtensionMethods
 	{
