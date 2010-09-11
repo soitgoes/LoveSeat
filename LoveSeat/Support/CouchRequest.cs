@@ -53,7 +53,14 @@ namespace LoveSeat.Support
 			}
 			return this;
 		}
-
+		public CouchRequest Data(byte[] attachment)
+		{
+			using (var body = request.GetRequestStream())
+			{
+				body.Write(attachment, 0, attachment.Length);
+			}
+			return this;
+		}
 		public CouchRequest Data(JObject obj)
 		{
 			return Data(obj.ToString());
@@ -87,11 +94,12 @@ namespace LoveSeat.Support
 				var response = (HttpWebResponse)webEx.Response;
 				if (response != null)
 				{
-					throw new CouchException(response.GetJObject());					
+					throw new CouchException(response.GetCouchDocument());					
 				}
 				throw;
 			}
 		}
+
 
 		
 	}

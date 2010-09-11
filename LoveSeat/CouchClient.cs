@@ -56,7 +56,7 @@ namespace LoveSeat
 				.Data(options.ToString())
 				.GetResponse();
 
-			return response.GetJObject();
+			return response.GetCouchDocument();
 		}
 
 
@@ -73,7 +73,7 @@ namespace LoveSeat
 		/// <returns></returns>
 		public JObject CreateDatabase(string databaseName)
 		{
-			return GetRequest(baseUri + databaseName).Put().GetResponse().GetJObject();
+			return GetRequest(baseUri + databaseName).Put().GetResponse().GetCouchDocument();
 		}
 		/// <summary>
 		/// Deletes the specified database
@@ -82,7 +82,7 @@ namespace LoveSeat
 		/// <returns></returns>
 		public JObject DeleteDatabase(string databaseName)
 		{
-			return GetRequest(baseUri + databaseName).Delete().GetResponse().GetJObject();
+			return GetRequest(baseUri + databaseName).Delete().GetResponse().GetCouchDocument();
 		}
 
 		/// <summary>
@@ -111,7 +111,7 @@ namespace LoveSeat
   ""_id"": ""org.couchdb.user:%name%"", ""type"": ""user"", ""roles"": [],
 }".Replace("%name%", usernameToCreate).Replace("\r\n", "");
 			var docResult = GetRequest(baseUri + "_users/org.couchdb.user:" + HttpUtility.UrlEncode(usernameToCreate))
-				.Put().Json().Data(user).GetResponse().GetJObject();
+				.Put().Json().Data(user).GetResponse().GetCouchDocument();
 			return docResult;
 
 		}
@@ -136,7 +136,7 @@ namespace LoveSeat
 			var userDoc = userDb.GetDocument(userId);
 			if (userDoc != null)
 			{
-				userDb.DeleteDocument(userDoc.Id(), userDoc.Rev());	
+				userDb.DeleteDocument(userDoc.Id, userDoc.Rev);	
 			}
 		}
 		/// <summary>
@@ -151,7 +151,7 @@ namespace LoveSeat
 				var result = GetRequest(baseUri + databaseName)
 					.Get()
 					.GetResponse()
-					.GetJObject()["ok"];
+					.GetCouchDocument()["ok"];
 				return true;
 			}
 			catch (Exception ex)
@@ -159,6 +159,25 @@ namespace LoveSeat
 				return false;
 			}
 		}
-
+		/// <summary>
+		/// Returns true/false depending on whether or not the user is contained in the _users database
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <returns></returns>
+		public bool HasUser(string userId)
+		{
+			return GetUser(userId) != null;
+		}
+		/// <summary>
+		/// Get's the user.  
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <returns></returns>
+		public CouchDocument GetUser(string userId)
+		{
+			var db = new CouchDatabase(baseUri, "_users", username, password);
+			userId = "org.couchdb.user:" + HttpUtility.UrlEncode(userId);
+			return db.GetDocument(userId);
+		}
 	}
 }

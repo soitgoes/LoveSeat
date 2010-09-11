@@ -17,30 +17,41 @@ namespace LoveSeat
 		/// Creates a document using the json provided. 
 		/// No validation or smarts attempted here by design for simplicities sake
 		/// </summary>
+		/// <param name="id">Id of Document</param>
 		/// <param name="jsonForDocument"></param>
 		/// <returns></returns>
-		public JObject CreateDocument(string id, string jsonForDocument)
+		public CouchDocument CreateDocument(string id, string jsonForDocument)
 		{
 			return GetRequest(databaseBaseUri +"/" +  id)
 				.Put().Form()
 				.Data(jsonForDocument)
 				.GetResponse()
-				.GetJObject();
+				.GetCouchDocument();
 		}
-		public JObject DeleteDocument(string id, string rev)
+		/// <summary>
+		/// Creates a document when you intend for Couch to generate the id for you.
+		/// </summary>
+		/// <param name="jsonForDocument">Json for creating the document</param>
+		/// <returns></returns>
+		public CouchDocument CreateDocument(string jsonForDocument)
 		{
-			return GetRequest(databaseBaseUri + "/" + id +"?rev=" + rev).Delete().Form().GetResponse().GetJObject();
+			return
+				GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetResponse().GetCouchDocument();
+		}
+		public CouchDocument DeleteDocument(string id, string rev)
+		{
+			return GetRequest(databaseBaseUri + "/" + id + "?rev=" + rev).Delete().Form().GetResponse().GetCouchDocument();
 		}
 		/// <summary>
 		/// Returns null if document is not found
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public JObject GetDocument(string id)
+		public CouchDocument GetDocument(string id)
 		{
 			try
 			{
-				return GetRequest(databaseBaseUri + "/" + id).Get().Form().GetResponse().GetJObject();	
+				return GetRequest(databaseBaseUri + "/" + id).Get().Form().GetResponse().GetCouchDocument();	
 			}catch(CouchException ce)
 			{
 				if (ce.Message.Contains("not_found"))
@@ -50,6 +61,32 @@ namespace LoveSeat
 				throw;
 			}
 		}
-		
+		/// <summary>
+		/// Adds an attachment to a document.  If revision is not specified then the most recent will be fetched and used.  Warning: if you need document update conflicts to occur please use the method that specifies the revision
+		/// </summary>
+		/// <param name="id">id of the couch Document</param>
+		/// <param name="attachment">byte[] of of the attachment.  Use File.ReadAllBytes()</param>
+		/// <param name="contentType">Content Type must be specifed</param>	
+		public JObject AddAttachment(string id, byte[] attachment, string filename, string contentType)
+		{
+			var doc = GetDocument(id);
+			return AddAttachment(id, doc.Rev, attachment,filename, contentType);
+		}
+		/// <summary>
+		/// Adds an attachment to the documnet.  Rev must be specified on this signature.  If you want to attach no matter what then use the method without the rev param
+		/// </summary>
+		/// <param name="id">id of the couch Document</param>
+		/// <param name="rev">revision _rev of the Couch Document</param>
+		/// <param name="attachment">byte[] of of the attachment.  Use File.ReadAllBytes()</param>
+		/// <param name="filename">filename of the attachment</param>
+		/// <param name="contentType">Content Type must be specifed</param>			
+		/// <returns></returns>
+		public JObject AddAttachment(string id, string rev,  byte[] attachment,string filename, string contentType)
+		{
+			return
+				GetRequest(databaseBaseUri + "/" + id + "/" +filename + "?rev=" + rev).Put().ContentType(contentType).Data(attachment).GetResponse().GetJObject();
+		}
+
+
 	}
 }

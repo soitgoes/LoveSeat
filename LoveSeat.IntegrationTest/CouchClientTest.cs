@@ -1,4 +1,6 @@
 ﻿using System.Configuration;
+using System.IO;
+using System.Linq;
 using LoveSeat.Support;
 using NUnit.Framework;
 
@@ -33,17 +35,20 @@ namespace LoveSeat.IntegrationTest
 			{
 				client.DeleteDatabase(baseDatabase);
 			}
-
+			if (client.HasUser("Leela"))
+			{
+				client.DeleteAdminUser("Leela");	
+			}
 		}
 
 		[Test]
-		public void CanTriggerReplication()
+		public void Should_Trigger_Replication()
 		{
 			var obj  = client.TriggerReplication("http://Professor:Farnsworth@"+ host+":5984/" +replicateDatabase, baseDatabase);
 			Assert.IsTrue(obj != null);
 		}
 		[Test]
-		public void CanCreateDocumentFromString()
+		public void Should_Create_Document_From_String()
 		{
 			string obj = @"{""test"": ""prop""}";
 			var db = client.GetDatabase(baseDatabase);
@@ -51,22 +56,45 @@ namespace LoveSeat.IntegrationTest
 			Assert.IsNotNull(db.GetDocument("fdas"));
 		}
 		[Test]
-		public void CanDeleteDocument()
+		public void Should_Delete_Document()
 		{
 			var db = client.GetDatabase(baseDatabase);
 			db.CreateDocument("asdf", "{}");
 			var doc = db.GetDocument("asdf");
-			var result = 	db.DeleteDocument(doc.Id(), doc.Rev());
+			var result = 	db.DeleteDocument(doc.Id, doc.Rev);
 			Assert.IsNull(db.GetDocument("asdf"));
 		}
+
+
 		[Test]
-		public void CanCreateAdminUser()
+		public void Should_Determine_If_Doc_Has_Attachment()
+		{
+			var db = client.GetDatabase(baseDatabase);
+			db.CreateDocument(@"{""_id"":""fdsa""}");
+			byte[] attachment = File.ReadAllBytes("../../Files/martin.jpg");
+			db.AddAttachment("fdsa" , attachment,"martin.jpg", "image/jpeg");
+			var doc = db.GetDocument("fdsa");
+			Assert.IsTrue(doc.HasAttachment);
+		}
+		[Test]
+		public void Should_Return_Attachment_Names()
+		{
+			var db = client.GetDatabase(baseDatabase);
+			db.CreateDocument(@"{""_id"":""fdsa""}");
+			var attachment = File.ReadAllBytes("../../Files/martin.jpg");
+			db.AddAttachment("fdsa", attachment,  "martin.jpg", "image/jpeg");	
+			var doc = db.GetDocument("fdsa");
+			Assert.IsTrue(doc.GetAttachmentNames().Contains("martin.jpg"));
+		}
+
+		[Test]
+		public void Should_Create_Admin_User()
 		{			
 			client.CreateAdminUser("Leela", "Turanga");
 		}
 
 		[Test]
-		public void CanDeleteAdminUser()
+		public void Should_Delete_Admin_User()
 		{
 			client.DeleteAdminUser("Leela");
 		}
