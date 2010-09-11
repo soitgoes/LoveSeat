@@ -80,10 +80,10 @@ namespace LoveSeat.IntegrationTest
 		public void Should_Return_Attachment_Names()
 		{
 			var db = client.GetDatabase(baseDatabase);
-			db.CreateDocument(@"{""_id"":""fdsa""}");
+			db.CreateDocument(@"{""_id"":""upload""}");
 			var attachment = File.ReadAllBytes("../../Files/martin.jpg");
-			db.AddAttachment("fdsa", attachment,  "martin.jpg", "image/jpeg");	
-			var doc = db.GetDocument("fdsa");
+			db.AddAttachment("upload", attachment,  "martin.jpg", "image/jpeg");
+			var doc = db.GetDocument("upload");
 			Assert.IsTrue(doc.GetAttachmentNames().Contains("martin.jpg"));
 		}
 
