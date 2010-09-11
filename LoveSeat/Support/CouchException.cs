@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat.Support
@@ -7,7 +8,7 @@ namespace LoveSeat.Support
 	{
 		private readonly JObject response;
 
-		public CouchException(JObject response): base(response.ToString())
+		public CouchException(JObject response, HttpWebRequest request): base(response.ToString()+ request.ToString())
 		{
 			this.response = response;			
 		}

@@ -168,6 +168,7 @@ namespace LoveSeat
 		{
 			return GetUser(userId) != null;
 		}
+		
 		/// <summary>
 		/// Get's the user.  
 		/// </summary>

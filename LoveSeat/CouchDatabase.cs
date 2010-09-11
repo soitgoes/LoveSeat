@@ -1,3 +1,5 @@
+using System.IO;
+using System.Web;
 using LoveSeat.Support;
 using Newtonsoft.Json.Linq;
 
@@ -33,14 +35,14 @@ namespace LoveSeat
 		/// </summary>
 		/// <param name="jsonForDocument">Json for creating the document</param>
 		/// <returns></returns>
-		public CouchDocument CreateDocument(string jsonForDocument)
+		public JObject CreateDocument(string jsonForDocument)
 		{
 			return
-				GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetResponse().GetCouchDocument();
+				GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetResponse().GetJObject();
 		}
-		public CouchDocument DeleteDocument(string id, string rev)
+		public JObject DeleteDocument(string id, string rev)
 		{
-			return GetRequest(databaseBaseUri + "/" + id + "?rev=" + rev).Delete().Form().GetResponse().GetCouchDocument();
+			return GetRequest(databaseBaseUri + "/" + id + "?rev=" + rev).Delete().Form().GetResponse().GetJObject();
 		}
 		/// <summary>
 		/// Returns null if document is not found
@@ -87,6 +89,28 @@ namespace LoveSeat
 				GetRequest(databaseBaseUri + "/" + id + "/" +filename + "?rev=" + rev).Put().ContentType(contentType).Data(attachment).GetResponse().GetJObject();
 		}
 
-
+		public Stream GetAttachmentStream(CouchDocument doc, string attachmentName)
+		{
+			return GetAttachmentStream(doc.Id, doc.Rev, attachmentName);
+		}
+		public Stream GetAttachmentStream(string docId, string rev, string attachmentName)
+		{
+			return GetRequest(databaseBaseUri + "/" + docId + "/" + HttpUtility.UrlEncode(attachmentName)).Get().GetResponse().GetResponseStream();
+		}
+		public Stream GetAttachmentStream(string docId, string attachmentName)
+		{
+			var doc = GetDocument(docId);
+			if (doc == null) return null;
+			return GetAttachmentStream(docId, doc.Rev, attachmentName);
+		}
+		public JObject DeleteAttachment(string id, string rev, string attachmentName)
+		{
+			return GetRequest(databaseBaseUri + "/" + id + "/" + attachmentName + "?rev=" + rev).Json().Delete().GetResponse().GetJObject();			
+		}
+		public JObject DeleteAttachment(string id, string attachmentName)
+		{
+			var doc = GetDocument(id);
+			return DeleteAttachment(doc.Id, doc.Rev, attachmentName);
+		}
 	}
 }

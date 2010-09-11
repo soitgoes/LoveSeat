@@ -99,7 +99,32 @@ namespace LoveSeat.IntegrationTest
 			client.DeleteAdminUser("Leela");
 		}
 
-		
-
+		[Test]
+		public void Should_Get_Attachment()
+		{
+			var db = client.GetDatabase(baseDatabase);
+			db.CreateDocument(@"{""_id"":""test_upload""}");
+			var doc = db.GetDocument("test_upload");
+			var attachment = File.ReadAllBytes("../../Files/test_upload.txt");
+			db.AddAttachment("test_upload", attachment, "test_upload.txt", "text/html");
+			var stream = db.GetAttachmentStream(doc, "test_upload.txt");
+			using (StreamReader sr = new StreamReader(stream))
+			{
+				string result = sr.ReadToEnd();
+				Assert.IsTrue(result == "test");	
+			}			
+		}
+		[Test]
+		public void Should_Delete_Attachment()
+		{
+			var db = client.GetDatabase(baseDatabase);
+			db.CreateDocument(@"{""_id"":""test_delete""}");
+			var doc = db.GetDocument("test_delete");
+			var attachment = File.ReadAllBytes("../../Files/test_upload.txt");
+			db.AddAttachment("test_delete", attachment, "test_upload.txt", "text/html");
+			db.DeleteAttachment("test_delete", "test_upload.txt");
+			var retrieved = db.GetDocument("test_delete");
+			Assert.IsFalse(retrieved.HasAttachment);
+		}
 	}
 }

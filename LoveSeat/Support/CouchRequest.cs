@@ -86,15 +86,16 @@ namespace LoveSeat.Support
 		{
 			try
 			{
-				var response = (HttpWebResponse)request.GetResponse();
+				var response = (HttpWebResponse)request.GetResponse();				
 				return response;
 			}
 			catch (WebException webEx)
 			{
 				var response = (HttpWebResponse)webEx.Response;
+				
 				if (response != null)
 				{
-					throw new CouchException(response.GetCouchDocument());					
+					throw new CouchException(response.GetCouchDocument(), request);					
 				}
 				throw;
 			}
