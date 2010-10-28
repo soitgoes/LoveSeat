@@ -103,7 +103,7 @@ namespace LoveSeat
 				var iniResult = GetRequest(baseUri + "_config/admins/" + HttpUtility.UrlEncode(usernameToCreate))
 					.Put().Json().Data("\"" + passwordToCreate + "\"").GetResponse();
 			}
-			catch (CouchException ce)
+			catch (CouchException)
 			{
 				//fail silently
 			}
@@ -126,7 +126,7 @@ namespace LoveSeat
 				var iniResult = GetRequest(baseUri + "_config/admins/" + HttpUtility.UrlEncode(userToDelete))
 					.Delete().Json().GetResponse();
 			}
-			catch (CouchException ce)
+			catch (CouchException)
 			{
 				//fail silently
 			}
@@ -148,13 +148,16 @@ namespace LoveSeat
 		{
 			try
 			{
-				var result = GetRequest(baseUri + databaseName)
+                var request = GetRequest(baseUri + databaseName);
+                request.Timeout = 5000;
+				var result = request
 					.Get()
+                    .ContentType("application/x-www-form-urlencoded")
 					.GetResponse()
 					.GetCouchDocument()["ok"];
 				return true;
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				return false;
 			}

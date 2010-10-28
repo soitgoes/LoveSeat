@@ -20,9 +20,9 @@ namespace LoveSeat.Support
 			request.KeepAlive = true;
 			if (authCookie != null)
 				request.Headers.Add("Cookie", "AuthSession=" + authCookie.Value);
-			request.Timeout = int.MaxValue;
+			request.Timeout = Timeout.HasValue ? Timeout.Value : 10000;
 		}
-
+        public int? Timeout { get; set; }
 		public CouchRequest Put()
 		{
 			request.Method = "PUT";

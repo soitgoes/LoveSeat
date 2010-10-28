@@ -18,6 +18,24 @@ namespace LoveSeat.Support
 			this.username = username;
 			this.password = password;
 		}
+        public static bool Authenticate(string baseUri, string userName, string password)
+        {
+            try
+            {
+            var request = new CouchRequest("http://" + baseUri + "/_session");
+            request.Timeout = 3000;
+            var response = request.Post()
+                .ContentType("application/x-www-form-urlencoded")
+                .Data("name=" + userName + "&password=" + password)
+                .GetResponse();
+                return response.StatusCode == HttpStatusCode.OK;
+            }
+            catch (Exception ce)
+            {
+                return false;
+            }
+            
+        }
 		
 		protected Cookie GetSession()
 		{

@@ -35,10 +35,10 @@ namespace LoveSeat
 		/// </summary>
 		/// <param name="jsonForDocument">Json for creating the document</param>
 		/// <returns></returns>
-		public JObject CreateDocument(string jsonForDocument)
+		public CouchDocument CreateDocument(string jsonForDocument)
 		{
 			return
-				GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetResponse().GetJObject();
+				GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetResponse().GetCouchDocument();
 		}
 		public JObject DeleteDocument(string id, string rev)
 		{
@@ -53,7 +53,7 @@ namespace LoveSeat
 		{
 			try
 			{
-				return GetRequest(databaseBaseUri + "/" + id).Get().Form().GetResponse().GetCouchDocument();	
+				return GetRequest(databaseBaseUri + "/" + id).Get().Json().GetResponse().GetCouchDocument();	
 			}catch(CouchException ce)
 			{
 				if (ce.Message.Contains("not_found"))
