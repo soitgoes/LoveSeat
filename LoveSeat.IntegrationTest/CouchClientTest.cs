@@ -26,6 +26,10 @@ namespace LoveSeat.IntegrationTest
 			{
 				client.CreateDatabase(baseDatabase);
 			}
+            if (!client.HasDatabase(replicateDatabase))
+            {
+                client.CreateDatabase(replicateDatabase);
+            }
 		}
 		[TestFixtureTearDown]
 		public void TearDown()
@@ -35,6 +39,10 @@ namespace LoveSeat.IntegrationTest
 			{
 				client.DeleteDatabase(baseDatabase);
 			}
+            if (client.HasDatabase(replicateDatabase))
+            {
+                client.DeleteDatabase(replicateDatabase);
+            }
 			if (client.HasUser("Leela"))
 			{
 				client.DeleteAdminUser("Leela");	
