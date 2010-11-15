@@ -12,6 +12,9 @@ namespace LoveSeat
 		public CouchDocument(JObject jobj) : base(jobj)
 		{
 		}
+        public CouchDocument(object obj) : base(obj)
+        {
+        }
 		public bool HasAttachment
 		{
 			get { return this["_attachments"] != null; }

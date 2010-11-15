@@ -63,6 +63,18 @@ namespace LoveSeat.IntegrationTest
 			var result = db.CreateDocument("fdas", obj);
 			Assert.IsNotNull(db.GetDocument("fdas"));
 		}
+        [Test]
+        public void Should_Save_Existing_Document()
+        {
+            string obj = @"{""test"": ""prop""}";
+            var db = client.GetDatabase(baseDatabase);
+            var result = db.CreateDocument("fdas", obj);
+            var doc = db.GetDocument("fdas");
+            doc["test"] = "newprop";
+            var newresult = db.SaveDocument(doc);
+            Assert.AreEqual(newresult.Value<string>("test"), "newprop");
+        }
+
 		[Test]
 		public void Should_Delete_Document()
 		{

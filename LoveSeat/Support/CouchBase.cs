@@ -22,7 +22,9 @@ namespace LoveSeat.Support
         {
             try
             {
-            var request = new CouchRequest("http://" + baseUri + "/_session");
+                if (!baseUri.Contains("http://"))
+                    baseUri = "http://" + baseUri;
+            var request = new CouchRequest( baseUri + "/_session");
             request.Timeout = 3000;
             var response = request.Post()
                 .ContentType("application/x-www-form-urlencoded")

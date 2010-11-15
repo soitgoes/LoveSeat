@@ -151,8 +151,7 @@ namespace LoveSeat
                 var request = GetRequest(baseUri + databaseName);
                 request.Timeout = 5000;
 				var result = request
-					.Get()
-                    .ContentType("application/x-www-form-urlencoded")
+					.Get()                   
 					.GetResponse()
 					.GetCouchDocument()["ok"];
 				return true;

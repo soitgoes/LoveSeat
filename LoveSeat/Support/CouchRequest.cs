@@ -14,7 +14,9 @@ namespace LoveSeat.Support
 		public CouchRequest(string uri, Cookie authCookie)
 		{
 			request = (HttpWebRequest)WebRequest.Create(uri);
-			//	request.Headers.Clear(); //important
+			request.Headers.Clear(); //important
+            request.Headers.Add("Accept-Charset", "utf-8");
+            request.Headers.Add("Accept-Language", "en-us");
 			request.Referer = uri;
 			request.ContentType = "application/json";
 			request.KeepAlive = true;
