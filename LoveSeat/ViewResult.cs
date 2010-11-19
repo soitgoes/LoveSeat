@@ -10,7 +10,6 @@ namespace LoveSeat
             : base(obj)
         {
         }
-
         public int TotalRows { get { return this["total_rows"].Value<int>(); } }
         public int OffSet { get { return this["offset"].Value<int>(); } }
         public IEnumerable<JToken> Rows { get { return (JArray)this["rows"]; } }

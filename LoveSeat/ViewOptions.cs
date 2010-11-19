@@ -18,6 +18,7 @@ namespace LoveSeat
         public bool? InclusiveEnd { get; set; }
         public int? GroupLevel { get; set; }
         public bool? Descending { get; set; }
+        public bool? Stale { get; set; }
 
         public override string ToString()
         {
@@ -44,6 +45,8 @@ namespace LoveSeat
                 result += "&group_level=" + GroupLevel.Value.ToString();
             if (Descending.HasValue)
                 result += "&descending=" + Descending.Value.ToString().ToLower();
+            if (Stale.HasValue && Stale.Value)
+                result += "&stale=ok";
             return result.Substring(1);
         }
     }
