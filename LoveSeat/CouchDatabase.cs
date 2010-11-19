@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using LoveSeat.Support;
@@ -6,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
-	public class CouchDatabase : CouchBase
+    public class CouchDatabase : CouchBase
 	{
 		private readonly string databaseBaseUri;
 
@@ -129,5 +130,33 @@ namespace LoveSeat
 	       //TODO: Change this so it simply alters the revision on the document past in so that there isn't an additional request.
             return GetDocument(document.Id);
 	    }
+
+        /// <summary>
+        /// Gets the results of a view with no view parameters.  Use the overload to pass parameters
+        /// </summary>
+        /// <param name="designDoc">The design doc on which the view resides</param>
+        /// <param name="viewName">The name of the view</param>
+        /// <returns></returns>
+        public ViewResult View(string designDoc, string viewName)
+        {
+            return View(designDoc, viewName, null);
+        }
+
+        /// <summary>
+        /// Gets the results of the view using any and all parameters
+        /// </summary>
+        /// <param name="designDoc">The design doc on which the view resides</param>
+        /// <param name="viewName">The name of the view</param>
+        /// <param name="options">Options such as startkey etc.</param>
+        /// <returns></returns>
+        public ViewResult View(string designDoc, string viewName, ViewOptions options)
+        {
+            var uri = databaseBaseUri + "/_design/" + designDoc + "/_view/" + viewName ;
+            if (options != null)
+                uri += "?" + options.ToString();
+            var resp = GetRequest(uri).Get().Json().GetResponse();
+            var jobj = resp.GetJObject();
+            return new ViewResult(jobj);
+        }
 	}
 }
