@@ -21,9 +21,6 @@ namespace LoveSeat
 
         public override string ToString()
         {
-            var settings = new JsonSerializerSettings();
-            settings.NullValueHandling = NullValueHandling.Ignore;
-            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             string result = "";
             if (Key != null)
                 result += "&key=" + Key.ToString(Formatting.None);
@@ -47,7 +44,7 @@ namespace LoveSeat
                 result += "&group_level=" + GroupLevel.Value.ToString();
             if (Descending.HasValue)
                 result += "&descending=" + Descending.Value.ToString().ToLower();
-            return result;
+            return result.Substring(1);
         }
     }
    
