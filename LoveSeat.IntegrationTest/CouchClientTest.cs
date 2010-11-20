@@ -146,5 +146,22 @@ namespace LoveSeat.IntegrationTest
 			var retrieved = db.GetDocument("test_delete");
 			Assert.IsFalse(retrieved.HasAttachment);
 		}
+        [Test]
+        public void Should_Return_Etag_In_ViewResults()
+        {
+            var db = client.GetDatabase(baseDatabase);
+            db.CreateDocument(@"{""_id"":""test_eTag""}");
+            ViewResult result = db.GetAllDocuments();
+           Assert.IsTrue(!string.IsNullOrEmpty(result.Etag));
+        }
+	    [Test]
+	    [ExpectedException("LoveSeat.NotModifiedException")]
+	    public void Should_Throw_Not_Modified_Exception_If_Etag_Matches()
+	    {
+            var db = client.GetDatabase(baseDatabase);
+            db.CreateDocument(@"{""_id"":""test_eTag_exception""}");
+            ViewResult result = db.GetAllDocuments();
+	        db.GetAllDocuments(new ViewOptions {Etag = result.Etag});
+	    }
 	}
 }

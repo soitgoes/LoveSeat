@@ -19,6 +19,7 @@ namespace LoveSeat
         public int? GroupLevel { get; set; }
         public bool? Descending { get; set; }
         public bool? Stale { get; set; }
+        public string Etag { get; set; }
 
         public override string ToString()
         {
@@ -47,7 +48,7 @@ namespace LoveSeat
                 result += "&descending=" + Descending.Value.ToString().ToLower();
             if (Stale.HasValue && Stale.Value)
                 result += "&stale=ok";
-            return result.Substring(1);
+            return result.Length < 1 ? "" : result.Substring(1);
         }
     }
    
