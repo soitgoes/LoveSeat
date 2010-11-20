@@ -8,25 +8,24 @@ namespace LoveSeat.Support
 	{
 		public static CouchDocument GetCouchDocument(this HttpWebResponse response)
 		{
-			using (var stream = response.GetResponseStream())
+			return new CouchDocument(response.GetJObject()); 
+		}
+
+        public static string GetResponseString(this HttpWebResponse response)
+        {
+            using (var stream = response.GetResponseStream())
 			{
 				using (var streamReader = new StreamReader(stream))
 				{
 					var result = streamReader.ReadToEnd();
-					return new CouchDocument(JObject.Parse(result)); 
+                    if (string.IsNullOrEmpty(result)) return null;
+					return result;
 				}
 			}
-		}
+        }
 		public static JObject GetJObject(this HttpWebResponse response)
 		{
-			using (var stream = response.GetResponseStream())
-			{
-				using (var streamReader = new StreamReader(stream))
-				{
-					var result = streamReader.ReadToEnd();
-					return JObject.Parse(result);
-				}
-			}
+		    return JObject.Parse(response.GetResponseString());
 		}
 	}
 }

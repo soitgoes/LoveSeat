@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Web;
 using LoveSeat.Support;
 using Newtonsoft.Json.Linq;
@@ -26,11 +27,12 @@ namespace LoveSeat
         /// <returns></returns>
         public CouchDocument CreateDocument(string id, string jsonForDocument)
         {
-            return GetRequest(databaseBaseUri + "/" + id)
+            var resp = GetRequest(databaseBaseUri + "/" + id)
                 .Put().Form()
                 .Data(jsonForDocument)
-                .GetResponse()
-                .GetCouchDocument();
+                .GetResponse();
+            return 
+                resp.GetCouchDocument();
         }
 
         public CouchDocument CreateDocument(CouchDocument doc)
@@ -44,9 +46,13 @@ namespace LoveSeat
         /// <returns></returns>
         public CouchDocument CreateDocument(string jsonForDocument)
         {
-            return
-                GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetResponse().GetCouchDocument();
-        }
+            var json = JObject.Parse(jsonForDocument);
+            var jobj = 
+                GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetResponse().GetJObject();
+            json["_id"] = jobj["_id"];
+            json["_rev"] = jobj["_rev"];
+            return new CouchDocument(json);
+        }        
         public JObject DeleteDocument(string id, string rev)
         {
             return GetRequest(databaseBaseUri + "/" + id + "?rev=" + rev).Delete().Form().GetResponse().GetJObject();
@@ -58,18 +64,9 @@ namespace LoveSeat
         /// <returns></returns>
         public CouchDocument GetDocument(string id)
         {
-            try
-            {
-                return GetRequest(databaseBaseUri + "/" + id).Get().Json().GetResponse().GetCouchDocument();
-            }
-            catch (CouchException ce)
-            {
-                if (ce.Message.Contains("not_found"))
-                {
-                    return null;
-                }
-                throw;
-            }
+            var resp = GetRequest(databaseBaseUri + "/" + id).Get().Json().GetResponse();
+            if (resp.StatusCode==HttpStatusCode.NotFound) return null;
+            return resp.GetCouchDocument();
         }
         /// <summary>
         /// Adds an attachment to a document.  If revision is not specified then the most recent will be fetched and used.  Warning: if you need document update conflicts to occur please use the method that specifies the revision
@@ -160,13 +157,9 @@ namespace LoveSeat
         {
             if (options != null)
                 uri += "?" + options.ToString();
-            var resp = GetRequest(uri).Get().Json().GetResponse();
-            string responseETag = resp.GetResponseHeader("ETag");
-            if (options != null && options.Etag == responseETag)
-                throw new NotModifiedException("Data not modified for uri: " + uri);
-            var jobj = resp.GetJObject();
-            var result = new ViewResult(jobj) {Etag = responseETag};
-            return result;
+            var req = GetRequest(uri, options == null ? null : options.Etag).Get().Json();
+            var resp = req.GetResponse();
+            return new ViewResult(resp, req.GetRequest());
         }
 
         /// <summary>
