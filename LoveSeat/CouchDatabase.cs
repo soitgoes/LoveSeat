@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Web;
 using LoveSeat.Support;
 using Newtonsoft.Json.Linq;
@@ -9,8 +10,7 @@ namespace LoveSeat
     public class CouchDatabase : CouchBase
     {
         private readonly string databaseBaseUri;
-
-        public CouchDatabase(string baseUri, string databaseName, string username, string password)
+         public CouchDatabase(string baseUri, string databaseName, string username, string password)
             : base(username, password)
         {
             this.baseUri = baseUri;
@@ -26,11 +26,12 @@ namespace LoveSeat
         /// <returns></returns>
         public CouchDocument CreateDocument(string id, string jsonForDocument)
         {
-            return GetRequest(databaseBaseUri + "/" + id)
+            var resp = GetRequest(databaseBaseUri + "/" + id)
                 .Put().Form()
                 .Data(jsonForDocument)
-                .GetResponse()
-                .GetCouchDocument();
+                .GetResponse();
+            return 
+                resp.GetCouchDocument();
         }
 
         public CouchDocument CreateDocument(CouchDocument doc)
@@ -44,9 +45,13 @@ namespace LoveSeat
         /// <returns></returns>
         public CouchDocument CreateDocument(string jsonForDocument)
         {
-            return
-                GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetResponse().GetCouchDocument();
-        }
+            var json = JObject.Parse(jsonForDocument);
+            var jobj = 
+                GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetResponse().GetJObject();
+            json["_id"] = jobj["_id"];
+            json["_rev"] = jobj["_rev"];
+            return new CouchDocument(json);
+        }        
         public JObject DeleteDocument(string id, string rev)
         {
             return GetRequest(databaseBaseUri + "/" + id + "?rev=" + rev).Delete().Form().GetResponse().GetJObject();
@@ -58,18 +63,20 @@ namespace LoveSeat
         /// <returns></returns>
         public CouchDocument GetDocument(string id)
         {
-            try
-            {
-                return GetRequest(databaseBaseUri + "/" + id).Get().Json().GetResponse().GetCouchDocument();
-            }
-            catch (CouchException ce)
-            {
-                if (ce.Message.Contains("not_found"))
-                {
-                    return null;
-                }
-                throw;
-            }
+            var resp = GetRequest(databaseBaseUri + "/" + id).Get().Json().GetResponse();
+            if (resp.StatusCode==HttpStatusCode.NotFound) return null;
+            return resp.GetCouchDocument();
+        }
+
+        public T GetDocument<T>(string id)
+        {
+            return GetDocument(id, new ObjectSerializer<T>());
+        }
+        public T GetDocument<T>(string id, IObjectSerializer<T> objectSerializer)
+        {
+            var resp = GetRequest(databaseBaseUri + "/" + id).Get().Json().GetResponse();
+            if (resp.StatusCode == HttpStatusCode.NotFound) return default(T);
+            return objectSerializer.Deserialize(resp.GetResponseString());
         }
         /// <summary>
         /// Adds an attachment to a document.  If revision is not specified then the most recent will be fetched and used.  Warning: if you need document update conflicts to occur please use the method that specifies the revision
@@ -138,9 +145,9 @@ namespace LoveSeat
         /// <param name="designDoc">The design doc on which the view resides</param>
         /// <param name="viewName">The name of the view</param>
         /// <returns></returns>
-        public ViewResult View(string designDoc, string viewName)
+        public ViewResult<T> View<T>(string designDoc, string viewName)
         {
-            return View(designDoc, viewName, null);
+            return View<T>(designDoc, viewName, null);
         }
 
         /// <summary>
@@ -150,24 +157,45 @@ namespace LoveSeat
         /// <param name="viewName">The name of the view</param>
         /// <param name="options">Options such as startkey etc.</param>
         /// <returns></returns>
-        public ViewResult View(string designDoc, string viewName, ViewOptions options)
+        public ViewResult<T> View<T>(string designDoc, string viewName, ViewOptions options)
         {
             var uri = databaseBaseUri + "/_design/" + designDoc + "/_view/" + viewName;
-            return ProcessResults(uri, options);
+            return ProcessGenericResults<T>(uri, options, new ObjectSerializer<T>());
         }
-
+        /// <summary>
+        /// Don't use this overload unless you intend to override the default ObjectSerialization behavior.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="designDoc"></param>
+        /// <param name="viewName"></param>
+        /// <param name="options"></param>
+        /// <param name="objectSerializer">Only needed unless you'd like to override the default behavior of the serializer</param>
+        /// <returns></returns>
+        public ViewResult<T> View<T>(string designDoc, string viewName, ViewOptions options, IObjectSerializer<T> objectSerializer)
+        {
+            var uri = databaseBaseUri + "/_design/" + designDoc + "/_view/" + viewName;
+            return ProcessGenericResults<T>(uri, options, objectSerializer);                 
+        }
+        private ViewResult<T> ProcessGenericResults<T>(string uri, ViewOptions options, IObjectSerializer<T> objectSerializer)
+        {
+            CouchRequest req = GetRequest(options, uri);
+            var resp = req.GetResponse();
+            return new ViewResult<T>(resp, req.GetRequest(), objectSerializer);
+        }
         private ViewResult ProcessResults(string uri, ViewOptions options)
+        {
+            CouchRequest req = GetRequest(options, uri);
+            var resp = req.GetResponse();
+            return new ViewResult(resp, req.GetRequest());
+        }
+        
+        private CouchRequest GetRequest(ViewOptions options, string uri)
         {
             if (options != null)
                 uri += "?" + options.ToString();
-            var resp = GetRequest(uri).Get().Json().GetResponse();
-            string responseETag = resp.GetResponseHeader("ETag");
-            if (options != null && options.Etag == responseETag)
-                throw new NotModifiedException("Data not modified for uri: " + uri);
-            var jobj = resp.GetJObject();
-            var result = new ViewResult(jobj) {Etag = responseETag};
-            return result;
+            return GetRequest(uri, options == null ? null : options.Etag).Get().Json();
         }
+
 
         /// <summary>
         /// Gets all the documents in the database using the _all_docs uri

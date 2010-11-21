@@ -1,6 +1,7 @@
 ﻿using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net;
 using LoveSeat.Support;
 using NUnit.Framework;
 
@@ -155,13 +156,13 @@ namespace LoveSeat.IntegrationTest
            Assert.IsTrue(!string.IsNullOrEmpty(result.Etag));
         }
 	    [Test]
-	    [ExpectedException("LoveSeat.NotModifiedException")]
-	    public void Should_Throw_Not_Modified_Exception_If_Etag_Matches()
+	    public void Should_Get_304_If_ETag_Matches()
 	    {
             var db = client.GetDatabase(baseDatabase);
             db.CreateDocument(@"{""_id"":""test_eTag_exception""}");
             ViewResult result = db.GetAllDocuments();
-	        db.GetAllDocuments(new ViewOptions {Etag = result.Etag});
+	        ViewResult cachedResult = db.GetAllDocuments(new ViewOptions {Etag = result.Etag});
+            Assert.AreEqual(cachedResult.StatusCode, HttpStatusCode.NotModified);
 	    }
 	}
 }

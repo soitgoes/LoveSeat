@@ -8,13 +8,15 @@ namespace LoveSeat.Support
 	{
 		private readonly HttpWebRequest request;
 		public CouchRequest(string uri)
-			: this(uri, null)
+			: this(uri, null, null)
 		{
 		}
-		public CouchRequest(string uri, Cookie authCookie)
+		public CouchRequest(string uri, Cookie authCookie, string eTag)
 		{
-			request = (HttpWebRequest)WebRequest.Create(uri);
-			request.Headers.Clear(); //important
+		    request = (HttpWebRequest) WebRequest.Create(uri);
+            request.Headers.Clear(); //important
+            if (!string.IsNullOrEmpty(eTag))
+                request.Headers.Add("If-None-Match", eTag);		
             request.Headers.Add("Accept-Charset", "utf-8");
             request.Headers.Add("Accept-Language", "en-us");
 			request.Referer = uri;
@@ -84,23 +86,26 @@ namespace LoveSeat.Support
 			request.ContentType = "application/json";
 			return this;
 		}
+        public HttpWebRequest GetRequest()
+        {
+            return request;
+        }
 		public HttpWebResponse GetResponse()
 		{
 			try
 			{
-				var response = (HttpWebResponse)request.GetResponse();				
-				return response;
+				var response = (HttpWebResponse)request.GetResponse();	
+					return response;
 			}
 			catch (WebException webEx)
 			{
 				var response = (HttpWebResponse)webEx.Response;
-				
 				if (response != null)
 				{
-					throw new CouchException(response.GetCouchDocument(), request);					
+				    return response;
 				}
-				throw;
 			}
+		    return null;
 		}
 
 
