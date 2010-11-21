@@ -1,9 +1,21 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
+    public class CouchDocument<T> : CouchDocument
+    {
+        private static IObjectSerializer<T> objectSerializer = new ObjectSerializer<T>();
+
+        public CouchDocument(T obj) : base(objectSerializer.Serialize(obj)) {
+            }
+        public CouchDocument(T obj, IObjectSerializer<T> objectSerializer) : base(objectSerializer.Serialize(obj))
+        {            
+        }
+    }
+
     public class CouchDocument : JObject
     {
         public string Id
@@ -24,7 +36,9 @@ namespace LoveSeat
             }
             set { this["_rev"] = value; }
         }
-
+        protected CouchDocument()
+        {
+        }
         public CouchDocument(JObject jobj)
             : base(jobj)
         {

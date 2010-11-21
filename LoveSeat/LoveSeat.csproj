@@ -68,6 +68,7 @@
     <Compile Include="CouchDocument.cs" />
     <Compile Include="CouchUser.cs" />
     <Compile Include="NotModifiedException.cs" />
+    <Compile Include="ObjectSerializer.cs" />
     <Compile Include="Support\CouchBase.cs" />
     <Compile Include="CouchClient.cs" />
     <Compile Include="CouchDatabase.cs" />

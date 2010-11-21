@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -8,6 +9,30 @@ using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
+    public class ViewResult<T> : ViewResult
+    {
+        private readonly IObjectSerializer<T> objectSerializer = null;
+        public ViewResult(HttpWebResponse response, HttpWebRequest request, IObjectSerializer<T> objectSerializer)
+            : base(response, request)
+        {
+            this.objectSerializer = objectSerializer;
+        }
+
+        public IEnumerable<T> Items
+        {
+            get
+            {
+                if (objectSerializer == null)
+                {
+                    throw new InvalidOperationException("ObjectSerializer must be set in order to use the generic view.");
+                }
+                return this.RawValues.Select(item => objectSerializer.Deserialize(item));
+            }
+        }
+    }
+
+
+
     public class ViewResult
     {
         private readonly HttpWebResponse response;
