@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Web;
 using LoveSeat.Support;
 using Newtonsoft.Json.Linq;
@@ -133,20 +134,12 @@ namespace LoveSeat
         /// <returns></returns>
         public bool HasDatabase(string databaseName)
         {
-            try
-            {
-                var request = GetRequest(baseUri + databaseName);
-                request.Timeout = 5000;
-                var result = request
-                    .Get()
-                    .GetResponse()
-                    .GetCouchDocument()["ok"];
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            var request = GetRequest(baseUri + databaseName);
+            request.Timeout = 5000;
+            var result = request
+                .Get()
+                .GetResponse();
+            return result.StatusCode == HttpStatusCode.OK;
         }
         /// <summary>
         /// Returns true/false depending on whether or not the user is contained in the _users database
