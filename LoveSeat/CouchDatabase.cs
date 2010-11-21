@@ -161,7 +161,7 @@ namespace LoveSeat
             if (options != null)
                 uri += "?" + options.ToString();
             var resp = GetRequest(uri).Get().Json().GetResponse();
-            string responseETag = resp.GetResponseHeader("ETag").Replace(@"""", "");
+            string responseETag = resp.GetResponseHeader("ETag");
             if (options != null && options.Etag == responseETag)
                 throw new NotModifiedException("Data not modified for uri: " + uri);
             var jobj = resp.GetJObject();
