@@ -8,7 +8,7 @@ namespace LoveSeat
     public class ViewOptions
     {
         public JToken Key { get; set; }
-        public JToken StartKey { get; set; }
+        public JToken StartKey { get; set; }        
         public JToken EndKey { get; set; }
         public int? Limit { get; set; }
         public int? Skip { get; set; }
@@ -20,6 +20,22 @@ namespace LoveSeat
         public bool? Descending { get; set; }
         public bool? Stale { get; set; }
         public string Etag { get; set; }
+
+        public void SetStartKey(string startKey)
+        {
+            if (!string.IsNullOrEmpty(startKey))
+                StartKey = JToken.FromObject(startKey);
+        }
+        public void SetEndKey(string endKey)
+        {
+            if (!string.IsNullOrEmpty(endKey))
+                EndKey = JToken.FromObject(endKey);
+        }
+        public void SetKey(string key)
+        {
+            if (!string.IsNullOrEmpty(key))
+                Key = JToken.FromObject(key);
+        }
 
         public override string ToString()
         {
