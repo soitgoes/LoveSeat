@@ -5,18 +5,18 @@ using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
-    public class CouchDocument<T> : CouchDocument
+    public class Document<T> : Document
     {
         private static IObjectSerializer<T> objectSerializer = new ObjectSerializer<T>();
 
-        public CouchDocument(T obj) : base(objectSerializer.Serialize(obj)) {
+        public Document(T obj) : base(objectSerializer.Serialize(obj)) {
             }
-        public CouchDocument(T obj, IObjectSerializer<T> objectSerializer) : base(objectSerializer.Serialize(obj))
+        public Document(T obj, IObjectSerializer<T> objectSerializer) : base(objectSerializer.Serialize(obj))
         {            
         }
     }
 
-    public class CouchDocument : JObject
+    public class Document : JObject
     {
         public string Id
         {
@@ -36,14 +36,14 @@ namespace LoveSeat
             }
             set { this["_rev"] = value; }
         }
-        protected CouchDocument()
+        protected Document()
         {
         }
-        public CouchDocument(JObject jobj)
+        public Document(JObject jobj)
             : base(jobj)
         {
         }
-        public CouchDocument(string json)
+        public Document(string json)
             : base(JObject.Parse(json))
         {
         }

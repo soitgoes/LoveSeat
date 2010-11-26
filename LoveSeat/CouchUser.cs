@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
-	public class CouchUser : CouchDocument
+	public class CouchUser : Document
 	{
 		public CouchUser(JObject jobj)
 			: base(jobj)

@@ -156,7 +156,7 @@ namespace LoveSeat
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public CouchDocument GetUser(string userId)
+        public Document GetUser(string userId)
         {
             var db = new CouchDatabase(baseUri, "_users", username, password);
             userId = "org.couchdb.user:" + HttpUtility.UrlEncode(userId);
