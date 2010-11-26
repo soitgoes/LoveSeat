@@ -1,9 +1,10 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
-using LoveSeat.Support;
 using NUnit.Framework;
+using LoveSeat;
 
 namespace LoveSeat.IntegrationTest
 {
@@ -163,6 +164,25 @@ namespace LoveSeat.IntegrationTest
             ViewResult result = db.GetAllDocuments();
 	        ViewResult cachedResult = db.GetAllDocuments(new ViewOptions {Etag = result.Etag});
             Assert.AreEqual(cachedResult.StatusCode, HttpStatusCode.NotModified);
-	    }
+	    } 
+
+        [Test]
+        public void Should_Get_Results_Quickly()
+        {
+            var db = client.GetDatabase("accounting");
+            var startTime = DateTime.Now;
+            var options = new ViewOptions {Limit = 20};
+            var result= db.View<Company>("accounting", "companies_by_name", options);
+            foreach ( var item in result.Items)
+            {
+                Console.WriteLine(item.Name);
+            }
+            var endTime = DateTime.Now;
+            Assert.Less((endTime - startTime).TotalMilliseconds, 80);
+        }
 	}
+    public class Company
+    {
+        public string Name { get; set; }
+    }
 }
