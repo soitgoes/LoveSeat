@@ -8,7 +8,7 @@ using LoveSeat;
 
 namespace LoveSeat.IntegrationTest
 {
-	[TestFixture]
+    [TestFixture]
 	public class CouchClientTest
 	{
 		private CouchClient client;

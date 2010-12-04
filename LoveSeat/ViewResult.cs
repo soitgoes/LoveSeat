@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web;
+using LoveSeat.Interfaces;
 using LoveSeat.Support;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -33,7 +34,7 @@ namespace LoveSeat
 
 
 
-    public class ViewResult
+    public class ViewResult : IViewResult
     {
         private readonly HttpWebResponse response;
         private readonly HttpWebRequest request;

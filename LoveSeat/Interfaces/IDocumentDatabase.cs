@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Newtonsoft.Json.Linq;
 
-namespace LoveSeat
+namespace LoveSeat.Interfaces
 {
     public interface IDocumentDatabase
     {

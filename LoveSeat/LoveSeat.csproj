@@ -68,7 +68,10 @@
     <Compile Include="Document.cs" />
     <Compile Include="CouchUser.cs" />
     <Compile Include="Interfaces\IDocumentDatabase.cs" />
+    <Compile Include="Interfaces\IViewOptions.cs" />
+    <Compile Include="Interfaces\IViewResult.cs" />
     <Compile Include="ObjectSerializer.cs" />
+    <Compile Include="PagingHelper.cs" />
     <Compile Include="Support\CouchBase.cs" />
     <Compile Include="CouchClient.cs" />
     <Compile Include="CouchDatabase.cs" />

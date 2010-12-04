@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Web;
+using LoveSeat.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace LoveSeat
 {
-    public class ViewOptions
+    public class ViewOptions : IViewOptions
     {
         public JToken Key { get; set; }
         public JToken StartKey { get; set; }        
@@ -21,31 +23,31 @@ namespace LoveSeat
         public bool? Stale { get; set; }
         public string Etag { get; set; }
 
-        public void SetStartKey(string startKey)
+        public virtual void SetStartKey(string startKey)
         {
             if (!string.IsNullOrEmpty(startKey))
                 StartKey = JToken.FromObject(startKey);
         }
-        public void SetEndKey(string endKey)
+        public virtual void SetEndKey(string endKey)
         {
             if (!string.IsNullOrEmpty(endKey))
                 EndKey = JToken.FromObject(endKey);
         }
-        public void SetKey(string key)
+        public virtual void SetKey(string key)
         {
             if (!string.IsNullOrEmpty(key))
                 Key = JToken.FromObject(key);
         }
 
-        public override string ToString()
+        public  override string ToString()
         {
             string result = "";
             if (Key != null)
-                result += "&key=" + Key.ToString(Formatting.None);
+                result += "&key=" + HttpUtility.UrlEncode(Key.ToString(Formatting.None));
             if (StartKey != null)
-                result += "&startkey=" + StartKey.ToString(Formatting.None);
+                result += "&startkey=" + HttpUtility.UrlEncode(StartKey.ToString(Formatting.None));
             if (EndKey != null)
-                result += "&endkey=" + EndKey.ToString(Formatting.None);
+                result += "&endkey=" + HttpUtility.UrlEncode(EndKey.ToString(Formatting.None));
             if (Limit.HasValue)
                 result += "&limit=" + Limit.Value.ToString();
             if (Skip.HasValue)
