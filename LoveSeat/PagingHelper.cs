@@ -54,9 +54,10 @@ namespace LoveSeat
 
         public static void UpdatePaging(this IPageableModel model, IViewOptions options, IViewResult result)
         {
-            var limit = options.Limit.HasValue ? options.Limit.Value : 25;
+            var limit = options.Limit.HasValue ? options.Limit.Value : 10;
             model.Limit = limit;
-            model.ShowPrev = result.OffSet != 0  && !(model.Descending && ((result.TotalRows -  result.OffSet) < options.Limit));
+            int rowsMinusOffset = (result.TotalRows - result.OffSet);
+            model.ShowPrev = result.OffSet != 0  && !(model.Descending && (rowsMinusOffset < options.Limit));
             model.ShowNext = (result.TotalRows > options.Limit + result.OffSet) || options.Descending.GetValueOrDefault();
             string skip = result.OffSet == 0 ? "" : "&skip=1";
             JToken lastRow; 
@@ -65,15 +66,18 @@ namespace LoveSeat
             {
                 lastRow = result.Rows.FirstOrDefault();
                 firstRow = result.Rows.LastOrDefault();
-                model.StartIndex = result.TotalRows - result.OffSet - limit;
-                model.EndIndex = result.TotalRows -  result.OffSet;
+                model.StartIndex = rowsMinusOffset < limit ? 1 :  rowsMinusOffset - limit;
+                
             }else
             {
                 lastRow = result.Rows.LastOrDefault();
                 firstRow = result.Rows.FirstOrDefault();
-                model.StartIndex = result.OffSet;
-                model.EndIndex = result.OffSet + limit;
+                model.StartIndex = result.OffSet +1;
             }
+            var startIndexPlusLimit = model.StartIndex + limit;
+            int count = result.Rows.Count();
+            model.EndIndex = model.StartIndex + count - 1;
+                     
             model.TotalRows = result.TotalRows;
             string prevStartKey = firstRow != null ? "&startkey=" + HttpUtility.UrlEncode(firstRow.Value<string>("key")) : "";
             string nextStartKey = lastRow != null ? "&startkey=" + HttpUtility.UrlEncode(lastRow.Value<string>("key") ): "";

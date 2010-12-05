@@ -59,9 +59,21 @@ namespace LoveSeat
         public HttpStatusCode StatusCode { get { return response.StatusCode; } }
 
         public string Etag { get { return response.Headers["ETag"]; } }
-        public int TotalRows { get { return Json["total_rows"].Value<int>(); } }
-        public int OffSet { get { return Json["offset"].Value<int>(); } }
-        public IEnumerable<JToken> Rows { get { return (JArray)Json["rows"]; } }
+        public int TotalRows { get
+        {
+            if (Json["total_rows"] == null) throw new CouchException(Json["reason"].Value<string>());
+            return Json["total_rows"].Value<int>();
+        } }
+        public int OffSet { get
+        {
+            if (Json["offset"] == null) throw new CouchException(Json["reason"].Value<string>());            
+            return Json["offset"].Value<int>();
+        } }
+        public IEnumerable<JToken> Rows { get
+        {
+            if (Json["rows"] == null) throw new CouchException(Json["reason"].Value<string>());
+            return (JArray)Json["rows"];
+        } }
         /// <summary>
         /// Only populated when IncludeDocs is true
         /// </summary>
