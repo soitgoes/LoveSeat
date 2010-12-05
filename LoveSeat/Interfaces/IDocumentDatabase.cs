@@ -64,30 +64,30 @@ namespace LoveSeat.Interfaces
         /// <summary>
         /// Gets the results of a view with no view parameters.  Use the overload to pass parameters
         /// </summary>
-        /// <param name="designDoc">The design doc on which the view resides</param>
         /// <param name="viewName">The name of the view</param>
+        /// <param name="designDoc">The design doc on which the view resides</param>
         /// <returns></returns>
-        ViewResult<T> View<T>(string designDoc, string viewName);
+        ViewResult<T> View<T>(string viewName, string designDoc);
 
         /// <summary>
         /// Gets the results of the view using any and all parameters
         /// </summary>
-        /// <param name="designDoc">The design doc on which the view resides</param>
         /// <param name="viewName">The name of the view</param>
         /// <param name="options">Options such as startkey etc.</param>
+        /// <param name="designDoc">The design doc on which the view resides</param>
         /// <returns></returns>
-        ViewResult<T> View<T>(string designDoc, string viewName, ViewOptions options);
+        ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc);
 
         /// <summary>
         /// Don't use this overload unless you intend to override the default ObjectSerialization behavior.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="designDoc"></param>
         /// <param name="viewName"></param>
         /// <param name="options"></param>
+        /// <param name="designDoc"></param>
         /// <param name="objectSerializer">Only needed unless you'd like to override the default behavior of the serializer</param>
         /// <returns></returns>
-        ViewResult<T> View<T>(string designDoc, string viewName, ViewOptions options, IObjectSerializer<T> objectSerializer);
+        ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc, IObjectSerializer<T> objectSerializer);
 
         /// <summary>
         /// Gets all the documents in the database using the _all_docs uri

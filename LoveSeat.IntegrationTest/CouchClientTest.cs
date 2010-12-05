@@ -172,7 +172,7 @@ namespace LoveSeat.IntegrationTest
             var db = client.GetDatabase("accounting");
             var startTime = DateTime.Now;
             var options = new ViewOptions {Limit = 20};
-            var result= db.View<Company>("accounting", "companies_by_name", options);
+            var result= db.View<Company>("companies_by_name", options,"accounting");
             foreach ( var item in result.Items)
             {
                 Console.WriteLine(item.Name);

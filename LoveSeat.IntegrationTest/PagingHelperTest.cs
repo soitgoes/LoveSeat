@@ -50,8 +50,9 @@ namespace LoveSeat.IntegrationTest
             model.UpdatePaging(options, result.Object);
             Assert.IsTrue(model.NextUrlParameters.Contains("skip=1"));
             Assert.IsTrue(model.PrevUrlParameters.Contains("skip=1"));
-            Assert.IsTrue(model.PrevUrlParameters.Contains("previous=true"));
+            Assert.IsTrue(model.PrevUrlParameters.Contains("descending=true"));
         }
+       
 
 
     }

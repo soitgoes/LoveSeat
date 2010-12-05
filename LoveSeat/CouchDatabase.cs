@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -11,6 +12,7 @@ namespace LoveSeat
     public class CouchDatabase : CouchBase, IDocumentDatabase
     {
         private readonly string databaseBaseUri;
+        private string defaultDesignDoc = null;
          public CouchDatabase(string baseUri, string databaseName, string username, string password)
             : base(username, password)
         {
@@ -133,7 +135,7 @@ namespace LoveSeat
         {
             if (document.Rev == null)
                 return CreateDocument(document);
-
+                    
             var resp = GetRequest(databaseBaseUri + "/" + document.Id + "?rev=" + document.Rev).Put().Form().Data(document).GetResponse();
             var jobj = resp.GetJObject();
             //TODO: Change this so it simply alters the revision on the document past in so that there isn't an additional request.
@@ -143,36 +145,80 @@ namespace LoveSeat
         /// <summary>
         /// Gets the results of a view with no view parameters.  Use the overload to pass parameters
         /// </summary>
-        /// <param name="designDoc">The design doc on which the view resides</param>
         /// <param name="viewName">The name of the view</param>
+        /// <param name="designDoc">The design doc on which the view resides</param>
         /// <returns></returns>
-        public ViewResult<T> View<T>(string designDoc, string viewName)
+        public ViewResult<T> View<T>(string viewName, string designDoc)
         {
-            return View<T>(designDoc, viewName, null);
+            return View<T>(viewName, null, designDoc);
         }
 
         /// <summary>
+        /// Gets the results of the view using the defaultDesignDoc and no view parameters.  Use the overloads to specify options.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="viewName"></param>
+        /// <returns></returns>
+        public ViewResult<T> View<T>(string viewName)
+        {
+            if (string.IsNullOrEmpty(defaultDesignDoc))
+                throw new Exception("You must use SetDefaultDesignDoc prior to using this signature.  Otherwise explicitly specify the design doc in the other overloads.");
+            return View<T>(viewName, defaultDesignDoc);
+        }
+        public void SetDefaultDesignDoc(string designDoc)
+        {
+            this.defaultDesignDoc = defaultDesignDoc;
+        }
+        /// <summary>
         /// Gets the results of the view using any and all parameters
         /// </summary>
-        /// <param name="designDoc">The design doc on which the view resides</param>
         /// <param name="viewName">The name of the view</param>
         /// <param name="options">Options such as startkey etc.</param>
+        /// <param name="designDoc">The design doc on which the view resides</param>
         /// <returns></returns>
-        public ViewResult<T> View<T>(string designDoc, string viewName, ViewOptions options)
+        public ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc)
         {
             var uri = databaseBaseUri + "/_design/" + designDoc + "/_view/" + viewName;
             return ProcessGenericResults<T>(uri, options, new ObjectSerializer<T>());
         }
         /// <summary>
+        /// Allows you to specify options and uses the defaultDesignDoc Specified.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="viewName"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public ViewResult<T>  View<T>(string viewName, ViewOptions options)
+        {
+            if (string.IsNullOrEmpty(defaultDesignDoc))
+                throw new Exception("You must use SetDefaultDesignDoc prior to using this signature.  Otherwise explicitly specify the design doc in the other overloads");
+            return View<T>(viewName, options, defaultDesignDoc);
+        }
+        /// <summary>
+        /// Allows you to override the objectSerializer and use the Default Design Doc settings.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="viewName"></param>
+        /// <param name="options"></param>
+        /// <param name="objectSerializer"></param>
+        /// <returns></returns>
+        public ViewResult<T> View<T>(string viewName, ViewOptions options, IObjectSerializer<T> objectSerializer)
+        {
+            if (string.IsNullOrEmpty(defaultDesignDoc))
+                throw new Exception("Must use SetDefaultDocument before using this method.  Call SetDefaultDocument or use the other overloads to explicitly set the designdoc");
+            return View<T>(viewName, options, defaultDesignDoc, objectSerializer);
+        }
+
+        /// <summary>
         /// Don't use this overload unless you intend to override the default ObjectSerialization behavior.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="designDoc"></param>
         /// <param name="viewName"></param>
         /// <param name="options"></param>
+        /// <param name="designDoc"></param>
         /// <param name="objectSerializer">Only needed unless you'd like to override the default behavior of the serializer</param>
         /// <returns></returns>
-        public ViewResult<T> View<T>(string designDoc, string viewName, ViewOptions options, IObjectSerializer<T> objectSerializer)
+        public ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc, IObjectSerializer<T> objectSerializer)
         {
             var uri = databaseBaseUri + "/_design/" + designDoc + "/_view/" + viewName;
             return ProcessGenericResults<T>(uri, options, objectSerializer);                 
