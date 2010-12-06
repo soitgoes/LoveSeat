@@ -96,5 +96,32 @@ namespace LoveSeat.Interfaces
         ViewResult GetAllDocuments();
 
         ViewResult GetAllDocuments(ViewOptions options);
+
+        /// <summary>
+        /// Gets the results of the view using the defaultDesignDoc and no view parameters.  Use the overloads to specify options.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="viewName"></param>
+        /// <returns></returns>
+        ViewResult<T> View<T>(string viewName);
+
+        /// <summary>
+        /// Allows you to specify options and uses the defaultDesignDoc Specified.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="viewName"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        ViewResult<T>  View<T>(string viewName, ViewOptions options);
+
+        /// <summary>
+        /// Allows you to override the objectSerializer and use the Default Design Doc settings.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="viewName"></param>
+        /// <param name="options"></param>
+        /// <param name="objectSerializer"></param>
+        /// <returns></returns>
+        ViewResult<T> View<T>(string viewName, ViewOptions options, IObjectSerializer<T> objectSerializer);
     }
 }
