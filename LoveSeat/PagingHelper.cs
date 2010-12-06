@@ -72,11 +72,11 @@ namespace LoveSeat
             {
                 lastRow = result.Rows.LastOrDefault();
                 firstRow = result.Rows.FirstOrDefault();
-                model.StartIndex = result.OffSet +1;
+                model.StartIndex = result.TotalRows == 0 ? 0 :  result.OffSet +1;
             }
             var startIndexPlusLimit = model.StartIndex + limit;
             int count = result.Rows.Count();
-            model.EndIndex = model.StartIndex + count - 1;
+            model.EndIndex =result.TotalRows == 0 ? 0 :  model.StartIndex + count - 1;
                      
             model.TotalRows = result.TotalRows;
             string prevStartKey = firstRow != null ? "&startkey=" + HttpUtility.UrlEncode(firstRow.Value<string>("key")) : "";
