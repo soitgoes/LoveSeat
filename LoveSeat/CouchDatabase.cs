@@ -167,7 +167,7 @@ namespace LoveSeat
         }
         public void SetDefaultDesignDoc(string designDoc)
         {
-            this.defaultDesignDoc = defaultDesignDoc;
+            this.defaultDesignDoc = designDoc;
         }
         /// <summary>
         /// Gets the results of the view using any and all parameters
