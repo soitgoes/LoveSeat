@@ -1,14 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Net;
 
 namespace LoveSeat
 {
    public  class CouchException : System.Exception
     {
-       public CouchException(string mesg) : base(mesg)
+       private readonly HttpWebRequest request;
+       private readonly HttpWebResponse response;
+
+       public CouchException(HttpWebRequest request, HttpWebResponse response, string mesg) : base(mesg)
        {
+           this.request = request;
+           this.response = response;
        }
+
+       public HttpWebRequest Request { get { return request; } }
+       public HttpWebResponse Response { get { return response; } }
     }
 }
