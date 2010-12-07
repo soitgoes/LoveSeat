@@ -82,7 +82,7 @@ namespace LoveSeat
                 model.StartIndex = result.OffSet + 1;
             }
             
-            var startIndexPlusCount = model.StartIndex + count;
+            var startIndexPlusCount = model.StartIndex + count-1;
             model.EndIndex =result.TotalRows == 0 ? 0 : startIndexPlusCount;
             if (count == 0 ) model.EndIndex = model.StartIndex = 0;
             
