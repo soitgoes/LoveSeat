@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace LoveSeat.Interfaces
 {
-    public interface IViewResult
+    public interface IViewResult : System.IEquatable<IListResult>
     {
         JObject Json { get; }
 

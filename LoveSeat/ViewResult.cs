@@ -114,6 +114,13 @@ namespace LoveSeat
         {
             get { return responseString; }
         }
+
+        public bool Equals(IListResult other)
+        {
+            if (string.IsNullOrEmpty(Etag) || string.IsNullOrEmpty(other.Etag)) return false;
+            return Etag == other.Etag;
+        }
+
         public override string ToString()
         {
             return responseString;
