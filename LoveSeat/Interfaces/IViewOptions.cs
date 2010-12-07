@@ -17,6 +17,8 @@ namespace LoveSeat.Interfaces
         bool? Descending { get; set; }
         bool? Stale { get; set; }
         string Etag { get; set; }
+        string StartKeyDocId { get; set; }
+        string EndKeyDocId { get; set; }
         void SetStartKey(string startKey);
         void SetEndKey(string endKey);
         void SetKey(string key);

@@ -10,8 +10,10 @@ namespace LoveSeat
     public class ViewOptions : IViewOptions
     {
         public JToken Key { get; set; }
-        public JToken StartKey { get; set; }        
+        public JToken StartKey { get; set; }
+        public string StartKeyDocId { get; set; }
         public JToken EndKey { get; set; }
+        public string EndKeyDocId { get; set; }
         public int? Limit { get; set; }
         public int? Skip { get; set; }
         public bool? Reduce { get; set; }
@@ -66,6 +68,10 @@ namespace LoveSeat
                 result += "&descending=" + Descending.Value.ToString().ToLower();
             if (Stale.HasValue && Stale.Value)
                 result += "&stale=ok";
+            if (string.IsNullOrEmpty(StartKeyDocId))
+                result += "&startkey_docid=" + StartKeyDocId;
+            if (string.IsNullOrEmpty(EndKeyDocId))
+                result += "&endkey_docid=" + EndKeyDocId;
             return result.Length < 1 ? "" : result.Substring(1);
         }
     }
