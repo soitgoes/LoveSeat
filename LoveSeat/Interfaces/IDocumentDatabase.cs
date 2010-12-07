@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat.Interfaces
@@ -123,5 +124,8 @@ namespace LoveSeat.Interfaces
         /// <param name="objectSerializer"></param>
         /// <returns></returns>
         ViewResult<T> View<T>(string viewName, ViewOptions options, IObjectSerializer<T> objectSerializer);
+
+        T GetDocument<T>(Guid id , IObjectSerializer<T> objectSerializer);
+        T GetDocument<T>(Guid id);
     }
 }
