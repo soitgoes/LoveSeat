@@ -127,5 +127,8 @@ namespace LoveSeat.Interfaces
 
         T GetDocument<T>(Guid id , IObjectSerializer<T> objectSerializer);
         T GetDocument<T>(Guid id);
+        string Show (string showName, string docId);
+        IListResult List(string listName, string viewName, ViewOptions options,  string designDoc);
+        IListResult List(string listName, string viewName, ViewOptions options);
     }
 }
