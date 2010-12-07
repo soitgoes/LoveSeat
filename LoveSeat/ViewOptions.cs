@@ -72,7 +72,7 @@ namespace LoveSeat
                 result += "&startkey_docid=" + StartKeyDocId;
             if (string.IsNullOrEmpty(EndKeyDocId))
                 result += "&endkey_docid=" + EndKeyDocId;
-            return result.Length < 1 ? "" : result.Substring(1);
+            return result.Length < 1 ? "" :  "?" + result.Substring(1);
         }
     }
    

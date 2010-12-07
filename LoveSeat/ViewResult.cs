@@ -32,8 +32,6 @@ namespace LoveSeat
         }
     }
 
-
-
     public class ViewResult : IViewResult
     {
         private readonly HttpWebResponse response;

@@ -168,10 +168,41 @@ namespace LoveSeat
         /// <returns></returns>
         public ViewResult<T> View<T>(string viewName)
         {
-            if (string.IsNullOrEmpty(defaultDesignDoc))
-                throw new Exception("You must use SetDefaultDesignDoc prior to using this signature.  Otherwise explicitly specify the design doc in the other overloads.");
+            ThrowDesignDocException();
             return View<T>(viewName, defaultDesignDoc);
         }
+        public string Show (string showName, string docId)
+        {
+            ThrowDesignDocException();
+            return Show(showName, docId,  defaultDesignDoc);
+        }
+
+        private void ThrowDesignDocException()
+        {
+            if (string.IsNullOrEmpty(defaultDesignDoc))
+                throw new Exception("You must use SetDefaultDesignDoc prior to using this signature.  Otherwise explicitly specify the design doc in the other overloads.");
+        }
+
+        public string Show(string showName, string docId, string designDoc)
+        {
+            //TODO:  add in Etag support for Shows
+            var uri = databaseBaseUri + "/_design/" + designDoc + "/_show/" + showName + "/" + docId;
+            var req = GetRequest(uri);
+            return req.GetResponse().GetResponseString();
+        }
+        public IListResult List(string listName, string viewName, ViewOptions options,  string designDoc)
+        {
+            var uri = databaseBaseUri + "/_design/" + designDoc + "/_list/" + viewName + options.ToString();
+            var req = GetRequest(uri);
+            return new ListResult(req.GetRequest(), req.GetResponse());
+        }
+
+        public IListResult List(string listName, string viewName, ViewOptions options)
+        {
+            ThrowDesignDocException();
+            return List(listName, viewName,options, defaultDesignDoc);
+        }
+
         public void SetDefaultDesignDoc(string designDoc)
         {
             this.defaultDesignDoc = designDoc;
@@ -197,9 +228,8 @@ namespace LoveSeat
         /// <returns></returns>
         public ViewResult<T>  View<T>(string viewName, ViewOptions options)
         {
-            if (string.IsNullOrEmpty(defaultDesignDoc))
-                throw new Exception("You must use SetDefaultDesignDoc prior to using this signature.  Otherwise explicitly specify the design doc in the other overloads");
-            return View<T>(viewName, options, defaultDesignDoc);
+            ThrowDesignDocException();
+             return View<T>(viewName, options, defaultDesignDoc);
         }
         /// <summary>
         /// Allows you to override the objectSerializer and use the Default Design Doc settings.
@@ -211,8 +241,7 @@ namespace LoveSeat
         /// <returns></returns>
         public ViewResult<T> View<T>(string viewName, ViewOptions options, IObjectSerializer<T> objectSerializer)
         {
-            if (string.IsNullOrEmpty(defaultDesignDoc))
-                throw new Exception("Must use SetDefaultDocument before using this method.  Call SetDefaultDocument or use the other overloads to explicitly set the designdoc");
+            ThrowDesignDocException();
             return View<T>(viewName, options, defaultDesignDoc, objectSerializer);
         }
 
@@ -246,7 +275,7 @@ namespace LoveSeat
         private CouchRequest GetRequest(ViewOptions options, string uri)
         {
             if (options != null)
-                uri += "?" + options.ToString();
+                uri +=  options.ToString();
             return GetRequest(uri, options == null ? null : options.Etag).Get().Json();
         }
 
