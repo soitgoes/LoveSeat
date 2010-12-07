@@ -70,7 +70,14 @@ namespace LoveSeat
             if (resp.StatusCode==HttpStatusCode.NotFound) return null;
             return resp.GetCouchDocument();
         }
-
+        public T GetDocument<T>(Guid id , IObjectSerializer<T> objectSerializer)
+        {
+            return GetDocument(id.ToString(), objectSerializer);
+        }
+        public T GetDocument<T>(Guid id)
+        {
+            return GetDocument<T>(id.ToString());
+        }
         public T GetDocument<T>(string id)
         {
             return GetDocument(id, new ObjectSerializer<T>());
