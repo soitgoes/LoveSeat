@@ -23,13 +23,13 @@ LoveSeat Basics
 
 **Get a view results and populate your Domain object**
 
-    var results = db.View&lt;MyObject&gt;("view_name");
+    var results = db.View<MyObject>("view_name");
     
     //...or with parameters
     
     var options = new ViewOptions{Limit=10};
     options.SetStartKey("abc");
-    results = db.View&lt;MyObject&gt;("view_name", options);
+    results = db.View<MyObject>("view_name", options);
     
     //loop through your strongly typed results
     
