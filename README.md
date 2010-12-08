@@ -32,10 +32,12 @@ results = db.View&lt;MyObject&gt;("view_name", options);
 //loop through your strongly typed results
 
 foreach (var item in results.Items){ 
-/* do something */
+// do something 
+
 }
 
 //Get the results of a List
+
 var results = db.List("list_name")
 LoveSeat Supports Replication and User Management off of the CouchClient as well.  Enjoy!
 
