@@ -11,9 +11,11 @@ LoveSeat Basics
 var client = new CouchClient(); //assumes localhost:5984 with no credentials if left blank
 
 //From here you can get the database
+
 var db= client.GetDatabase("my_database");
 
 //Set the default design doc (not required and can be overriden
+
 db.SetDefaultDesignDoc("name_of_design_doc"); 
 
 //Get a Document By Id
