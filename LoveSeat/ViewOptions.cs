@@ -9,9 +9,18 @@ namespace LoveSeat
 {
     public class ViewOptions : IViewOptions
     {
+        /// <summary>
+        /// If you have a complex object as a string set this using a JRaw object()
+        /// </summary>
         public JToken Key { get; set; }
+        /// <summary>
+        /// If you have a complex object as a string set this using a JRaw object()
+        /// </summary>
         public JToken StartKey { get; set; }
         public string StartKeyDocId { get; set; }
+        /// <summary>
+        /// If you have a complex object as a string set this using a JRaw object()
+        /// </summary>
         public JToken EndKey { get; set; }
         public string EndKeyDocId { get; set; }
         public int? Limit { get; set; }
@@ -25,17 +34,17 @@ namespace LoveSeat
         public bool? Stale { get; set; }
         public string Etag { get; set; }
 
-        public virtual void SetStartKey(string startKey)
+        public virtual void SetSimpleStartKey(string startKey)
         {
             if (!string.IsNullOrEmpty(startKey))
                 StartKey = JToken.FromObject(startKey);
         }
-        public virtual void SetEndKey(string endKey)
+        public virtual void SetSimpleEndKey(string endKey)
         {
             if (!string.IsNullOrEmpty(endKey))
                 EndKey = JToken.FromObject(endKey);
         }
-        public virtual void SetKey(string key)
+        public virtual void SetSimpleKey(string key)
         {
             if (!string.IsNullOrEmpty(key))
                 Key = JToken.FromObject(key);
