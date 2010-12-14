@@ -39,17 +39,28 @@ namespace LoveSeat
             if (!string.IsNullOrEmpty(startKey))
                 StartKey = JToken.FromObject(startKey);
         }
+        public virtual void SetStartKey(string json)
+        {
+            StartKey = new JRaw(json);
+        }
         public virtual void SetSimpleEndKey(string endKey)
         {
             if (!string.IsNullOrEmpty(endKey))
                 EndKey = JToken.FromObject(endKey);
+        }
+        public virtual void SetEndKey(string json)
+        {
+            EndKey = new JRaw(json);
         }
         public virtual void SetSimpleKey(string key)
         {
             if (!string.IsNullOrEmpty(key))
                 Key = JToken.FromObject(key);
         }
-
+        public virtual void SetKey(string json)
+        {
+            Key = new JRaw(json);
+        }
         public  override string ToString()
         {
             string result = "";
