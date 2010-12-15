@@ -62,8 +62,14 @@ Assuming that your view keys have complex structure, for example:
     ...
 
     var options = new ViewOptions();
+    
+    options.StartKey.Add("1234", CouchValue.Empty); // passes  "[1234, {}]"
+    options.EndKey.Add("1234", DateTime.Now.AddYears(1)); //Dates are properly converted to ISO8601
+    
+    // or if you would like to do all the work and create the json yourself... 
     options.StartKey.Add(new JRaw("[\"johny\",[\"work\"]"));
-    options.EndKey.Add(new JRaw("[\"johny\",[\"work\",{}]]"));
+    options.EndKey.Add(new JRaw("[\"johny\",[\"work\",{}]]"));  
+    
     results = db.View<MyObject>("view_name", options);
     
     // loop through your strongly typed results

@@ -4,9 +4,9 @@ namespace LoveSeat.Interfaces
 {
     public interface IViewOptions
     {
-        KeyOptions Key { get; set; }
-        KeyOptions StartKey { get; set; }
-        KeyOptions EndKey { get; set; }
+        IKeyOptions Key { get; set; }
+        IKeyOptions StartKey { get; set; }
+        IKeyOptions EndKey { get; set; }
         int? Limit { get; set; }
         int? Skip { get; set; }
         bool? Reduce { get; set; }
