@@ -39,15 +39,22 @@ namespace LoveSeat
         public bool? Descending { get; set; }
         public bool? Stale { get; set; }
         public string Etag { get; set; }
-     
+
+        public ViewOptions()
+        {
+            Key = new KeyOptions();
+            StartKey = new KeyOptions();
+            EndKey = new KeyOptions();
+        }
+
         public  override string ToString()
         {
             string result = "";
-            if (Key != null)
+            if ((Key != null) && (Key.Count > 0))
                 result += "&key=" + HttpUtility.UrlEncode(Key.ToString());
-            if (StartKey != null)
+            if ((StartKey != null) && (StartKey.Count > 0))
                 result += "&startkey=" + HttpUtility.UrlEncode(StartKey.ToString());
-            if (EndKey != null)
+            if ((EndKey != null) && (EndKey.Count > 0))
                 result += "&endkey=" + HttpUtility.UrlEncode(EndKey.ToString());
             if (Limit.HasValue)
                 result += "&limit=" + Limit.Value.ToString();
@@ -67,9 +74,9 @@ namespace LoveSeat
                 result += "&descending=" + Descending.Value.ToString().ToLower();
             if (Stale.HasValue && Stale.Value)
                 result += "&stale=ok";
-            if (string.IsNullOrEmpty(StartKeyDocId))
+            if (!string.IsNullOrEmpty(StartKeyDocId))
                 result += "&startkey_docid=" + StartKeyDocId;
-            if (string.IsNullOrEmpty(EndKeyDocId))
+            if (!string.IsNullOrEmpty(EndKeyDocId))
                 result += "&endkey_docid=" + EndKeyDocId;
             return result.Length < 1 ? "" :  "?" + result.Substring(1);
         }
