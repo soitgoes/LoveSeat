@@ -50,6 +50,7 @@ LoveSeat Basics
 **Get a view results and with more complex key parameters**
 
 Assuming that your view keys have complex structure, for example:
+
 ["johny", ["work", "programming"]]
 
 ["joe", ["programming"]]
