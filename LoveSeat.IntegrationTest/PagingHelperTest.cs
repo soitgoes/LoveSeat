@@ -1,4 +1,5 @@
 ﻿using LoveSeat.Interfaces;
+using LoveSeat.Support;
 using Moq;
 using NUnit.Framework;
 
@@ -41,14 +42,13 @@ namespace LoveSeat.IntegrationTest
         }
 
         [Test]
-        public void Should_Skip_1_On_Any_Url_Other_Than_Offset_Zero()
+        public void Should_Skip_1_On_Next_Url_When_Offset_is_Not_Zero()
         {
             var result = new Mock<IViewResult>();
             result.ExpectGet(x => x.OffSet).Returns(1);
             var options = new ViewOptions();
             var model = new PageableModel();
             model.UpdatePaging(options, result.Object);
-            Assert.IsTrue(model.NextUrlParameters.Contains("skip=1"));
             Assert.IsTrue(model.PrevUrlParameters.Contains("skip=1"));
             Assert.IsTrue(model.PrevUrlParameters.Contains("descending=true"));
         }

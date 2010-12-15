@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CouchClientTest.cs" />
+    <Compile Include="NewtonSoftTests.cs" />
     <Compile Include="PagingHelperTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

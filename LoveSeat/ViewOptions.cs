@@ -12,16 +12,16 @@ namespace LoveSeat
         /// <summary>
         /// If you have a complex object as a string set this using a JRaw object()
         /// </summary>
-        public JToken Key { get; set; }
+        public KeyOptions Key { get; set; }
         /// <summary>
         /// If you have a complex object as a string set this using a JRaw object()
         /// </summary>
-        public JToken StartKey { get; set; }
+        public KeyOptions StartKey { get; set; }
         public string StartKeyDocId { get; set; }
         /// <summary>
         /// If you have a complex object as a string set this using a JRaw object()
         /// </summary>
-        public JToken EndKey { get; set; }
+        public KeyOptions EndKey { get; set; }
         public string EndKeyDocId { get; set; }
         public int? Limit { get; set; }
         public int? Skip { get; set; }
@@ -33,43 +33,16 @@ namespace LoveSeat
         public bool? Descending { get; set; }
         public bool? Stale { get; set; }
         public string Etag { get; set; }
-
-        public virtual void SetSimpleStartKey(string startKey)
-        {
-            if (!string.IsNullOrEmpty(startKey))
-                StartKey = JToken.FromObject(startKey);
-        }
-        public virtual void SetStartKey(string json)
-        {
-            StartKey = new JRaw(json);
-        }
-        public virtual void SetSimpleEndKey(string endKey)
-        {
-            if (!string.IsNullOrEmpty(endKey))
-                EndKey = JToken.FromObject(endKey);
-        }
-        public virtual void SetEndKey(string json)
-        {
-            EndKey = new JRaw(json);
-        }
-        public virtual void SetSimpleKey(string key)
-        {
-            if (!string.IsNullOrEmpty(key))
-                Key = JToken.FromObject(key);
-        }
-        public virtual void SetKey(string json)
-        {
-            Key = new JRaw(json);
-        }
+     
         public  override string ToString()
         {
             string result = "";
             if (Key != null)
-                result += "&key=" + HttpUtility.UrlEncode(Key.ToString(Formatting.None));
+                result += "&key=" + HttpUtility.UrlEncode(Key.ToString());
             if (StartKey != null)
-                result += "&startkey=" + HttpUtility.UrlEncode(StartKey.ToString(Formatting.None));
+                result += "&startkey=" + HttpUtility.UrlEncode(StartKey.ToString());
             if (EndKey != null)
-                result += "&endkey=" + HttpUtility.UrlEncode(EndKey.ToString(Formatting.None));
+                result += "&endkey=" + HttpUtility.UrlEncode(EndKey.ToString());
             if (Limit.HasValue)
                 result += "&limit=" + Limit.Value.ToString();
             if (Skip.HasValue)

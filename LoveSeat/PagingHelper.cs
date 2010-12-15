@@ -49,7 +49,7 @@ namespace LoveSeat
         {
             var options = new ViewOptions();
             options.Descending = model.Descending;
-            options.SetStartKey(model.StartKey);
+            options.StartKey.Add(model.StartKey);
             options.Skip = model.Skip;
             options.Stale = model.Stale;
             options.StartKeyDocId = model.StartKeyDocId;

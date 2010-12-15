@@ -4,9 +4,9 @@ namespace LoveSeat.Interfaces
 {
     public interface IViewOptions
     {
-        JToken Key { get; set; }
-        JToken StartKey { get; set; }
-        JToken EndKey { get; set; }
+        KeyOptions Key { get; set; }
+        KeyOptions StartKey { get; set; }
+        KeyOptions EndKey { get; set; }
         int? Limit { get; set; }
         int? Skip { get; set; }
         bool? Reduce { get; set; }
@@ -19,9 +19,6 @@ namespace LoveSeat.Interfaces
         string Etag { get; set; }
         string StartKeyDocId { get; set; }
         string EndKeyDocId { get; set; }
-        void SetStartKey(string startKey);
-        void SetEndKey(string endKey);
-        void SetKey(string key);
         string ToString();
     }
 }
