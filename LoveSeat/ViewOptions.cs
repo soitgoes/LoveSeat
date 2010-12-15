@@ -9,6 +9,12 @@ namespace LoveSeat
 {
     public class ViewOptions : IViewOptions
     {
+        public ViewOptions()
+        {
+            Key = new KeyOptions();
+            StartKey = new KeyOptions();
+            EndKey = new KeyOptions();
+        }
         /// <summary>
         /// If you have a complex object as a string set this using a JRaw object()
         /// </summary>
