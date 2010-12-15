@@ -28,7 +28,7 @@ LoveSeat Basics
     //...or with parameters
     
     var options = new ViewOptions{Limit=10};
-    options.SetStartKey("abc");
+    options.StartKey.Add("abc");
     results = db.View<MyObject>("view_name", options);
     
     //loop through your strongly typed results
