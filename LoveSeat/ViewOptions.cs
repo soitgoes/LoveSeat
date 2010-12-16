@@ -47,7 +47,10 @@ namespace LoveSeat
             if ((Key != null) && (Key.Count > 0))
                 result += "&key=" + HttpUtility.UrlEncode(Key.ToString());
             if ((StartKey != null) && (StartKey.Count > 0))
-                result += "&startkey=" + HttpUtility.UrlEncode(StartKey.ToString());
+                if((StartKey.Count == 1) && (EndKey.Count > 1))
+                    result += "&startkey=" + HttpUtility.UrlEncode("[" + StartKey.ToString() + "]");
+                else
+                    result += "&startkey=" + HttpUtility.UrlEncode(StartKey.ToString());
             if ((EndKey != null) && (EndKey.Count > 0))
                 result += "&endkey=" + HttpUtility.UrlEncode(EndKey.ToString());
             if (Limit.HasValue)
