@@ -69,6 +69,7 @@
     <Compile Include="Document.cs" />
     <Compile Include="CouchUser.cs" />
     <Compile Include="Interfaces\IDocumentDatabase.cs" />
+    <Compile Include="Interfaces\IKeyOptions.cs" />
     <Compile Include="Interfaces\IListResult.cs" />
     <Compile Include="Interfaces\IViewOptions.cs" />
     <Compile Include="Interfaces\IViewResult.cs" />

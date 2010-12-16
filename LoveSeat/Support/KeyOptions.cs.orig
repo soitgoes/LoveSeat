@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using LoveSeat.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
-    /*public interface IKeyOptions
+<<<<<<< HEAD
+   public class KeyOptions : JArray
     {       
+=======
+    public interface IKeyOptions
+    {
         string ToString();
         void Insert(int index, JToken item);
         void RemoveAt(int index);
@@ -19,8 +22,7 @@ namespace LoveSeat
         int Count { get; }
         bool HasValues { get; }
         void Add(object content);
-        void Add()
-    }*/
+    }
 
     public class KeyOptions : IKeyOptions
     {
@@ -33,6 +35,7 @@ namespace LoveSeat
         {
             this.objects = jArray;
         }
+>>>>>>> 4e1e7fb4ebac97a7ae778240c4f389d616746ac3
        public override string ToString()
        {
            if (objects.Count ==0 ) return "";
@@ -60,6 +63,11 @@ namespace LoveSeat
             objects.RemoveAt(index);
         }
 
+        public void Add(JToken item)
+        {
+            objects.Add(item);
+        }
+
         public bool Remove(JToken item)
         {
             return objects.Remove(item);
@@ -74,12 +82,11 @@ namespace LoveSeat
         {
             get { return objects.Count > 0; }
         }
-
-        public void Add(JToken item)
+        public void Add(params object[] items)
         {
-            objects.Add(item);
+            foreach (var item in items)
+                Add(item);
         }
-
         public void Add(object item)
         {
             if (item == CouchValue.Empty)
@@ -88,14 +95,6 @@ namespace LoveSeat
                 return;
             }
             objects.Add(item);
-        }
-
-        public void Add(params object[] items)
-        {
-            foreach (var item in items)
-            {
-                Add(item);
-            }
         }
     }
     public static class CouchValue
