@@ -9,8 +9,7 @@ using Newtonsoft.Json.Linq;
 namespace LoveSeat
 {
    public class KeyOptions : JArray
-    {
-       
+    {       
        public override string ToString()
        {
            if (Count == 1)
