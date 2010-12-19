@@ -5,6 +5,7 @@ using System.Net;
 using System.Web;
 using LoveSeat.Interfaces;
 using LoveSeat.Support;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
@@ -29,9 +30,12 @@ namespace LoveSeat
         /// <returns></returns>
         public Document CreateDocument(string id, string jsonForDocument)
         {
+            var jobj = JObject.Parse(jsonForDocument);
+            if (jobj.Value<object>("_rev") == null)
+                jobj.Remove("_rev");
             var resp = GetRequest(databaseBaseUri + "/" + id)
                 .Put().Form()
-                .Data(jsonForDocument)
+                .Data(jobj.ToString(Formatting.None))
                 .GetResponse();
             return 
                 resp.GetCouchDocument();
