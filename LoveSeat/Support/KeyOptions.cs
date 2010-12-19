@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 using LoveSeat.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -31,7 +32,7 @@ namespace LoveSeat
             }
             if (objects.Count == 1)
             {
-                return objects[0].ToString(Formatting.None, new IsoDateTimeConverter());
+                return HttpUtility.UrlEncode(objects[0].ToString(Formatting.None, new IsoDateTimeConverter()));
             }
             
             string result = "[";
@@ -41,7 +42,10 @@ namespace LoveSeat
                 if (!first)
                     result += ",";
                 first = false;
-                result +=  item.ToString(Formatting.None, new IsoDateTimeConverter());
+                if(item.ToString().Equals("{}"))
+                    result += item.ToString(Formatting.None, new IsoDateTimeConverter());
+                else
+                    result += HttpUtility.UrlEncode(item.ToString(Formatting.None, new IsoDateTimeConverter()));
             }
             result += "]";
             return result;
