@@ -266,7 +266,11 @@ namespace LoveSeat
         private ViewResult<T> ProcessGenericResults<T>(string uri, ViewOptions options, IObjectSerializer<T> objectSerializer)
         {
             CouchRequest req = GetRequest(options, uri);
-            var resp = req.GetResponse();
+            var resp = req.GetResponse();   
+            if (resp.StatusCode == HttpStatusCode.BadRequest)
+            {
+                throw new CouchException(req.GetRequest(), resp, resp.GetResponseString() + "\n" + req.GetRequest().RequestUri  );
+            }
             return new ViewResult<T>(resp, req.GetRequest(), objectSerializer);
         }
         private ViewResult ProcessResults(string uri, ViewOptions options)
