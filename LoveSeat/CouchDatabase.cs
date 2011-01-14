@@ -55,8 +55,8 @@ namespace LoveSeat
             var json = JObject.Parse(jsonForDocument);
             var jobj = 
                 GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetResponse().GetJObject();
-            json["_id"] = jobj["_id"];
-            json["_rev"] = jobj["_rev"];
+            json["_id"] = jobj["id"];
+            json["_rev"] = jobj["rev"];
             return new Document(json);
         }        
         public JObject DeleteDocument(string id, string rev)
