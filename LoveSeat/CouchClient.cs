@@ -41,6 +41,10 @@ namespace LoveSeat
             baseUri = "http://" + host + ":" + port + "/";
         }
 
+        public CouchClient(CouchConfiguration config) : this(config.Host, config.Port, config.User, config.Password)
+        {                        
+        }
+
         /// <summary>
         /// Triggers one way replication from the source to target.  If bidirection is needed call this method twice with the source and target args reversed.
         /// </summary>

@@ -14,7 +14,7 @@ namespace LoveSeat
     {
         private readonly string databaseBaseUri;
         private string defaultDesignDoc = null;
-         public CouchDatabase(string baseUri, string databaseName, string username, string password)
+        internal CouchDatabase(string baseUri, string databaseName, string username, string password)
             : base(username, password)
         {
             this.baseUri = baseUri;
