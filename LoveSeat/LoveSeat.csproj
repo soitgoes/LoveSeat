@@ -84,6 +84,7 @@
     <Compile Include="Support\ReplicationOptions.cs" />
     <Compile Include="Support\ResponseExtensionMethods.cs" />
     <Compile Include="Support\KeyOptions.cs" />
+    <Compile Include="Support\TtlDictionary.cs" />
     <Compile Include="ViewOptions.cs" />
     <Compile Include="ViewResult.cs" />
   </ItemGroup>

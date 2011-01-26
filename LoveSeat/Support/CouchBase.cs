@@ -8,6 +8,7 @@ namespace LoveSeat.Support
         protected readonly string username;
         protected readonly string password;
         protected string baseUri;
+        private TtlDictionary<string, Cookie> cookiestore = new TtlDictionary<string, Cookie>();
 
         protected CouchBase()
         {
@@ -33,6 +34,11 @@ namespace LoveSeat.Support
 
         protected Cookie GetSession()
         {
+            var cookie = cookiestore["authcookie"];
+
+            if (cookie != null)
+                return cookie;
+
             if (string.IsNullOrEmpty(username)) return null;
             var request = new CouchRequest(baseUri + "_session");
             var response = request.Post()
@@ -46,9 +52,9 @@ namespace LoveSeat.Support
                 var parts = header.Split(';')[0].Split('=');
                 var authCookie = new Cookie(parts[0], parts[1]);
                 authCookie.Domain = response.Server;
-                return authCookie;
+                cookiestore.Add("authcookie", authCookie, TimeSpan.FromMinutes(9));
             }
-            return null;
+            return cookie;
         }
         protected CouchRequest GetRequest(string uri)
         {
