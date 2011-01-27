@@ -248,6 +248,20 @@ namespace LoveSeat
             ThrowDesignDocException();
             return View<T>(viewName, options, defaultDesignDoc, objectSerializer);
         }
+        public ViewResult View(string viewName, ViewOptions options, string designDoc)
+        {
+            ThrowDesignDocException();
+            var uri = databaseBaseUri + "/_design/" + designDoc + "/_view/" + viewName;
+            return ProcessResults(uri, options);
+        }
+
+        public ViewResult View(string viewName, ViewOptions options)
+        {
+            ThrowDesignDocException();
+            var uri = databaseBaseUri + "/_design/" + this.defaultDesignDoc + "/_view/" + viewName;
+            return ProcessResults(uri, options);
+        }
+
 
         /// <summary>
         /// Don't use this overload unless you intend to override the default ObjectSerialization behavior.
