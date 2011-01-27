@@ -18,6 +18,11 @@ namespace LoveSeat.Support
 
         public void Add(X key, Y value, TimeSpan ttl)
         {
+            if (items.ContainsKey(key))
+            {
+                items.Remove(key);
+                expiration.Remove(key);
+            }
             items.Add(key, value);
             expiration.Add(key, DateTime.Now.Add(ttl));
             RemoveExpiredKeys();
