@@ -13,7 +13,7 @@ namespace LoveSeat
     public class ViewResult<T> : ViewResult
     {
         private readonly IObjectSerializer<T> objectSerializer = null;
-        private Dictionary<JToken, T> dict = null;
+        private Dictionary<JContainer, T> dict = null;
         public ViewResult(HttpWebResponse response, HttpWebRequest request, IObjectSerializer<T> objectSerializer)
             : base(response, request)
         {
@@ -21,15 +21,15 @@ namespace LoveSeat
             
         }
 
-        public Dictionary<JToken, T> Dictionary
+        public Dictionary<JContainer, T> Dictionary
         {
             get
             {
                 if (dict != null) return dict;
-                dict = new Dictionary<JToken, T>();
+                dict = new Dictionary<JContainer, T>();
                 foreach (var row in this.Rows)
                 {
-                    dict.Add((JToken)row["key"], objectSerializer.Deserialize(row.Value<string>("value")));
+                    dict.Add((JContainer)row["key"], objectSerializer.Deserialize(row.Value<string>("value")));
                 }
                 return dict;
             }
