@@ -13,20 +13,26 @@ namespace LoveSeat
     public class ViewResult<T> : ViewResult
     {
         private readonly IObjectSerializer<T> objectSerializer = null;
+        private Dictionary<JToken, T> dict = null;
         public ViewResult(HttpWebResponse response, HttpWebRequest request, IObjectSerializer<T> objectSerializer)
             : base(response, request)
         {
             this.objectSerializer = objectSerializer;
+            
         }
 
-        public Dictionary<JToken, T> GetDictionary()
+        public Dictionary<JToken, T> Dictionary
         {
-            var dict = new Dictionary<JToken, T>();
-            foreach (var row in this.Rows)
+            get
             {
-                dict.Add((JToken)row["key"], objectSerializer.Deserialize(row.Value<string>("value")));
+                if (dict != null) return dict;
+                dict = new Dictionary<JToken, T>();
+                foreach (var row in this.Rows)
+                {
+                    dict.Add((JToken)row["key"], objectSerializer.Deserialize(row.Value<string>("value")));
+                }
+                return dict;
             }
-            return dict;
         }
 
         public IEnumerable<T> Items
