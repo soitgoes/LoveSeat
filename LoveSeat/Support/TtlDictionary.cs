@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LoveSeat.Support
 {
-    internal class TtlDictionary<X, Y> 
+    internal class TtlDictionary<X, Y>
     {
         private readonly Dictionary<X, Y> items;
         private readonly Dictionary<X, DateTime> expiration;
@@ -46,7 +46,8 @@ namespace LoveSeat.Support
                 if (expiration.ContainsKey(key) && expiration[key] > DateTime.Now)
                 {
                     return items[key];
-                }else
+                }
+                else
                 {
                     return default(Y);
                 }

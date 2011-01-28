@@ -82,6 +82,7 @@
     <Compile Include="CouchDatabase.cs" />
     <Compile Include="Support\CouchRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Support\NullableDictionary.cs" />
     <Compile Include="Support\ReplicationOptions.cs" />
     <Compile Include="Support\ResponseExtensionMethods.cs" />
     <Compile Include="Support\KeyOptions.cs" />
