@@ -19,6 +19,16 @@ namespace LoveSeat
             this.objectSerializer = objectSerializer;
         }
 
+        public Dictionary<JToken, T> GetDictionary()
+        {
+            var dict = new Dictionary<JToken, T>();
+            foreach (var row in this.Rows)
+            {
+                dict.Add((JToken)row["key"], objectSerializer.Deserialize(row.Value<string>("value")));
+            }
+            return dict;
+        }
+
         public IEnumerable<T> Items
         {
             get
