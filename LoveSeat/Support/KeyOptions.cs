@@ -83,7 +83,7 @@ namespace LoveSeat
 
         public void Add(object item)
         {
-            if (item == CouchValue.Empty)
+            if (item == CouchValue.MaxValue)
             {
                 objects.Add(new JRaw("{}"));
                 return;
@@ -102,12 +102,17 @@ namespace LoveSeat
     public static class CouchValue
     {
         static object value = new object();
-        public static object Empty
+        public static object MaxValue
         {
             get
             {
                 return value;
             }
+        }
+
+        public static object MinValue
+        {
+            get { return null; }
         }
     }
 }
