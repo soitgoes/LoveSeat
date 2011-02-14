@@ -2,12 +2,19 @@
 
 namespace LoveSeat.Support
 {
-    public class NullableDictionary<X, Y>
+    public class CouchDictionary<Y> : NullableDictionary<string, Y>
+    {      
+    }
+
+    public class NullableDictionary<X, Y> 
     {
-        private Dictionary<X, Y> dictionary = new Dictionary<X, Y>();
-        public NullableDictionary(Dictionary<X, Y> dictionary)
+        private readonly Dictionary<X,Y> dictionary  = new Dictionary<X, Y>();
+        public NullableDictionary()
+        {        
+        }
+        public void Add(X key, Y value)
         {
-            this.dictionary = dictionary;
+            dictionary.Add(key, value);
         }
         public Y this[X key]
         {
@@ -21,9 +28,9 @@ namespace LoveSeat.Support
                 {
                     return default(Y);
                 }
+
             }
         }
-
-
     }
+
 }
