@@ -175,6 +175,12 @@ namespace LoveSeat
             ThrowDesignDocException();
             return View<T>(viewName, defaultDesignDoc);
         }
+        public ViewResult View(string viewName)
+        {
+            ThrowDesignDocException();
+            return View(viewName);
+        }
+     
         public string Show (string showName, string docId)
         {
             ThrowDesignDocException();

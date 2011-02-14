@@ -130,5 +130,8 @@ namespace LoveSeat.Interfaces
         string Show (string showName, string docId);
         IListResult List(string listName, string viewName, ViewOptions options,  string designDoc);
         IListResult List(string listName, string viewName, ViewOptions options);
+
+        ViewResult View(string viewName, ViewOptions options);
+        ViewResult View(string viewName);
     }
 }
