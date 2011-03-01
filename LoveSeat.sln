@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveSeat", "LoveSeat\LoveSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveSeat.IntegrationTest", "LoveSeat.IntegrationTest\LoveSeat.IntegrationTest.csproj", "{7496CEA9-442C-4468-8350-54F34693F64A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveSeat.Repository", "LoveSeat.Repository\LoveSeat.Repository.csproj", "{95A18B36-B97A-4A39-8920-B245ACD12AAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{7496CEA9-442C-4468-8350-54F34693F64A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7496CEA9-442C-4468-8350-54F34693F64A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7496CEA9-442C-4468-8350-54F34693F64A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95A18B36-B97A-4A39-8920-B245ACD12AAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95A18B36-B97A-4A39-8920-B245ACD12AAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95A18B36-B97A-4A39-8920-B245ACD12AAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95A18B36-B97A-4A39-8920-B245ACD12AAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

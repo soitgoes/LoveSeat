@@ -37,10 +37,10 @@ namespace LoveSeat.IntegrationTest
         }
 
         [Test]
-        public void KeyOptions_Should_Produce_Squirley_Brackets_for_CouchValueEmpty()
+        public void KeyOptions_Should_Produce_Squirley_Brackets_for_CouchValueMax()
         {
             var arry = new KeyOptions();
-            arry.Add(CouchValue.Empty);
+            arry.Add(CouchValue.MaxValue);
             arry.Add(1);
             var result = arry.ToString();
             Assert.AreEqual("[{},1]", result);
@@ -50,7 +50,7 @@ namespace LoveSeat.IntegrationTest
         public void KeyOptions_Should_Produce_IsoTime()
         {
             var arry = new KeyOptions();
-            arry.Add(CouchValue.Empty);
+            arry.Add(CouchValue.MinValue);
             arry.Add(new DateTime(2011,1,1));
             var result = arry.ToString();
             Assert.AreEqual("[{},\"2011-01-01T00:00:00\"]", result);
