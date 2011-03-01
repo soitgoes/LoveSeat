@@ -6,7 +6,7 @@ namespace LoveSeat.Repositories
     public class CouchRepository<T> : IRepository<T> where T : IBaseObject
     {
         protected readonly CouchDatabase db = null;
-        protected CouchRepository(CouchDatabase db)
+        public  CouchRepository(CouchDatabase db)
         {
             this.db = db;
         }
