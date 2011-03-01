@@ -1,6 +1,7 @@
 ﻿using System;
+using LoveSeat.Repository;
 
-namespace LoveSeat.Repository
+namespace LoveSeat.Repositories
 {
     public class CouchRepository<T> : IRepository<T> where T : IBaseObject
     {
