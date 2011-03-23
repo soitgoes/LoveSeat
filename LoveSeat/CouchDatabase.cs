@@ -256,7 +256,6 @@ namespace LoveSeat
         }
         public ViewResult View(string viewName, ViewOptions options, string designDoc)
         {
-            ThrowDesignDocException();
             var uri = databaseBaseUri + "/_design/" + designDoc + "/_view/" + viewName;
             return ProcessResults(uri, options);
         }
