@@ -33,7 +33,7 @@ namespace LoveSeat.IntegrationTest
             arry.Add(1);
             arry.Add(new DateTime(2011,1,1));
             var result = arry.ToString();
-            Assert.AreEqual("[1,\"2011-01-01T00:00:00\"]", result);
+            Assert.AreEqual("[1,%222011-01-01T00%3a00%3a00%22]", result);
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace LoveSeat.IntegrationTest
             arry.Add(CouchValue.MinValue);
             arry.Add(new DateTime(2011,1,1));
             var result = arry.ToString();
-            Assert.AreEqual("[{},\"2011-01-01T00:00:00\"]", result);
+            Assert.AreEqual("[null,%222011-01-01T00%3a00%3a00%22]", result);
     
         }
     }

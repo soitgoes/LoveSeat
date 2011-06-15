@@ -40,20 +40,5 @@ namespace LoveSeat.IntegrationTest
             model.UpdatePaging(options, result.Object);
             Assert.IsFalse(model.ShowNext);
         }
-
-        [Test]
-        public void Should_Skip_1_On_Next_Url_When_Offset_is_Not_Zero()
-        {
-            var result = new Mock<IViewResult>();
-            result.ExpectGet(x => x.OffSet).Returns(1);
-            var options = new ViewOptions();
-            var model = new PageableModel();
-            model.UpdatePaging(options, result.Object);
-            Assert.IsTrue(model.PrevUrlParameters.Contains("skip=1"));
-            Assert.IsTrue(model.PrevUrlParameters.Contains("descending=true"));
-        }
-       
-
-
     }
 }
