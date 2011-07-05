@@ -34,10 +34,10 @@ namespace LoveSeat.Support
 
         protected Cookie GetSession()
         {
-            var cookie = cookiestore["authcookie"];
+            var authCookie = cookiestore["authcookie"];
 
-            if (cookie != null)
-                return cookie;
+            if (authCookie != null)
+                return authCookie;
 
             if (string.IsNullOrEmpty(username)) return null;
             var request = new CouchRequest(baseUri + "_session");
@@ -50,11 +50,11 @@ namespace LoveSeat.Support
             if (header != null)
             {
                 var parts = header.Split(';')[0].Split('=');
-                var authCookie = new Cookie(parts[0], parts[1]);
+                authCookie = new Cookie(parts[0], parts[1]);
                 authCookie.Domain = response.Server;
                 cookiestore.Add("authcookie", authCookie, TimeSpan.FromMinutes(9));
             }
-            return cookie;
+            return authCookie;
         }
         protected CouchRequest GetRequest(string uri)
         {
