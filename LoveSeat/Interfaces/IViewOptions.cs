@@ -16,6 +16,7 @@ namespace LoveSeat.Interfaces
         int? GroupLevel { get; set; }
         bool? Descending { get; set; }
         bool? Stale { get; set; }
+        string StaleOption { get; set; }
         string Etag { get; set; }
         string StartKeyDocId { get; set; }
         string EndKeyDocId { get; set; }

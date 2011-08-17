@@ -38,6 +38,7 @@ namespace LoveSeat
         public int? GroupLevel { get; set; }
         public bool? Descending { get; set; }
         public bool? Stale { get; set; }
+        public string StaleOption { get; set; }
         public string Etag { get; set; }
 
 
@@ -70,7 +71,21 @@ namespace LoveSeat
             if (Descending.HasValue)
                 result += "&descending=" + Descending.Value.ToString().ToLower();
             if (Stale.HasValue && Stale.Value)
-                result += "&stale=ok";
+            {
+                if(!string.IsNullOrEmpty(StaleOption))
+                {
+                    if (StaleOption.ToLower() == "ok")
+                        result += "&stale=ok";
+                    else if (StaleOption.ToLower() == "update_after")
+                        result += "&stale=update_after";
+                    else
+                        throw new ArgumentException("Invalid StaleOption provided as a CouchDB ViewOption - as of v 1.1.0, valid options include 'ok' and 'update_after'.");
+                }
+                else
+                {
+                    result += "&stale=ok";
+                }
+            }
             if (!string.IsNullOrEmpty(StartKeyDocId))
                 result += "&startkey_docid=" + StartKeyDocId;
             if (!string.IsNullOrEmpty(EndKeyDocId))
