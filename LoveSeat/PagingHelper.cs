@@ -18,6 +18,7 @@ namespace LoveSeat
         bool Descending { get; set; }
         string StartKey { get; set; }
         int? Skip { get; set; }
+        string StaleOption { get; set; }
         bool? Stale { get; set; }
         int StartIndex { get; set; }
         int EndIndex { get; set; }
@@ -41,6 +42,7 @@ namespace LoveSeat
         public string StartKeyDocId { get; set; }
         public string EndKeyDocId { get; set; }
         public int? Skip { get; set; }
+        public string StaleOption { get; set; }
         public bool? Stale { get; set; }
     }
     public static class PagingHelper
