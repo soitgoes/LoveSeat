@@ -201,8 +201,8 @@ namespace LoveSeat
             return req.GetResponse().GetResponseString();
         }
         public IListResult List(string listName, string viewName, ViewOptions options,  string designDoc)
-        {
-            var uri = databaseBaseUri + "/_design/" + designDoc + "/_list/" + viewName + options.ToString();
+        {            
+			var uri = databaseBaseUri + "/_design/" + designDoc + "/_list/" + listName + "/" + viewName + options.ToString();
             var req = GetRequest(uri);
             return new ListResult(req.GetRequest(), req.GetResponse());
         }
@@ -210,7 +210,7 @@ namespace LoveSeat
         public IListResult List(string listName, string viewName, ViewOptions options)
         {
             ThrowDesignDocException();
-            return List(listName, viewName,options, defaultDesignDoc);
+            return List(listName, viewName, options, defaultDesignDoc);
         }
 
         public void SetDefaultDesignDoc(string designDoc)
