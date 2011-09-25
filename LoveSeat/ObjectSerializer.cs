@@ -24,11 +24,11 @@ namespace LoveSeat
 
         public virtual T Deserialize(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json.Replace("_id", "id").Replace("_rev", "rev"), settings);
+            return JsonConvert.DeserializeObject<T>(json, settings);
         }
         public virtual string Serialize(object obj)
         {
-            return JsonConvert.SerializeObject(obj, Formatting.Indented, settings).Replace("id", "_id").Replace("rev", "_rev");
+            return JsonConvert.SerializeObject(obj, Formatting.Indented, settings);
         }
     }
 }

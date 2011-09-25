@@ -36,19 +36,16 @@ namespace LoveSeat.IntegrationTest
 		[TestFixtureTearDown]
 		public void TearDown()
 		{
-			//delete the test database
-			if (client.HasDatabase(baseDatabase))
-			{
-				client.DeleteDatabase(baseDatabase);
-			}
-            if (client.HasDatabase(replicateDatabase))
-            {
+            //delete the test database
+            if (client.HasDatabase(baseDatabase)) {
+                client.DeleteDatabase(baseDatabase);
+            }
+            if (client.HasDatabase(replicateDatabase)) {
                 client.DeleteDatabase(replicateDatabase);
             }
-			if (client.HasUser("Leela"))
-			{
-				client.DeleteAdminUser("Leela");	
-			}
+            if (client.HasUser("Leela")) {
+                client.DeleteAdminUser("Leela");
+            }
 		}
 
 		[Test]
@@ -63,7 +60,8 @@ namespace LoveSeat.IntegrationTest
 			string obj = @"{""test"": ""prop""}";
 			var db = client.GetDatabase(baseDatabase);
 			var result = db.CreateDocument("fdas", obj);
-			Assert.IsNotNull(db.GetDocument("fdas"));
+		    var document = db.GetDocument("fdas");
+			Assert.IsNotNull(document);
 		}
         [Test]
         public void Should_Save_Existing_Document()
@@ -73,7 +71,8 @@ namespace LoveSeat.IntegrationTest
             var result = db.CreateDocument("fdas", obj);
             var doc = db.GetDocument("fdas");
             doc["test"] = "newprop";
-            var newresult = db.SaveDocument(doc);
+            db.SaveDocument(doc);
+            var newresult= db.GetDocument("fdas");
             Assert.AreEqual(newresult.Value<string>("test"), "newprop");
         }
 
@@ -165,6 +164,15 @@ namespace LoveSeat.IntegrationTest
 	        ViewResult cachedResult = db.GetAllDocuments(new ViewOptions {Etag = result.Etag});
             Assert.AreEqual(cachedResult.StatusCode, HttpStatusCode.NotModified);
 	    } 
+        [Test]
+        public void Should_Get_Id_From_Existing_Document()
+        {
+            var db = client.GetDatabase(baseDatabase);
+            string id = "test_should_get_id";
+            db.CreateDocument("{\"_id\":\""+ id+"\"}");
+            Document doc= db.GetDocument(id);
+            Assert.AreEqual(id, doc.Id);
+        }
 	}
     public class Company
     {

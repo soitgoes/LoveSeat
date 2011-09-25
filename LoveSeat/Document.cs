@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
@@ -18,30 +19,27 @@ namespace LoveSeat
 
     public class Document : JObject
     {
-        public string Id
-        {
-            get { return this["_id"].Value<string>(); }
-            set { this["_id"] = value; }
-        }
-        public string Rev
-        {
-            get
-            {
-                JToken  rev;
-                if (this.TryGetValue("_rev",out rev ))
-                {
-                    return rev.Value<string>();
-                }
-                return null;
-            }
-            set { this["_rev"] = value; }
-        }
+        [JsonProperty("_id")]
+        public string Id { get; set; }
+        
+        [JsonProperty("_rev")]
+        public string Rev { get; set; }
+        
         protected Document()
         {
         }
         public Document(JObject jobj)
             : base(jobj)
         {
+            JToken tmp;
+            if (jobj.TryGetValue("id", out tmp))
+                this.Id = tmp.Value<string>();
+            if (jobj.TryGetValue("rev", out tmp))
+                this.Rev = tmp.Value<string>();
+            if (jobj.TryGetValue("_id", out tmp))
+                this.Id = tmp.Value<string>();
+            if (jobj.TryGetValue("_rev", out tmp))
+                this.Rev = tmp.Value<string>();
         }
         public Document(string json)
             : base(JObject.Parse(json))

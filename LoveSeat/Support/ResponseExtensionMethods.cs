@@ -8,7 +8,8 @@ namespace LoveSeat.Support
 	{
 		public static Document GetCouchDocument(this HttpWebResponse response)
 		{
-			return new Document(response.GetJObject()); 
+		    var jobj = JObject.Parse(response.GetResponseString());
+            return new Document(jobj);
 		}
 
         public static string GetResponseString(this HttpWebResponse response)

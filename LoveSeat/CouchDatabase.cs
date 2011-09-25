@@ -28,7 +28,7 @@ namespace LoveSeat
         /// <param name="id">Id of Document</param>
         /// <param name="jsonForDocument"></param>
         /// <returns></returns>
-        public Document CreateDocument(string id, string jsonForDocument)
+        public JObject CreateDocument(string id, string jsonForDocument)
         {
             var jobj = JObject.Parse(jsonForDocument);
             if (jobj.Value<object>("_rev") == null)
@@ -38,10 +38,10 @@ namespace LoveSeat
                 .Data(jobj.ToString(Formatting.None))
                 .GetResponse();
             return 
-                resp.GetCouchDocument();
+                resp.GetJObject();
         }
 
-        public Document CreateDocument(Document doc)
+        public JObject CreateDocument(Document doc)
         {
             return CreateDocument(doc.Id, doc.ToString());
         }
@@ -50,14 +50,12 @@ namespace LoveSeat
         /// </summary>
         /// <param name="jsonForDocument">Json for creating the document</param>
         /// <returns></returns>
-        public Document CreateDocument(string jsonForDocument)
+        public JObject CreateDocument(string jsonForDocument)
         {
-            var json = JObject.Parse(jsonForDocument);
+            var json = JObject.Parse(jsonForDocument); //to make sure it's valid json
             var jobj = 
                 GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetResponse().GetJObject();
-            json["_id"] = jobj["id"];
-            json["_rev"] = jobj["rev"];
-            return new Document(json);
+            return jobj;
         }        
         public JObject DeleteDocument(string id, string rev)
         {
@@ -142,15 +140,13 @@ namespace LoveSeat
             return DeleteAttachment(doc.Id, doc.Rev, attachmentName);
         }
 
-        public Document SaveDocument(Document document)
+        public JObject SaveDocument(Document document)
         {
             if (document.Rev == null)
                 return CreateDocument(document);
                     
             var resp = GetRequest(databaseBaseUri + "/" + document.Id + "?rev=" + document.Rev).Put().Form().Data(document).GetResponse();
-            var jobj = resp.GetJObject();
-            //TODO: Change this so it simply alters the revision on the document past in so that there isn't an additional request.
-            return GetDocument(document.Id);
+            return resp.GetJObject();
         }
 
         /// <summary>

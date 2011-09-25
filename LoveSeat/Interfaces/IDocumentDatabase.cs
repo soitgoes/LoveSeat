@@ -12,17 +12,17 @@ namespace LoveSeat.Interfaces
         /// </summary>
         /// <param name="id">Id of Document</param>
         /// <param name="jsonForDocument"></param>
-        /// <returns></returns>
-        Document CreateDocument(string id, string jsonForDocument);
+        /// <returns>The status from CouchDb as a JObject</returns>
+        JObject CreateDocument(string id, string jsonForDocument);
 
-        Document CreateDocument(Document doc);
+        JObject CreateDocument(Document doc);
 
         /// <summary>
         /// Creates a document when you intend for Couch to generate the id for you.
         /// </summary>
         /// <param name="jsonForDocument">Json for creating the document</param>
-        /// <returns></returns>
-        Document CreateDocument(string jsonForDocument);
+        /// <returns>Returns the status from Couchdb as a JObject</returns>
+        JObject CreateDocument(string jsonForDocument);
 
         JObject DeleteDocument(string id, string rev);
 
@@ -60,7 +60,7 @@ namespace LoveSeat.Interfaces
         Stream GetAttachmentStream(string docId, string attachmentName);
         JObject DeleteAttachment(string id, string rev, string attachmentName);
         JObject DeleteAttachment(string id, string attachmentName);
-        Document SaveDocument(Document document);
+        JObject SaveDocument(Document document);
 
         /// <summary>
         /// Gets the results of a view with no view parameters.  Use the overload to pass parameters
