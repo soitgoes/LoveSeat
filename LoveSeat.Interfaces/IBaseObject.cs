@@ -1,10 +1,13 @@
 ﻿using System;
+using Newtonsoft.Json;
 
-namespace LoveSeat.Repository
+namespace LoveSeat.Interfaces
 {
     public interface IBaseObject
     {
-        Guid Id { get; set; }
+        [JsonProperty("_id")]
+        string Id { get; set; }
+        [JsonProperty("_rev")]
         string Rev { get; set; }
         string Type { get; }
     }

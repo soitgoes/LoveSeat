@@ -12,9 +12,9 @@ namespace LoveSeat
 {
     public class ViewResult<T> : ViewResult
     {
-        private readonly IObjectSerializer<T> objectSerializer = null;
+        private readonly IObjectSerializer objectSerializer = null;
         private CouchDictionary<T> dict = null;
-        public ViewResult(HttpWebResponse response, HttpWebRequest request, IObjectSerializer<T> objectSerializer)
+        public ViewResult(HttpWebResponse response, HttpWebRequest request, IObjectSerializer objectSerializer)
             : base(response, request)
         {
             this.objectSerializer = objectSerializer;
@@ -29,7 +29,7 @@ namespace LoveSeat
                 dict = new CouchDictionary<T>();
                 foreach (var row in this.Rows)
                 {                    
-                    dict.Add(row.Value<JToken>("key").ToString(Formatting.None), objectSerializer.Deserialize(row.Value<string>("value")));
+                    dict.Add(row.Value<JToken>("key").ToString(Formatting.None), objectSerializer.Deserialize<T>(row.Value<string>("value")));
                 }
                 return dict;
             }
@@ -43,7 +43,7 @@ namespace LoveSeat
                 {
                     throw new InvalidOperationException("ObjectSerializer must be set in order to use the generic view.");
                 }
-                return this.RawValues.Select(item => objectSerializer.Deserialize(item));
+                return this.RawValues.Select(item => objectSerializer.Deserialize<T>(item));
             }
         }
     }

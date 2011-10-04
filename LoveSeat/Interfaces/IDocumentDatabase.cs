@@ -15,7 +15,7 @@ namespace LoveSeat.Interfaces
         /// <returns>The status from CouchDb as a JObject</returns>
         JObject CreateDocument(string id, string jsonForDocument);
 
-        JObject CreateDocument(Document doc);
+        JObject CreateDocument<T>(T doc);
 
         /// <summary>
         /// Creates a document when you intend for Couch to generate the id for you.
@@ -34,8 +34,6 @@ namespace LoveSeat.Interfaces
         Document GetDocument(string id);
 
         T GetDocument<T>(string id);
-        T GetDocument<T>(string id, IObjectSerializer<T> objectSerializer);
-
         /// <summary>
         /// Adds an attachment to a document.  If revision is not specified then the most recent will be fetched and used.  Warning: if you need document update conflicts to occur please use the method that specifies the revision
         /// </summary>
@@ -80,17 +78,6 @@ namespace LoveSeat.Interfaces
         ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc);
 
         /// <summary>
-        /// Don't use this overload unless you intend to override the default ObjectSerialization behavior.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="viewName"></param>
-        /// <param name="options"></param>
-        /// <param name="designDoc"></param>
-        /// <param name="objectSerializer">Only needed unless you'd like to override the default behavior of the serializer</param>
-        /// <returns></returns>
-        ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc, IObjectSerializer<T> objectSerializer);
-
-        /// <summary>
         /// Gets all the documents in the database using the _all_docs uri
         /// </summary>
         /// <returns></returns>
@@ -115,17 +102,7 @@ namespace LoveSeat.Interfaces
         /// <returns></returns>
         ViewResult<T>  View<T>(string viewName, ViewOptions options);
 
-        /// <summary>
-        /// Allows you to override the objectSerializer and use the Default Design Doc settings.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="viewName"></param>
-        /// <param name="options"></param>
-        /// <param name="objectSerializer"></param>
-        /// <returns></returns>
-        ViewResult<T> View<T>(string viewName, ViewOptions options, IObjectSerializer<T> objectSerializer);
-
-        T GetDocument<T>(Guid id , IObjectSerializer<T> objectSerializer);
+        T GetDocument<T>(Guid id , IObjectSerializer objectSerializer);
         T GetDocument<T>(Guid id);
         string Show (string showName, string docId);
         IListResult List(string listName, string viewName, ViewOptions options,  string designDoc);

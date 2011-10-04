@@ -12,6 +12,8 @@ namespace LoveSeat
 {
     public class CouchDatabase : CouchBase, IDocumentDatabase
     {
+        public IObjectSerializer ObjectSerializer = new DefaultSerializer();
+
         private readonly string databaseBaseUri;
         private string defaultDesignDoc = null;
         internal CouchDatabase(string baseUri, string databaseName, string username, string password)
@@ -41,9 +43,10 @@ namespace LoveSeat
                 resp.GetJObject();
         }
 
-        public JObject CreateDocument(Document doc)
+        public JObject CreateDocument<T>(T doc)
         {
-            return CreateDocument(doc.Id, doc.ToString());
+            var serialized = ObjectSerializer.Serialize(doc);
+            return CreateDocument(serialized);
         }
         /// <summary>
         /// Creates a document when you intend for Couch to generate the id for you.
@@ -72,9 +75,9 @@ namespace LoveSeat
             if (resp.StatusCode==HttpStatusCode.NotFound) return null;
             return resp.GetCouchDocument();
         }
-        public T GetDocument<T>(Guid id , IObjectSerializer<T> objectSerializer)
+        public T GetDocument<T>(Guid id , IObjectSerializer objectSerializer)
         {
-            return GetDocument(id.ToString(), objectSerializer);
+            return GetDocument<T>(id.ToString(), objectSerializer);
         }
         public T GetDocument<T>(Guid id)
         {
@@ -82,13 +85,13 @@ namespace LoveSeat
         }
         public T GetDocument<T>(string id)
         {
-            return GetDocument(id, new ObjectSerializer<T>());
+            return GetDocument<T>(id, ObjectSerializer);
         }
-        public T GetDocument<T>(string id, IObjectSerializer<T> objectSerializer)
+        public T GetDocument<T>(string id, IObjectSerializer objectSerializer)
         {
             var resp = GetRequest(databaseBaseUri + "/" + id).Get().Json().GetResponse();
             if (resp.StatusCode == HttpStatusCode.NotFound) return default(T);
-            return objectSerializer.Deserialize(resp.GetResponseString());
+            return objectSerializer.Deserialize<T>(resp.GetResponseString());
         }
         /// <summary>
         /// Adds an attachment to a document.  If revision is not specified then the most recent will be fetched and used.  Warning: if you need document update conflicts to occur please use the method that specifies the revision
@@ -213,6 +216,15 @@ namespace LoveSeat
         {
             this.defaultDesignDoc = designDoc;
         }
+
+        private ViewResult<T> ProcessGenericResults<T>(string uri, ViewOptions options) {
+            CouchRequest req = GetRequest(options, uri);
+            var resp = req.GetResponse();
+            if (resp.StatusCode == HttpStatusCode.BadRequest) {
+                throw new CouchException(req.GetRequest(), resp, resp.GetResponseString() + "\n" + req.GetRequest().RequestUri);
+            }
+            return new ViewResult<T>(resp, req.GetRequest(), ObjectSerializer);
+        }
         /// <summary>
         /// Gets the results of the view using any and all parameters
         /// </summary>
@@ -223,7 +235,7 @@ namespace LoveSeat
         public ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc)
         {
             var uri = databaseBaseUri + "/_design/" + designDoc + "/_view/" + viewName;
-            return ProcessGenericResults<T>(uri, options, new ObjectSerializer<T>());
+            return ProcessGenericResults<T>(uri, options);
         }
         /// <summary>
         /// Allows you to specify options and uses the defaultDesignDoc Specified.
@@ -237,19 +249,7 @@ namespace LoveSeat
             ThrowDesignDocException();
              return View<T>(viewName, options, defaultDesignDoc);
         }
-        /// <summary>
-        /// Allows you to override the objectSerializer and use the Default Design Doc settings.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="viewName"></param>
-        /// <param name="options"></param>
-        /// <param name="objectSerializer"></param>
-        /// <returns></returns>
-        public ViewResult<T> View<T>(string viewName, ViewOptions options, IObjectSerializer<T> objectSerializer)
-        {
-            ThrowDesignDocException();
-            return View<T>(viewName, options, defaultDesignDoc, objectSerializer);
-        }
+        
         public ViewResult View(string viewName, ViewOptions options, string designDoc)
         {
             var uri = databaseBaseUri + "/_design/" + designDoc + "/_view/" + viewName;
@@ -261,32 +261,6 @@ namespace LoveSeat
             ThrowDesignDocException();
             var uri = databaseBaseUri + "/_design/" + this.defaultDesignDoc + "/_view/" + viewName;
             return ProcessResults(uri, options);
-        }
-
-
-        /// <summary>
-        /// Don't use this overload unless you intend to override the default ObjectSerialization behavior.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="viewName"></param>
-        /// <param name="options"></param>
-        /// <param name="designDoc"></param>
-        /// <param name="objectSerializer">Only needed unless you'd like to override the default behavior of the serializer</param>
-        /// <returns></returns>
-        public ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc, IObjectSerializer<T> objectSerializer)
-        {
-            var uri = databaseBaseUri + "/_design/" + designDoc + "/_view/" + viewName;
-            return ProcessGenericResults<T>(uri, options, objectSerializer);                 
-        }
-        private ViewResult<T> ProcessGenericResults<T>(string uri, ViewOptions options, IObjectSerializer<T> objectSerializer)
-        {
-            CouchRequest req = GetRequest(options, uri);
-            var resp = req.GetResponse();   
-            if (resp.StatusCode == HttpStatusCode.BadRequest)
-            {
-                throw new CouchException(req.GetRequest(), resp, resp.GetResponseString() + "\n" + req.GetRequest().RequestUri  );
-            }
-            return new ViewResult<T>(resp, req.GetRequest(), objectSerializer);
         }
         private ViewResult ProcessResults(string uri, ViewOptions options)
         {

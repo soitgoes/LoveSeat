@@ -1,6 +1,7 @@
 ﻿using System;
+using LoveSeat.Interfaces;
 
-namespace LoveSeat.Repository
+namespace LoveSeat.Interfaces
 {
     public interface IRepository<T> where T : IBaseObject
     {

@@ -60,6 +60,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LoveSeat.Interfaces\LoveSeat.Interfaces.csproj">
+      <Project>{18833FC5-9145-451D-82D4-41A1886B0BE7}</Project>
+      <Name>LoveSeat.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LoveSeat\LoveSeat.csproj">
       <Project>{AF987164-0100-4A90-A767-D473F882EA8B}</Project>
       <Name>LoveSeat</Name>

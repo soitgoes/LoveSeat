@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LoveSeat.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -8,23 +9,27 @@ namespace LoveSeat
 {
     public class Document<T> : Document
     {
-        private static IObjectSerializer<T> objectSerializer = new ObjectSerializer<T>();
+        private static IObjectSerializer objectSerializer = new DefaultSerializer();
 
-        public Document(T obj) : base(objectSerializer.Serialize(obj)) {
+        public Document(T obj) : base(objectSerializer.Serialize<T>(obj)) {
             }
-        public Document(T obj, IObjectSerializer<T> objectSerializer) : base(objectSerializer.Serialize(obj))
+        public Document(T obj, IObjectSerializer objectSerializer) : base(objectSerializer.Serialize<T>(obj))
         {            
         }
     }
 
-    public class Document : JObject
+    
+
+    public class Document : JObject, IBaseObject
     {
         [JsonProperty("_id")]
         public string Id { get; set; }
-        
+
         [JsonProperty("_rev")]
         public string Rev { get; set; }
-        
+
+        public string Type { get; private set; }
+
         protected Document()
         {
         }

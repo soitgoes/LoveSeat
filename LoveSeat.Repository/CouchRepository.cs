@@ -1,5 +1,5 @@
 ﻿using System;
-using LoveSeat.Repository;
+using LoveSeat.Interfaces;
 
 namespace LoveSeat.Repositories
 {
@@ -13,8 +13,8 @@ namespace LoveSeat.Repositories
 
         public virtual void Save(T item)
         {
-            if (item.Id == Guid.Empty)
-                item.Id = Guid.NewGuid();
+            if (item.Id == "")
+                item.Id = Guid.NewGuid().ToString();
             var doc = new Document<T>(item);
             db.SaveDocument(doc);
         }

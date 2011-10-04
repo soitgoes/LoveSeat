@@ -1,6 +1,6 @@
 ﻿using System;
 using Accounting.Domain;
-using LoveSeat.Repository;
+using LoveSeat.Interfaces;
 
 namespace LoveSeat.Repositories
 {
@@ -14,8 +14,8 @@ namespace LoveSeat.Repositories
             if (item.Rev == null)
                 item.CreatedAt = DateTime.Now;
             item.LastModifiedAt = DateTime.Now;
-            if (item.Id == Guid.Empty)
-                item.Id = Guid.NewGuid();    
+            if (item.Id == string.Empty)
+                item.Id = Guid.NewGuid().ToString();    
             base.Save(item);
         }
     }

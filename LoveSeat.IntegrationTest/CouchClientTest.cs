@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
+using LoveSeat.Interfaces;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 using LoveSeat;
 
@@ -167,6 +172,20 @@ namespace LoveSeat.IntegrationTest
             var doc = db.GetDocument<Company>("1234");
             Assert.AreEqual(company.Name, doc.Name);
         }
+        [Test]
+        public void JsonConvert_Should_Serialize_Properly()
+        {
+            var company = new Company();
+            company.Name = "Whiteboard-it";
+            var settings = new JsonSerializerSettings();
+            var converters = new List<JsonConverter> { new IsoDateTimeConverter() };
+            settings.Converters = converters;
+            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            settings.NullValueHandling = NullValueHandling.Ignore;
+            var result = JsonConvert.SerializeObject(company, Formatting.Indented, settings);
+            Console.Write(result);
+            Assert.IsTrue(result.Contains("Whiteboard-it"));
+        }
 	    [Test]
 	    public void Should_Get_304_If_ETag_Matches()
 	    {
@@ -186,8 +205,11 @@ namespace LoveSeat.IntegrationTest
             Assert.AreEqual(id, doc.Id);
         }
 	}
-    public class Company :Document
-    {
+    public class Company : IBaseObject
+    {        
         public string Name { get; set; }
+        public string Id { get; set; }
+        public string Rev { get; set; }
+        public string Type { get { return "company"; } }
     }
 }
