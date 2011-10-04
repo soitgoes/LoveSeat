@@ -155,6 +155,18 @@ namespace LoveSeat.IntegrationTest
             ViewResult result = db.GetAllDocuments();
            Assert.IsTrue(!string.IsNullOrEmpty(result.Etag));
         }
+
+        [Test]
+        public void Should_Persist_Property()
+        {
+            var db = client.GetDatabase(baseDatabase);
+            var company = new Company();
+            company.Id = "1234";
+            company.Name = "Whiteboard-IT";
+            db.CreateDocument(company);
+            var doc = db.GetDocument<Company>("1234");
+            Assert.AreEqual(company.Name, doc.Name);
+        }
 	    [Test]
 	    public void Should_Get_304_If_ETag_Matches()
 	    {
@@ -174,7 +186,7 @@ namespace LoveSeat.IntegrationTest
             Assert.AreEqual(id, doc.Id);
         }
 	}
-    public class Company
+    public class Company :Document
     {
         public string Name { get; set; }
     }
