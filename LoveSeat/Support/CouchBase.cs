@@ -7,6 +7,7 @@ namespace LoveSeat.Support
     {
         protected readonly string username;
         protected readonly string password;
+        protected readonly AuthenticationType authType;
         protected string baseUri;
         private TtlDictionary<string, Cookie> cookiestore = new TtlDictionary<string, Cookie>();
 
@@ -14,10 +15,11 @@ namespace LoveSeat.Support
         {
             throw new Exception("Should not be used.");
         }
-        protected CouchBase(string username, string password)
+        protected CouchBase(string username, string password, AuthenticationType aT)
         {
             this.username = username;
             this.password = password;
+            this.authType = aT;
         }
         public static bool Authenticate(string baseUri, string userName, string password)
         {
@@ -46,6 +48,12 @@ namespace LoveSeat.Support
                 .Data("name=" + username + "&password=" + password)
                 .GetResponse();
 
+            // add check
+            if (response == null)
+            {
+                throw new NullReferenceException("Response from authentication post yielded a null reference exception.");
+            }
+
             var header = response.Headers.Get("Set-Cookie");
             if (header != null)
             {
@@ -56,14 +64,30 @@ namespace LoveSeat.Support
             }
             return authCookie;
         }
+
         protected CouchRequest GetRequest(string uri)
         {
             return GetRequest(uri, null);
         }
+
         protected CouchRequest GetRequest(string uri, string etag)
         {
-            var request = new CouchRequest(uri, GetSession(), etag);
-            return request;
+            if (AuthenticationType.Cookie == this.authType)
+            {
+                return new CouchRequest(uri, GetSession(), etag);
+            }
+            else if (AuthenticationType.Basic == this.authType) //Basic Authentication
+            {
+                return new CouchRequest(uri, username, password);
+            }
+            else //default Cookie
+            {
+                return new CouchRequest(uri, GetSession(), etag);
+            }
         }
+
+
+
+
     }
 }

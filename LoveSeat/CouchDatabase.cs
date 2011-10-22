@@ -16,8 +16,8 @@ namespace LoveSeat
 
         private readonly string databaseBaseUri;
         private string defaultDesignDoc = null;
-        internal CouchDatabase(string baseUri, string databaseName, string username, string password)
-            : base(username, password)
+        internal CouchDatabase(string baseUri, string databaseName, string username, string password, AuthenticationType aT)
+            : base(username, password, aT)
         {
             this.baseUri = baseUri;
             this.databaseBaseUri = baseUri + databaseName;
@@ -291,5 +291,72 @@ namespace LoveSeat
             var uri = databaseBaseUri + "/_all_docs";
             return ProcessResults(uri, options);
         }
+
+
+        #region Security
+        public SecurityDocument getSecurityConfiguration()
+        {
+            string request = databaseBaseUri + "/_security";
+
+            var docResult = GetRequest(request).Get().Json().GetResponse().GetJObject();
+
+            SecurityDocument sDoc = Newtonsoft.Json.JsonConvert.DeserializeObject<SecurityDocument>(docResult.ToString());
+
+            return sDoc;
+        }
+
+        /// <summary>
+        /// Updates security configuration for the database
+        /// </summary>
+        /// <param name="sDoc"></param>
+        public void UpdateSecurityDocument(SecurityDocument sDoc)
+        {
+            string request = databaseBaseUri + "/_security";
+
+            // serialize SecurityDocument to json
+            string data = Newtonsoft.Json.JsonConvert.SerializeObject(sDoc);
+
+            var result = GetRequest(request).Put().Json().Data(data).GetResponse();
+
+            if (result.StatusCode != HttpStatusCode.OK) //Check if okay
+            {
+                throw new WebException("An error occurred while trying to update the security document. StatusDescription: " + result.StatusDescription);
+            }
+        }
+
+        #endregion
     }
+
+    #region Security Configuration
+
+    // Example: {"admins":{},"readers":{"names":["dave"],"roles":[]}}
+    /// <summary>
+    /// Security configuration for the database
+    /// </summary>
+    public class SecurityDocument
+    {
+        public SecurityDocument()
+        {
+            admins = new UserType();
+            readers = new UserType();
+        }
+
+
+        public UserType admins;
+        public UserType readers;
+    }
+
+    public class UserType
+    {
+        public UserType()
+        {
+            names = new List<string>();
+            roles = new List<string>();
+        }
+
+        public List<string> names { get; set; }
+        public List<string> roles { get; set; }
+    }
+    #endregion
+
 }

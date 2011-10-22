@@ -28,7 +28,7 @@ namespace LoveSeat.IntegrationTest
 		[TestFixtureSetUp]
 		public void Setup()
 		{
-			client = new CouchClient(host, port, username, password);
+			client = new CouchClient(host, port, username, password, false,AuthenticationType.Cookie);
 			if (!client.HasDatabase(baseDatabase))
 			{
 				client.CreateDatabase(baseDatabase);
