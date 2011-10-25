@@ -22,7 +22,7 @@ namespace LoveSeat
         /// This is only intended for use if your CouchDb is in Admin Party
         /// </summary>
         public CouchClient()
-            : this("localhost", 5984, null, null, false, AuthenticationType.Cookie)
+            : this("localhost", 5984, null, null, false, AuthenticationType.Basic)
         {
         }
 
@@ -32,7 +32,7 @@ namespace LoveSeat
         /// <param name="username"></param>
         /// <param name="password"></param>
         public CouchClient(string username, string password)
-            : this("localhost", 5984, username, password, false, AuthenticationType.Cookie)
+            : this("localhost", 5984, username, password, false, AuthenticationType.Basic)
         {
         }
 
@@ -65,7 +65,7 @@ namespace LoveSeat
         /// </summary>
         /// <param name="config"></param>
         public CouchClient(CouchConfiguration config)
-            : this(config.Host, config.Port, config.User, config.Password, false, AuthenticationType.Cookie)
+            : this(config.Host, config.Port, config.User, config.Password, false, AuthenticationType.Basic)
         {
         }
 
