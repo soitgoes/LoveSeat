@@ -93,6 +93,69 @@ namespace LoveSeat
             if (resp.StatusCode == HttpStatusCode.NotFound) return default(T);
             return objectSerializer.Deserialize<T>(resp.GetResponseString());
         }
+
+        /// <summary>
+        /// Request multiple documents 
+        /// in a single request.
+        /// </summary>
+        /// <param name="keyLst"></param>
+        /// <returns></returns>
+        public ViewResult GetDocuments(Keys keyLst)
+        {
+            // serialize list of keys to json
+            string data = Newtonsoft.Json.JsonConvert.SerializeObject(keyLst);
+            
+            var resp = GetRequest(databaseBaseUri + "/_all_docs").Post().Json().Data(data).GetResponse();
+
+            if (resp == null) return null;
+
+            if (resp.StatusCode == HttpStatusCode.NotFound) return null;
+
+            ViewResult vw = new ViewResult(resp, null);
+
+            return vw;
+        }
+ 
+        /// <summary>
+        /// Using the bulk API for the loading of documents.
+        /// </summary>
+        /// <param name="docs"></param>
+        /// <remarks>Here we assume you have either added the correct rev, id, or _deleted attribute to each document.  The response will indicate if there were any errors.
+        /// Please note that the max_document_size configuration variable in CouchDB limits the maximum request size to CouchDB.</remarks>
+        /// <returns>JSON of updated documents in the BulkDocumentResponse class.  </returns>
+        public BulkDocumentResponses SaveDocuments(Documents docs, bool all_or_nothing = false)
+        {
+            string uri = databaseBaseUri + "/_bulk_docs";
+
+            string data = Newtonsoft.Json.JsonConvert.SerializeObject(docs);
+
+            if (all_or_nothing == true)
+            {
+                uri = uri + "?all_or_nothing=true";
+            }
+
+            HttpWebResponse resp = GetRequest(uri).Post().Json().Data(data).GetResponse();
+
+            if (resp == null)
+            {
+                throw new System.Exception("Response returned null.");
+            }
+
+            if (resp.StatusCode != HttpStatusCode.Created)
+            {
+                throw new System.Exception("Response returned with a HTTP status code of " + resp.StatusCode + " - " + resp.StatusDescription);    
+            }
+
+            // Get response
+            string x = resp.GetResponseString();
+                        
+            // Convert to Bulk response
+            BulkDocumentResponses bulk = Newtonsoft.Json.JsonConvert.DeserializeObject<BulkDocumentResponses>(x);
+
+            return bulk;
+        }
+
+        
         /// <summary>
         /// Adds an attachment to a document.  If revision is not specified then the most recent will be fetched and used.  Warning: if you need document update conflicts to occur please use the method that specifies the revision
         /// </summary>
@@ -179,7 +242,29 @@ namespace LoveSeat
             ThrowDesignDocException();
             return View(viewName);
         }
-     
+
+        /// <summary>
+        /// Call view cleanup for a database
+        /// </summary>
+        /// <returns>JSON success statement if the response code is Accepted</returns>
+        public JObject ViewCleanup()
+        {
+            HttpWebResponse resp = GetRequest(databaseBaseUri + "/_view_cleanup").Post().Json().GetResponse();
+
+            if (resp == null)
+            {
+                throw new System.Exception("Response returned null.");
+            }
+
+            if (resp.StatusCode != HttpStatusCode.Accepted)
+            {
+                throw new System.Exception("Response return with a HTTP Code of " + resp.StatusCode + " - " + resp.StatusDescription);
+            }
+
+            return resp.GetJObject();
+        }
+
+
         public string Show (string showName, string docId)
         {
             ThrowDesignDocException();
@@ -291,6 +376,8 @@ namespace LoveSeat
             var uri = databaseBaseUri + "/_all_docs";
             return ProcessResults(uri, options);
         }
+
+
 
 
         #region Security

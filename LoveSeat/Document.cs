@@ -18,7 +18,58 @@ namespace LoveSeat
         }
     }
 
-    
+    #region Bulk documents
+
+    /// <summary>
+    /// Class containing list of documents for bulk loading multiple documents with /all_docs
+    /// </summary>
+    public class Documents
+    {
+        public Documents()
+        {
+            Values = new List<Document>();
+        }
+
+        [JsonProperty("docs")]
+        public List<Document> Values { get; set; }
+    }
+
+    /// <summary>
+    /// Class containing list of keys for fetching multiple documents with /all_docs 
+    /// </summary>
+    public class Keys
+    {
+        public Keys()
+        {
+            Values = new List<string>();
+        }
+
+        [JsonProperty("keys")]
+        public List<string> Values { get; set; }
+
+    }
+
+    public class BulkDocumentResponses : List<BulkDocumentResponse>
+    { }
+
+    public class BulkDocumentResponse
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("rev")]
+        public string Rev { get; set; }
+
+        [JsonProperty("error")]
+        public string Error {get;set;}
+
+        [JsonProperty("reason")]
+        public string Reason { get; set; }
+    }
+
+    #endregion
+
+
 
     public class Document : JObject, IBaseObject
     {
