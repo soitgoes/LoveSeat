@@ -52,7 +52,7 @@ namespace LoveSeat
         /// Creates a document when you intend for Couch to generate the id for you.
         /// </summary>
         /// <param name="jsonForDocument">Json for creating the document</param>
-        /// <returns></returns>
+        /// <returns>The response as a JObject</returns>
         public JObject CreateDocument(string jsonForDocument)
         {
             var json = JObject.Parse(jsonForDocument); //to make sure it's valid json
