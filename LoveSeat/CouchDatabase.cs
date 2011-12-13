@@ -62,6 +62,8 @@ namespace LoveSeat
         }        
         public JObject DeleteDocument(string id, string rev)
         {
+            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(rev))
+                throw new Exception("Both id and rev must have a value that is not empty");
             return GetRequest(databaseBaseUri + "/" + id + "?rev=" + rev).Delete().Form().GetResponse().GetJObject();
         }
         /// <summary>
