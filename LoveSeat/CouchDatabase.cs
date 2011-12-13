@@ -242,7 +242,7 @@ namespace LoveSeat
         public ViewResult View(string viewName)
         {
             ThrowDesignDocException();
-            return View(viewName);
+            return View(viewName, new ViewOptions());
         }
 
         /// <summary>
