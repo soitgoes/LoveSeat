@@ -166,15 +166,21 @@ namespace LoveSeat
         /// </summary>
         /// <param name="databaseName"></param>
         /// <returns></returns>
-        public bool HasDatabase(string databaseName)
-        {
+      public bool HasDatabase(string databaseName) {
             var request = GetRequest(baseUri + databaseName);
-            request.Timeout = 5000;
-            var result = request
-                .Get()
-                .GetResponse();
-            return result.StatusCode == HttpStatusCode.OK;
-        }
+            request.Timeout = -1;
+
+            var response = request.GetResponse();
+            var pDocResult = new Document(response.GetResponseString());
+
+            if (pDocResult["error"] == null) {
+                return (true);
+            }
+            if (pDocResult["error"].Value<String>() == "not_found") {
+                return (false);
+            }
+            throw new Exception(pDocResult["error"].Value<String>());
+      }
 
         /// <summary>
         /// Returns true/false depending on whether or not the user is contained in the _users database
