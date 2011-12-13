@@ -59,6 +59,21 @@ namespace LoveSeat.IntegrationTest
 			var obj  = client.TriggerReplication("http://Professor:Farnsworth@"+ host+":5984/" +replicateDatabase, baseDatabase);
 			Assert.IsTrue(obj != null);
 		}
+        public class Bunny {
+            public Bunny() { }
+            public string Name { get; set; }
+        }
+        [Test]
+        public void Creating_A_Document_Should_Keep_Id_If_Supplied()
+        {
+            var doc = new Document<Bunny>(new Bunny());
+            doc.Id = "myid";
+            var db = client.GetDatabase(baseDatabase);
+            db.CreateDocument(doc);
+            var savedDoc = db.GetDocument("myid");
+            Assert.IsNotNull(savedDoc, "Saved doc should be able to be retrieved by the same id");
+        }
+
 		[Test]
 		public void Should_Create_Document_From_String()
 		{

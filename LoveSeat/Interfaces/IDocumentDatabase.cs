@@ -15,7 +15,7 @@ namespace LoveSeat.Interfaces
         /// <returns>The status from CouchDb as a JObject</returns>
         JObject CreateDocument(string id, string jsonForDocument);
 
-        JObject CreateDocument<T>(T doc);
+        JObject CreateDocument(IBaseObject doc);
 
         /// <summary>
         /// Creates a document when you intend for Couch to generate the id for you.
