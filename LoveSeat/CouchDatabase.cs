@@ -43,9 +43,13 @@ namespace LoveSeat
                 resp.GetJObject();
         }
 
-        public JObject CreateDocument<T>(T doc)
+        public JObject CreateDocument(IBaseObject doc) 
         {
             var serialized = ObjectSerializer.Serialize(doc);
+            if (doc.Id != null)
+            {
+                return CreateDocument(doc.Id, serialized);
+            }
             return CreateDocument(serialized);
         }
         /// <summary>
