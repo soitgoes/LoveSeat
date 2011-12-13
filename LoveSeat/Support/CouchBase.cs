@@ -33,9 +33,7 @@ namespace LoveSeat.Support
                 .GetResponse();
             return response.StatusCode == HttpStatusCode.OK;
         }
-
-        protected Cookie GetSession()
-        {
+        public Cookie GetSession() {
             var authCookie = cookiestore["authcookie"];
 
             if (authCookie != null)
@@ -43,20 +41,14 @@ namespace LoveSeat.Support
 
             if (string.IsNullOrEmpty(username)) return null;
             var request = new CouchRequest(baseUri + "_session");
+            request.GetRequest().Headers.Add("Authorization:Basic " + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(username + ":" + password)));
             var response = request.Post()
-                .ContentType("application/x-www-form-urlencoded")
+                .Form()
                 .Data("name=" + username + "&password=" + password)
                 .GetResponse();
 
-            // add check
-            if (response == null)
-            {
-                throw new NullReferenceException("Response from authentication post yielded a null reference exception.");
-            }
-
             var header = response.Headers.Get("Set-Cookie");
-            if (header != null)
-            {
+            if (header != null) {
                 var parts = header.Split(';')[0].Split('=');
                 authCookie = new Cookie(parts[0], parts[1]);
                 authCookie.Domain = response.Server;
@@ -64,7 +56,6 @@ namespace LoveSeat.Support
             }
             return authCookie;
         }
-
         protected CouchRequest GetRequest(string uri)
         {
             return GetRequest(uri, null);
