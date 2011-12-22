@@ -129,7 +129,7 @@ namespace LoveSeat
         /// <remarks>Here we assume you have either added the correct rev, id, or _deleted attribute to each document.  The response will indicate if there were any errors.
         /// Please note that the max_document_size configuration variable in CouchDB limits the maximum request size to CouchDB.</remarks>
         /// <returns>JSON of updated documents in the BulkDocumentResponse class.  </returns>
-        public BulkDocumentResponses SaveDocuments(Documents docs, bool all_or_nothing = false)
+        public BulkDocumentResponses SaveDocuments(Documents docs, bool all_or_nothing)
         {
             string uri = databaseBaseUri + "/_bulk_docs";
 
