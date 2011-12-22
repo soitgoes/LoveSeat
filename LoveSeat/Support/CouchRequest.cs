@@ -26,6 +26,7 @@ namespace LoveSeat.Support {
                 request.Headers.Add("If-None-Match", eTag);
             request.Headers.Add("Accept-Charset", "utf-8");
             request.Headers.Add("Accept-Language", "en-us");
+            request.Accept = "application/json";
             request.Referer = uri;
             request.ContentType = "application/json";
             request.KeepAlive = true;
