@@ -6,6 +6,9 @@ namespace LoveSeat
 {
     public class CouchConfiguration
     {
+        public CouchConfiguration()
+        {
+        }
         public CouchConfiguration(string pathToCouchAppRc)
         {
             var fileContents = File.ReadAllText(pathToCouchAppRc);
