@@ -76,7 +76,7 @@ namespace LoveSeat
         /// <param name="target">Uri or database name of database to replicate to</param>
         /// <param name="continuous">Whether or not CouchDB should continue to replicate going forward on it's own</param>
         /// <returns></returns>
-        public JObject TriggerReplication(string source, string target, bool continuous)
+        public CouchResponse TriggerReplication(string source, string target, bool continuous)
         {
             var request = GetRequest(baseUri + "_replicate");
 
@@ -88,7 +88,7 @@ namespace LoveSeat
             return response.GetJObject();
         }
 
-        public JObject TriggerReplication(string source, string target)
+        public CouchResponse TriggerReplication(string source, string target)
         {
             return TriggerReplication(source, target, false);
         }
@@ -98,7 +98,7 @@ namespace LoveSeat
         /// </summary>
         /// <param name="databaseName">Name of new database</param>
         /// <returns></returns>
-        public JObject CreateDatabase(string databaseName)
+        public CouchResponse CreateDatabase(string databaseName)
         {
             return GetRequest(baseUri + databaseName).Put().GetResponse().GetJObject();
         }
@@ -107,7 +107,7 @@ namespace LoveSeat
         /// </summary>
         /// <param name="databaseName">Database to delete</param>
         /// <returns></returns>
-        public JObject DeleteDatabase(string databaseName)
+        public CouchResponse DeleteDatabase(string databaseName)
         {
             return GetRequest(baseUri + databaseName).Delete().GetResponse().GetJObject();
         }
@@ -128,7 +128,7 @@ namespace LoveSeat
         /// <param name="usernameToCreate"></param>
         /// <param name="passwordToCreate"></param>
         /// <returns></returns>
-        public JObject CreateAdminUser(string usernameToCreate, string passwordToCreate)
+        public CouchResponse CreateAdminUser(string usernameToCreate, string passwordToCreate)
         {
             //Creates the user in the local.ini
             var iniResult = GetRequest(baseUri + "_config/admins/" + HttpUtility.UrlEncode(usernameToCreate))
@@ -211,7 +211,7 @@ namespace LoveSeat
         /// <param name="usernameToCreate"></param>
         /// <param name="passwordToCreate"></param>
         /// <returns></returns>
-        public JObject CreateUser(string usernameToCreate, string passwordToCreate)
+        public CouchResponse CreateUser(string usernameToCreate, string passwordToCreate)
         {
 
             var user = "";
