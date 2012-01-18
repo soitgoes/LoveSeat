@@ -12,11 +12,14 @@ namespace LoveSeat
 {
     public class KeyOptions : IKeyOptions
     {
-        private JArray objects;
+        private JArray objects = new JArray();
 
-        public KeyOptions(params object[] objects) 
-        {           
-            this.objects = new JArray(objects);
+        public KeyOptions(params object[] objects)
+        {
+            foreach (var obj in objects)
+            {
+                this.Add(obj);
+            }
         }
 
         public KeyOptions(JArray jArray)
