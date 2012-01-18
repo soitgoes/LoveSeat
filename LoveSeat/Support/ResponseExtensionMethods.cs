@@ -24,9 +24,11 @@ namespace LoveSeat.Support
 				}
 			}
         }
-		public static JObject GetJObject(this HttpWebResponse response)
+		public static CouchResponse GetJObject(this HttpWebResponse response)
 		{
-		    return JObject.Parse(response.GetResponseString());
+            var resp = new CouchResponse(JObject.Parse(response.GetResponseString()));
+		    resp.StatusCode = (int)response.StatusCode;
+		    return resp;
 		}
 	}
 }

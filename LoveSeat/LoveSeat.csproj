@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="CouchConfiguration.cs" />
     <Compile Include="CouchException.cs" />
+    <Compile Include="CouchResponse.cs" />
     <Compile Include="Document.cs" />
     <Compile Include="CouchUser.cs" />
     <Compile Include="Interfaces\IDocumentDatabase.cs" />

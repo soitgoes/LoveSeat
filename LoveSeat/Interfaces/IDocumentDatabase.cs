@@ -13,18 +13,18 @@ namespace LoveSeat.Interfaces
         /// <param name="id">Id of Document</param>
         /// <param name="jsonForDocument"></param>
         /// <returns>The status from CouchDb as a JObject</returns>
-        JObject CreateDocument(string id, string jsonForDocument);
+        CouchResponse CreateDocument(string id, string jsonForDocument);
 
-        JObject CreateDocument(IBaseObject doc);
+        CouchResponse CreateDocument(IBaseObject doc);
 
         /// <summary>
         /// Creates a document when you intend for Couch to generate the id for you.
         /// </summary>
         /// <param name="jsonForDocument">Json for creating the document</param>
         /// <returns>Returns the status from Couchdb as a JObject</returns>
-        JObject CreateDocument(string jsonForDocument);
+        CouchResponse CreateDocument(string jsonForDocument);
 
-        JObject DeleteDocument(string id, string rev);
+        CouchResponse DeleteDocument(string id, string rev);
 
         /// <summary>
         /// Returns null if document is not found
@@ -40,7 +40,7 @@ namespace LoveSeat.Interfaces
         /// <param name="id">id of the couch Document</param>
         /// <param name="attachment">byte[] of of the attachment.  Use File.ReadAllBytes()</param>
         /// <param name="contentType">Content Type must be specifed</param>	
-        JObject AddAttachment(string id, byte[] attachment, string filename, string contentType);
+        CouchResponse AddAttachment(string id, byte[] attachment, string filename, string contentType);
 
         /// <summary>
         /// Adds an attachment to the documnet.  Rev must be specified on this signature.  If you want to attach no matter what then use the method without the rev param
@@ -51,14 +51,14 @@ namespace LoveSeat.Interfaces
         /// <param name="filename">filename of the attachment</param>
         /// <param name="contentType">Content Type must be specifed</param>			
         /// <returns></returns>
-        JObject AddAttachment(string id, string rev, byte[] attachment, string filename, string contentType);
+        CouchResponse AddAttachment(string id, string rev, byte[] attachment, string filename, string contentType);
 
         Stream GetAttachmentStream(Document doc, string attachmentName);
         Stream GetAttachmentStream(string docId, string rev, string attachmentName);
         Stream GetAttachmentStream(string docId, string attachmentName);
-        JObject DeleteAttachment(string id, string rev, string attachmentName);
-        JObject DeleteAttachment(string id, string attachmentName);
-        JObject SaveDocument(Document document);
+        CouchResponse DeleteAttachment(string id, string rev, string attachmentName);
+        CouchResponse DeleteAttachment(string id, string attachmentName);
+        CouchResponse SaveDocument(Document document);
 
         /// <summary>
         /// Gets the results of a view with no view parameters.  Use the overload to pass parameters
