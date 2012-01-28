@@ -73,11 +73,24 @@ namespace LoveSeat
 
     public class Document : JObject, IBaseObject
     {
-        [JsonProperty("_id")]
-        public string Id { get; set; }
+        [JsonIgnore]
+        public string Id
+        {
+            get { 
+                JToken id;
+                return this.TryGetValue("_id", out id) ? id.ToString() : null;
+            } 
+            set { this["_id"] = value; }
+        }
 
-        [JsonProperty("_rev")]
-        public string Rev { get; set; }
+        [JsonIgnore]
+        public string Rev { 
+            get { 
+                JToken rev;
+                return this.TryGetValue("_rev", out rev) ? rev.ToString() : null;
+            }
+            set { this["_rev"] = value; }
+        }
 
         public string Type { get; private set; }
 
