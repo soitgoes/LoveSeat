@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using LoveSeat.Interfaces;
 using Newtonsoft.Json;
@@ -19,6 +21,7 @@ namespace LoveSeat
         /// If you have a complex object as a string set this using a JRaw object()
         /// </summary>
         public IKeyOptions Key { get; set; }
+        public IEnumerable<IKeyOptions> Keys { get; set; }
         /// <summary>
         /// If you have a complex object as a string set this using a JRaw object()
         /// </summary>
@@ -47,6 +50,8 @@ namespace LoveSeat
             string result = "";
             if ((Key != null) && (Key.Count > 0))
                 result += "&key=" + Key.ToString();
+            if (Keys != null)
+                result += "&keys=[" + String.Join(",", Keys.Select(k => k.ToString()).ToArray()) + "]";
             if ((StartKey != null) && (StartKey.Count > 0))
                 if((StartKey.Count == 1) && (EndKey.Count > 1))
                     result += "&startkey=[" + StartKey.ToString() + "]";
