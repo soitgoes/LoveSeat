@@ -255,19 +255,41 @@ namespace LoveSeat
         /// <returns>JSON success statement if the response code is Accepted</returns>
         public JObject ViewCleanup()
         {
-            HttpWebResponse resp = GetRequest(databaseBaseUri + "/_view_cleanup").Post().Json().GetResponse();
+            return CheckAccepted(GetRequest(databaseBaseUri + "/_view_cleanup").Post().Json().GetResponse());
+        }
 
-            if (resp == null)
-            {
+        /// <summary>
+        /// Compact the current database
+        /// </summary>
+        /// <returns></returns>
+        public JObject Compact()
+        {
+            return CheckAccepted(GetRequest(databaseBaseUri + "/_compact").Post().Json().GetResponse());
+        }
+
+        /// <summary>
+        /// Compact a view.
+        /// </summary>
+        /// <param name="designDoc">The view to compact</param>
+        /// <returns></returns>
+        /// <remarks>Requires admin permissions.</remarks>
+        public JObject Compact(string designDoc)
+        {
+            return CheckAccepted(GetRequest(databaseBaseUri + "/_compact/" + designDoc).Post().Json().GetResponse());
+        }
+
+        private static JObject CheckAccepted(HttpWebResponse resp)
+        {
+            if (resp == null) {
                 throw new System.Exception("Response returned null.");
             }
 
-            if (resp.StatusCode != HttpStatusCode.Accepted)
-            {
+            if (resp.StatusCode != HttpStatusCode.Accepted) {
                 throw new System.Exception("Response return with a HTTP Code of " + resp.StatusCode + " - " + resp.StatusDescription);
             }
 
             return resp.GetJObject();
+
         }
 
 
