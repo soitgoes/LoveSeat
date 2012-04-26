@@ -9,6 +9,7 @@ namespace LoveSeat.Support
 		public static Document GetCouchDocument(this HttpWebResponse response)
 		{
 		    var jobj = JObject.Parse(response.GetResponseString());
+			response.Close();
             return new Document(jobj);
 		}
 
@@ -19,15 +20,21 @@ namespace LoveSeat.Support
 				using (var streamReader = new StreamReader(stream))
 				{
 					var result = streamReader.ReadToEnd();
+
+					response.Close();
+
                     if (string.IsNullOrEmpty(result)) return null;
 					return result;
 				}
 			}
+
+			
         }
 		public static CouchResponse GetJObject(this HttpWebResponse response)
 		{
             var resp = new CouchResponse(JObject.Parse(response.GetResponseString()));
 		    resp.StatusCode = (int)response.StatusCode;
+			response.Close();
 		    return resp;
 		}
 	}
