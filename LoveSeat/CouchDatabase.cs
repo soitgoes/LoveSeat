@@ -167,6 +167,7 @@ namespace LoveSeat
         /// </summary>
         /// <param name="id">id of the couch Document</param>
         /// <param name="attachment">byte[] of of the attachment.  Use File.ReadAllBytes()</param>
+        /// <param name="filename">filename of the attachment</param>
         /// <param name="contentType">Content Type must be specifed</param>	
         public CouchResponse AddAttachment(string id, byte[] attachment, string filename, string contentType)
         {
@@ -186,6 +187,31 @@ namespace LoveSeat
         {
             return
                 GetRequest(databaseBaseUri + "/" + id + "/" + filename + "?rev=" + rev).Put().ContentType(contentType).Data(attachment).GetResponse().GetJObject();
+        }
+        /// <summary>
+        /// Adds an attachment to a document.  If revision is not specified then the most recent will be fetched and used.  Warning: if you need document update conflicts to occur please use the method that specifies the revision
+        /// </summary>
+        /// <param name="id">id of the couch Document</param>
+        /// <param name="attachmentStream">Stream of the attachment.</param>
+        /// <param name="contentType">Content Type must be specifed</param>	
+        public CouchResponse AddAttachment(string id, Stream attachmentStream, string filename, string contentType)
+        {
+            var doc = GetDocument(id);
+            return AddAttachment(id, doc.Rev, attachmentStream, filename, contentType);
+        }
+        /// <summary>
+        /// Adds an attachment to the documnet.  Rev must be specified on this signature.  If you want to attach no matter what then use the method without the rev param
+        /// </summary>
+        /// <param name="id">id of the couch Document</param>
+        /// <param name="rev">revision _rev of the Couch Document</param>
+        /// <param name="attachmentStream">Stream of of the attachment.  Use File.ReadAllBytes()</param>
+        /// <param name="filename">filename of the attachment</param>
+        /// <param name="contentType">Content Type must be specifed</param>			
+        /// <returns></returns>
+        public CouchResponse AddAttachment(string id, string rev, Stream attachmentStream, string filename, string contentType)
+        {
+            return
+                GetRequest(databaseBaseUri + "/" + id + "/" + filename + "?rev=" + rev).Put().ContentType(contentType).Data(attachmentStream).GetResponse().GetJObject();
         }
 
         public Stream GetAttachmentStream(Document doc, string attachmentName)
