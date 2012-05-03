@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Web;
@@ -7,6 +8,7 @@ namespace LoveSeat.Support {
     public class CouchRequest {
         private const string INVALID_USERNAME_OR_PASSWORD = "reason=Name or password is incorrect";
         private const string NOT_AUTHORIZED = "reason=You are not authorized to access this db.";
+        private const int STREAM_BUFFER_SIZE = 4096;
 
         private readonly HttpWebRequest request;
         public CouchRequest(string uri)
@@ -80,6 +82,19 @@ namespace LoveSeat.Support {
         }
         public CouchRequest Delete() {
             request.Method = "DELETE";
+            return this;
+        }
+        public CouchRequest Data(Stream data)
+        {
+            using (var body = request.GetRequestStream())
+            {
+                var buffer = new byte[STREAM_BUFFER_SIZE];
+                var bytesRead = 0;
+                while (0 != (bytesRead = data.Read(buffer, 0, buffer.Length)))
+                {
+                    body.Write(buffer, 0, bytesRead);   
+                }
+            }
             return this;
         }
         public CouchRequest Data(string data) {
