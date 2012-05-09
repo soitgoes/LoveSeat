@@ -59,6 +59,7 @@ namespace LoveSeat.Interfaces
         CouchResponse DeleteAttachment(string id, string rev, string attachmentName);
         CouchResponse DeleteAttachment(string id, string attachmentName);
         CouchResponse SaveDocument(Document document);
+        BulkDocumentResponses SaveDocuments(Documents docs, bool all_or_nothing);
 
         /// <summary>
         /// Gets the results of a view with no view parameters.  Use the overload to pass parameters
