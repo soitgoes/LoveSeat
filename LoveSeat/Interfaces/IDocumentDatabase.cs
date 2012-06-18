@@ -112,5 +112,11 @@ namespace LoveSeat.Interfaces
         ViewResult View(string viewName, ViewOptions options, string designDoc);
         ViewResult View(string viewName, ViewOptions options);
         ViewResult View(string viewName);
+
+        /// <summary>
+        /// Set the timeout to be used for future HTTP requests
+        /// </summary>
+        /// <param name="timeoutMs">The timeout value, in milliseconds.</param>
+        void SetTimeout(int timeoutMs);
     }
 }
