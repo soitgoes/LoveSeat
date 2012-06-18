@@ -167,8 +167,7 @@ namespace LoveSeat
         /// <param name="databaseName"></param>
         /// <returns></returns>
       public bool HasDatabase(string databaseName) {
-            var request = GetRequest(baseUri + databaseName);
-            request.Timeout = -1;
+            var request = GetRequest(baseUri + databaseName).Timeout(-1);
 
             var response = request.GetResponse();
             var pDocResult = new Document(response.GetResponseString());
