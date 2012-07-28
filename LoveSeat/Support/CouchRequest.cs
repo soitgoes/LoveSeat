@@ -34,7 +34,7 @@ namespace LoveSeat.Support {
             request.KeepAlive = true;
             if (authCookie != null)
                 request.Headers.Add("Cookie", "AuthSession=" + authCookie.Value);
-            request.Timeout = Timeout.HasValue ? Timeout.Value : 10000;
+            request.Timeout = 10000;
         }
 
         /// <summary>
@@ -63,10 +63,10 @@ namespace LoveSeat.Support {
             request.Referer = uri;
             request.ContentType = "application/json";
             request.KeepAlive = true;
+            request.Timeout = 10000;
         }
 
 
-        public int? Timeout { get; set; }
         public CouchRequest Put() {
             request.Method = "PUT";
             return this;
@@ -126,6 +126,11 @@ namespace LoveSeat.Support {
 
         public CouchRequest Json() {
             request.ContentType = "application/json";
+            return this;
+        }
+
+        public CouchRequest Timeout(int timeoutMs) {
+            request.Timeout = timeoutMs;
             return this;
         }
 
