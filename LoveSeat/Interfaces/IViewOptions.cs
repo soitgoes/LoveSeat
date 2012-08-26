@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat.Interfaces
@@ -5,6 +6,7 @@ namespace LoveSeat.Interfaces
     public interface IViewOptions
     {
         IKeyOptions Key { get; set; }
+        IEnumerable<IKeyOptions> Keys { get; set; }
         IKeyOptions StartKey { get; set; }
         IKeyOptions EndKey { get; set; }
         int? Limit { get; set; }
