@@ -219,6 +219,45 @@ namespace LoveSeat.IntegrationTest
             Document doc= db.GetDocument(id);
             Assert.AreEqual(id, doc.Id);
         }
+
+        [Test]
+        public void Should_Populate_Items_When_IncludeDocs_Set_In_ViewOptions()
+        {
+            string designDoc = "test";
+            string viewName = "testView";
+            var settings = new JsonSerializerSettings();
+            var converters = new List<JsonConverter> { new IsoDateTimeConverter() };
+            settings.Converters = converters;
+            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            settings.NullValueHandling = NullValueHandling.Ignore;
+
+            var doc = new
+                          {
+                              _id = "_design/" + designDoc,
+                              Language = "javascript",
+                              Views = new
+                                {
+                                    TestView = new
+                                    {
+                                        Map = "function(doc) {\n  if(doc.type == 'company') {\n    emit(doc._id, null);\n  }\n}"
+                                    }
+                                }
+                          };
+
+            var db = client.GetDatabase(baseDatabase);
+            db.CreateDocument(doc._id, JsonConvert.SerializeObject(doc, Formatting.Indented, settings));
+
+            var company = new Company();
+            company.Name = "foo";
+            db.CreateDocument(company);
+
+            // Without IncludeDocs
+            Assert.IsNull(db.View<Company>(viewName, designDoc).Items.ToList()[0]);
+
+            // With IncludeDocs
+            ViewOptions options = new ViewOptions { IncludeDocs = true };
+            Assert.AreEqual("foo", db.View<Company>(viewName, options, designDoc).Items.ToList()[0].Name);
+        }
 	}
     public class Company : IBaseObject
     {        
