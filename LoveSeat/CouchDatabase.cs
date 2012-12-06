@@ -363,7 +363,12 @@ namespace LoveSeat
                 throw new CouchException(req.GetRequest(), resp, resp.GetResponseString() + "\n" + req.GetRequest().RequestUri);
             }
 
-            bool includeDocs = options.IncludeDocs ?? false;
+            bool includeDocs = false;
+            if (options != null)
+            {
+                includeDocs = options.IncludeDocs ?? false;
+            }
+
             return new ViewResult<T>(resp, req.GetRequest(), ObjectSerializer, includeDocs);
         }
         /// <summary>
