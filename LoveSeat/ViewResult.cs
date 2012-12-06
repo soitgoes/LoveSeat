@@ -14,11 +14,11 @@ namespace LoveSeat
     {
         private readonly IObjectSerializer objectSerializer = null;
         private CouchDictionary<T> dict = null;
-        public ViewResult(HttpWebResponse response, HttpWebRequest request, IObjectSerializer objectSerializer)
-            : base(response, request)
+        public ViewResult(HttpWebResponse response, HttpWebRequest request, IObjectSerializer objectSerializer, bool includeDocs = false)
+            : base(response, request, includeDocs)
         {
             this.objectSerializer = objectSerializer;
-            
+
         }
 
         public CouchDictionary<T> Dictionary
@@ -28,7 +28,7 @@ namespace LoveSeat
                 if (dict != null) return dict;
                 dict = new CouchDictionary<T>();
                 foreach (var row in this.Rows)
-                {                    
+                {
                     dict.Add(row.Value<JToken>("key").ToString(Formatting.None), objectSerializer.Deserialize<T>(row.Value<string>("value")));
                 }
                 return dict;
@@ -43,7 +43,9 @@ namespace LoveSeat
                 {
                     throw new InvalidOperationException("ObjectSerializer must be set in order to use the generic view.");
                 }
-                return this.RawValues.Select(item => objectSerializer.Deserialize<T>(item));
+
+                var values = this.IncludeDocs ? this.RawDocs : this.RawValues;
+                return values.Select(item => objectSerializer.Deserialize<T>(item));
             }
         }
     }
@@ -56,11 +58,12 @@ namespace LoveSeat
         private readonly string responseString;
 
         public JObject Json { get { return json ?? (json = JObject.Parse(responseString)); } }
-        public ViewResult(HttpWebResponse response, HttpWebRequest request)
+        public ViewResult(HttpWebResponse response, HttpWebRequest request, bool includeDocs = false)
         {
             this.response = response;
             this.request = request;
             this.responseString = response.GetResponseString();
+            this.IncludeDocs = includeDocs;
         }
         /// <summary>
         /// Typically won't be needed.  Provided for debuging assistance
@@ -73,21 +76,30 @@ namespace LoveSeat
         public HttpStatusCode StatusCode { get { return response.StatusCode; } }
 
         public string Etag { get { return response.Headers["ETag"]; } }
-        public int TotalRows { get
+        public int TotalRows
         {
-            if (Json["total_rows"] == null) throw new CouchException(request, response, Json["reason"].Value<string>());
-            return Json["total_rows"].Value<int>();
-        } }
-        public int OffSet { get
+            get
+            {
+                if (Json["total_rows"] == null) throw new CouchException(request, response, Json["reason"].Value<string>());
+                return Json["total_rows"].Value<int>();
+            }
+        }
+        public int OffSet
         {
-            if (Json["offset"] == null) throw new CouchException(request, response, Json["reason"].Value<string>());            
-            return Json["offset"].Value<int>();
-        } }
-        public IEnumerable<JToken> Rows { get
+            get
+            {
+                if (Json["offset"] == null) throw new CouchException(request, response, Json["reason"].Value<string>());
+                return Json["offset"].Value<int>();
+            }
+        }
+        public IEnumerable<JToken> Rows
         {
-            if (Json["rows"] == null) throw new CouchException(request, response, Json["reason"].Value<string>());
-            return (JArray)Json["rows"];
-        } }
+            get
+            {
+                if (Json["rows"] == null) throw new CouchException(request, response, Json["reason"].Value<string>());
+                return (JArray)Json["rows"];
+            }
+        }
         /// <summary>
         /// Only populated when IncludeDocs is true
         /// </summary>
@@ -99,12 +111,14 @@ namespace LoveSeat
             }
         }
 
+        public bool IncludeDocs { get; private set; }
+
         public JToken[] Keys
         {
             get
             {
                 var arry = (JArray)Json["rows"];
-                return arry.Select(item => item["key"]).ToArray();         
+                return arry.Select(item => item["key"]).ToArray();
             }
         }
         /// <summary>

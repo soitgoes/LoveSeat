@@ -362,7 +362,14 @@ namespace LoveSeat
             if (resp.StatusCode == HttpStatusCode.BadRequest) {
                 throw new CouchException(req.GetRequest(), resp, resp.GetResponseString() + "\n" + req.GetRequest().RequestUri);
             }
-            return new ViewResult<T>(resp, req.GetRequest(), ObjectSerializer);
+
+            bool includeDocs = false;
+            if (options != null)
+            {
+                includeDocs = options.IncludeDocs ?? false;
+            }
+
+            return new ViewResult<T>(resp, req.GetRequest(), ObjectSerializer, includeDocs);
         }
         /// <summary>
         /// Gets the results of the view using any and all parameters
