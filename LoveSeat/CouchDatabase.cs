@@ -75,29 +75,49 @@ namespace LoveSeat
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Document GetDocument(string id)
+        public T GetDocument<T>(string id, bool attachments, IObjectSerializer objectSerializer)
         {
-            var resp = GetRequest(databaseBaseUri + "/" + id).Get().Json().GetResponse();
-            if (resp.StatusCode==HttpStatusCode.NotFound) return null;
-            return resp.GetCouchDocument();
-        }
-        public T GetDocument<T>(Guid id , IObjectSerializer objectSerializer)
-        {
-            return GetDocument<T>(id.ToString(), objectSerializer);
-        }
-        public T GetDocument<T>(Guid id)
-        {
-            return GetDocument<T>(id.ToString());
-        }
-        public T GetDocument<T>(string id)
-        {
-            return GetDocument<T>(id, ObjectSerializer);
+            var resp = GetRequest(String.Format("{0}/{1}{2}", databaseBaseUri, id, attachments ? "?attachments=true" : string.Empty)).Get().Json().GetResponse();
+            if (resp.StatusCode == HttpStatusCode.NotFound) return default(T);
+            return objectSerializer.Deserialize<T>(resp.GetResponseString());
         }
         public T GetDocument<T>(string id, IObjectSerializer objectSerializer)
         {
-            var resp = GetRequest(databaseBaseUri + "/" + id).Get().Json().GetResponse();
-            if (resp.StatusCode == HttpStatusCode.NotFound) return default(T);
-            return objectSerializer.Deserialize<T>(resp.GetResponseString());
+            return GetDocument<T>(id, false, objectSerializer);
+        }
+        public T GetDocument<T>(string id, bool attachments)
+        {
+            return GetDocument<T>(id, attachments, ObjectSerializer);
+        }
+        public T GetDocument<T>(string id)
+        {
+            return GetDocument<T>(id, false);
+        }
+        public T GetDocument<T>(Guid id, bool attachments, IObjectSerializer objectSerializer)
+        {
+            return GetDocument<T>(id.ToString(), attachments, objectSerializer);
+        }
+        public T GetDocument<T>(Guid id, IObjectSerializer objectSerializer)
+        {
+            return GetDocument<T>(id, false, objectSerializer);
+        }
+        public T GetDocument<T>(Guid id, bool attachments)
+        {
+            return GetDocument<T>(id.ToString(), attachments);
+        }
+        public T GetDocument<T>(Guid id)
+        {
+            return GetDocument<T>(id, false);
+        }
+        public Document GetDocument(string id, bool attachments)
+        {
+            var resp = GetRequest(String.Format("{0}/{1}{2}", databaseBaseUri, id, attachments ? "?attachments=true" : string.Empty)).Get().Json().GetResponse();
+            if (resp.StatusCode == HttpStatusCode.NotFound) return null;
+            return resp.GetCouchDocument();
+        }
+        public Document GetDocument(string id)
+        {
+            return GetDocument(id, false);
         }
 
         /// <summary>
@@ -186,7 +206,7 @@ namespace LoveSeat
         public CouchResponse AddAttachment(string id, string rev, byte[] attachment, string filename, string contentType)
         {
             return
-                GetRequest(databaseBaseUri + "/" + id + "/" + filename + "?rev=" + rev).Put().ContentType(contentType).Data(attachment).GetResponse().GetJObject();
+                GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, filename, rev)).Put().ContentType(contentType).Data(attachment).GetResponse().GetJObject();
         }
         /// <summary>
         /// Adds an attachment to a document.  If revision is not specified then the most recent will be fetched and used.  Warning: if you need document update conflicts to occur please use the method that specifies the revision
@@ -211,7 +231,7 @@ namespace LoveSeat
         public CouchResponse AddAttachment(string id, string rev, Stream attachmentStream, string filename, string contentType)
         {
             return
-                GetRequest(databaseBaseUri + "/" + id + "/" + filename + "?rev=" + rev).Put().ContentType(contentType).Data(attachmentStream).GetResponse().GetJObject();
+                GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, filename, rev)).Put().ContentType(contentType).Data(attachmentStream).GetResponse().GetJObject();
         }
 
         public Stream GetAttachmentStream(Document doc, string attachmentName)
@@ -220,7 +240,7 @@ namespace LoveSeat
         }
         public Stream GetAttachmentStream(string docId, string rev, string attachmentName)
         {
-            return GetRequest(databaseBaseUri + "/" + docId + "/" + HttpUtility.UrlEncode(attachmentName)).Get().GetResponse().GetResponseStream();
+            return GetRequest(string.Format("{0}/{1}/{2}", databaseBaseUri, docId, HttpUtility.UrlEncode(attachmentName))).Get().GetResponse().GetResponseStream();
         }
         public Stream GetAttachmentStream(string docId, string attachmentName)
         {
@@ -230,7 +250,7 @@ namespace LoveSeat
         }
         public CouchResponse DeleteAttachment(string id, string rev, string attachmentName)
         {
-            return GetRequest(databaseBaseUri + "/" + id + "/" + attachmentName + "?rev=" + rev).Json().Delete().GetResponse().GetJObject();
+            return GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, attachmentName, rev)).Json().Delete().GetResponse().GetJObject();
         }
         public CouchResponse DeleteAttachment(string id, string attachmentName)
         {
@@ -243,7 +263,7 @@ namespace LoveSeat
             if (document.Rev == null)
                 return CreateDocument(document);
                     
-            var resp = GetRequest(databaseBaseUri + "/" + document.Id + "?rev=" + document.Rev).Put().Form().Data(document).GetResponse();
+            var resp = GetRequest(string.Format("{0}/{1}?rev={2}", databaseBaseUri, document.Id, document.Rev)).Put().Form().Data(document).GetResponse();
             return resp.GetJObject();
         }
 
@@ -311,7 +331,7 @@ namespace LoveSeat
             }
 
             if (resp.StatusCode != HttpStatusCode.Accepted) {
-                throw new System.Exception("Response return with a HTTP Code of " + resp.StatusCode + " - " + resp.StatusDescription);
+                throw new System.Exception(string.Format("Response return with a HTTP Code of {0} - {1}", resp.StatusCode, resp.StatusDescription));
             }
 
             return resp.GetJObject();
@@ -334,13 +354,13 @@ namespace LoveSeat
         public string Show(string showName, string docId, string designDoc)
         {
             //TODO:  add in Etag support for Shows
-            var uri = databaseBaseUri + "/_design/" + designDoc + "/_show/" + showName + "/" + docId;
+            var uri = string.Format("{0}/_design/{1}/_show/{2}/{3}", databaseBaseUri, designDoc, showName, docId);
             var req = GetRequest(uri);
             return req.GetResponse().GetResponseString();
         }
         public IListResult List(string listName, string viewName, ViewOptions options,  string designDoc)
         {            
-			var uri = databaseBaseUri + "/_design/" + designDoc + "/_list/" + listName + "/" + viewName + options.ToString();
+			var uri = string.Format("{0}/_design/{1}/_list/{2}/{3}{4}", databaseBaseUri, designDoc, listName, viewName, options.ToString());
             var req = GetRequest(uri);
             return new ListResult(req.GetRequest(), req.GetResponse());
         }
@@ -380,7 +400,7 @@ namespace LoveSeat
         /// <returns></returns>
         public ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc)
         {
-            var uri = databaseBaseUri + "/_design/" + designDoc + "/_view/" + viewName;
+            var uri = string.Format("{0}/_design/{1}/_view/{2}", databaseBaseUri, designDoc, viewName);
             return ProcessGenericResults<T>(uri, options);
         }
         /// <summary>
@@ -398,14 +418,14 @@ namespace LoveSeat
         
         public ViewResult View(string viewName, ViewOptions options, string designDoc)
         {
-            var uri = databaseBaseUri + "/_design/" + designDoc + "/_view/" + viewName;
+            var uri = string.Format("{0}/_design/{1}/_view/{2}", databaseBaseUri, designDoc, viewName);
             return ProcessResults(uri, options);
         }
 
         public ViewResult View(string viewName, ViewOptions options)
         {
             ThrowDesignDocException();
-            var uri = databaseBaseUri + "/_design/" + this.defaultDesignDoc + "/_view/" + viewName;
+            var uri = string.Format("{0}/_design/{1}/_view/{2}", databaseBaseUri, this.defaultDesignDoc, viewName);
             return ProcessResults(uri, options);
         }
         private ViewResult ProcessResults(string uri, ViewOptions options)
