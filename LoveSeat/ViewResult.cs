@@ -44,7 +44,7 @@ namespace LoveSeat
                     throw new InvalidOperationException("ObjectSerializer must be set in order to use the generic view.");
                 }
 
-                var values = this.IncludeDocs ? this.RawDocs : this.RawValues;
+                var values = this.IncludeDocs ? this.RawDocs : this.RawRows;
                 return values.Select(item => objectSerializer.Deserialize<T>(item));
             }
         }
