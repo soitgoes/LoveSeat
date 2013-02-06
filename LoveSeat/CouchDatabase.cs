@@ -425,8 +425,7 @@ namespace LoveSeat
         public ViewResult View(string viewName, ViewOptions options)
         {
             ThrowDesignDocException();
-            var uri = string.Format("{0}/_design/{1}/_view/{2}", databaseBaseUri, this.defaultDesignDoc, viewName);
-            return ProcessResults(uri, options);
+            return View(viewName, options, this.defaultDesignDoc);
         }
         private ViewResult ProcessResults(string uri, ViewOptions options)
         {
