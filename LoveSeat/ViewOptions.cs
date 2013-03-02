@@ -11,12 +11,41 @@ namespace LoveSeat
 {
     public class ViewOptions : IViewOptions
     {
-        public ViewOptions()
+        public ViewOptions(IKeyOptions key = null,
+            IEnumerable<IKeyOptions> keys = null,
+            IKeyOptions startKey = null,
+            string startKeyDocId = null,
+            IKeyOptions endKey = null,
+            int? limit = null,
+            int? skip = null,
+            bool? reduce = null,
+            bool? group = null,
+            bool? includeDocs = null,
+            bool? inclusiveEnd = null,
+            int? groupLevel = null,
+            bool? descending = null, 
+            bool? stale = null,
+            string staleOption = null,
+            string etag = null)
         {
-            Key = new KeyOptions();
-            StartKey = new KeyOptions();
-            EndKey = new KeyOptions();
+            Key = key == null ? new KeyOptions() : key;
+            StartKey = startKey == null ? new KeyOptions() : startKey;
+            EndKey = endKey == null ? new KeyOptions() : endKey;
+            Keys = keys;
+            StartKeyDocId = startKeyDocId;
+            Limit = limit;
+            Skip = skip;
+            Reduce = reduce;
+            Group = group;
+            IncludeDocs = includeDocs;
+            InclusiveEnd = inclusiveEnd;
+            GroupLevel = groupLevel;
+            Descending = descending;
+            Stale = stale;
+            StaleOption = staleOption;
+            Etag = etag;
         }
+
        /// <summary>
         /// If you have a complex object as a string set this using a JRaw object()
         /// </summary>
