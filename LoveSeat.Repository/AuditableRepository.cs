@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Accounting.Domain;
 using LoveSeat.Interfaces;
 
@@ -9,14 +10,14 @@ namespace LoveSeat.Repositories
         protected AuditableRepository(CouchDatabase db) : base(db)
         {
         }
-        public  override void Save(T item)
+        public async override Task Save(T item)
         {
             if (item.Rev == null)
                 item.CreatedAt = DateTime.Now;
             item.LastModifiedAt = DateTime.Now;
             if (item.Id == string.Empty)
                 item.Id = Guid.NewGuid().ToString();    
-            base.Save(item);
+            await base.Save(item);
         }
     }
 }

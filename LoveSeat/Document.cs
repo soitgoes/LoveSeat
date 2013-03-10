@@ -92,7 +92,7 @@ namespace LoveSeat
             set { this["_rev"] = value; }
         }
 
-        public string Type { get; private set; }
+        public new string Type { get; private set; }
 
         protected Document()
         {

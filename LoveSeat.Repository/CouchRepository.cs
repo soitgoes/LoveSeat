@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using LoveSeat.Interfaces;
 
 namespace LoveSeat.Repositories
@@ -11,26 +12,26 @@ namespace LoveSeat.Repositories
             this.db = db;
         }
 
-        public virtual void Save(T item)
+        public async virtual Task Save(T item)
         {
             if (item.Id == "")
                 item.Id = Guid.NewGuid().ToString();
             var doc = new Document<T>(item);
-            db.SaveDocument(doc);
+            await db.SaveDocument(doc);
         }
 
-        public virtual T Find(Guid id)
+        public async virtual Task<T> Find(Guid id)
         {
-            return db.GetDocument<T>(id.ToString());
+            return await db.GetDocument<T>(id.ToString());
         }
 
         /// <summary>
         /// Repository methods don't have the business validation.  Use the service methods to enforce.
         /// </summary>
         /// <param name="obj"></param>
-        public virtual void Delete(T obj)
+        public async virtual Task Delete(T obj)
         {
-            db.DeleteDocument(obj.Id.ToString(), obj.Rev);
+            await db.DeleteDocument(obj.Id, obj.Rev);
         }
     }
 }

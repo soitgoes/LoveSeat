@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace LoveSeat.Support
 {
@@ -22,19 +23,20 @@ namespace LoveSeat.Support
             this.password = password;
             this.authType = aT;
         }
-        public static bool Authenticate(string baseUri, string userName, string password)
+        public static async Task<bool> Authenticate(string baseUri, string userName, string password)
         {
             if (!baseUri.Contains("http://"))
                 baseUri = "http://" + baseUri;
             var request = new CouchRequest(baseUri + "/_session");
-            var response = request.Post()
-                .ContentType("application/x-www-form-urlencoded")
-                .Data("name=" + userName + "&password=" + password)
-                .Timeout(3000)
-                .GetResponse();
+            var response = await request.Post()
+                                        .ContentType("application/x-www-form-urlencoded")
+                                        .Timeout(3000)
+                                        .Data("name=" + userName + "&password=" + password)
+                                        .GetResponse();
+
             return response.StatusCode == HttpStatusCode.OK;
         }
-        public Cookie GetSession() {
+        public async Task<Cookie> GetSession() {
             var authCookie = cookiestore["authcookie"];
 
             if (authCookie != null)
@@ -43,16 +45,18 @@ namespace LoveSeat.Support
             if (string.IsNullOrEmpty(username)) return null;
             var request = new CouchRequest(baseUri + "_session");
             request.GetRequest().Headers.Add("Authorization:Basic " + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(username + ":" + password)));
-            var response = request.Post()
-                .Form()
-                .Data("name=" + username + "&password=" + password)
-                .GetResponse();
+            var response = await request.Post()
+                                        .Form()
+                                        .Data("name=" + username + "&password=" + password)
+                                        .GetResponse();
 
             var header = response.Headers.Get("Set-Cookie");
             if (header != null) {
                 var parts = header.Split(';')[0].Split('=');
-                authCookie = new Cookie(parts[0], parts[1]);
-                authCookie.Domain = response.Server;
+                authCookie = new Cookie(parts[0], parts[1])
+                    {
+                        Domain = response.Server
+                    };
                 cookiestore.Add("authcookie", authCookie, TimeSpan.FromMinutes(9));
             }
             return authCookie;
@@ -63,17 +67,17 @@ namespace LoveSeat.Support
             timeout = timeoutMs;
         }
 
-        protected CouchRequest GetRequest(string uri)
+        protected async Task<CouchRequest> GetRequest(string uri)
         {
-            return GetRequest(uri, null);
+            return await GetRequest(uri, null);
         }
 
-        protected CouchRequest GetRequest(string uri, string etag)
+        protected async Task<CouchRequest> GetRequest(string uri, string etag)
         {
             CouchRequest request;
             if (AuthenticationType.Cookie == this.authType)
             {
-                request = new CouchRequest(uri, GetSession(), etag);
+                request = new CouchRequest(uri, await GetSession(), etag);
             }
             else if (AuthenticationType.Basic == this.authType) //Basic Authentication
             {
@@ -81,7 +85,7 @@ namespace LoveSeat.Support
             }
             else //default Cookie
             {
-                request = new CouchRequest(uri, GetSession(), etag);
+                request = new CouchRequest(uri, await GetSession(), etag);
             }
             if (timeout.HasValue) request.Timeout(timeout.Value);
             return request;
