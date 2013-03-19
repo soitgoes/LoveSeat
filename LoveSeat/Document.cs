@@ -101,6 +101,17 @@ namespace LoveSeat
         protected Document()
         {
         }
+
+        public Document(object obj)
+            : base(JObject.FromObject(obj))
+        {
+        }
+        
+        public Document(string json)
+            : base(JObject.Parse(json))
+        {
+        }
+
         public Document(JObject jobj)
             : base(jobj)
         {
@@ -113,10 +124,6 @@ namespace LoveSeat
                 this.Id = tmp.Value<string>();
             if (jobj.TryGetValue("_rev", out tmp))
                 this.Rev = tmp.Value<string>();
-        }
-        public Document(string json)
-            : base(JObject.Parse(json))
-        {
         }
         public bool HasAttachment
         {
