@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using LoveSeat.Interfaces;
@@ -30,8 +29,13 @@ namespace LoveSeat
             Values = new List<Document>();
         }
 
+        public Documents(IEnumerable<Document> values)
+        {
+            Values = values;
+        }
+
         [JsonProperty("docs")]
-        public List<Document> Values { get; set; }
+        public IEnumerable<Document> Values { get; set; }
     }
 
     /// <summary>
