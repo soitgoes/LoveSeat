@@ -20,12 +20,12 @@ namespace LoveSeat.IntegrationTest
 		private const string baseDatabase = "love-seat-test-base";
         private const string replicateDatabase = "love-seat-test-repli";
 
-		private readonly string host = ConfigurationManager.AppSettings["Host"].ToString();
-		private readonly int port = int.Parse(ConfigurationManager.AppSettings["Port"].ToString());
-		private readonly string username = ConfigurationManager.AppSettings["UserName"].ToString();
-		private readonly string password = ConfigurationManager.AppSettings["Password"].ToString();
+		private readonly string host = ConfigurationManager.AppSettings["Host"];
+		private readonly int port = int.Parse(ConfigurationManager.AppSettings["Port"]);
+		private readonly string username = ConfigurationManager.AppSettings["UserName"];
+		private readonly string password = ConfigurationManager.AppSettings["Password"];
 
-		[TestFixtureSetUp]
+		[SetUp]
 		public void Setup()
 		{
 			client = new CouchClient(host, port, username, password, false,AuthenticationType.Cookie);
@@ -38,7 +38,7 @@ namespace LoveSeat.IntegrationTest
                 client.CreateDatabase(replicateDatabase);
             }
 		}
-		[TestFixtureTearDown]
+		[TearDown]
 		public void TearDown()
 		{
             //delete the test database
