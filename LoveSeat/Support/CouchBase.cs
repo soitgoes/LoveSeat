@@ -28,14 +28,15 @@ namespace LoveSeat.Support
             if (!baseUri.Contains("http://"))
                 baseUri = "http://" + baseUri;
             var request = new CouchRequest(baseUri + "/_session");
-            var response = await request.Post()
-                                        .ContentType("application/x-www-form-urlencoded")
-                                        .Timeout(3000)
-                                        .Data("name=" + userName + "&password=" + password)
-                                        .GetResponse()
-                                        .ConfigureAwait(false);
-
-            return response.StatusCode == HttpStatusCode.OK;
+            using (var response = await request.Post()
+                                               .ContentType("application/x-www-form-urlencoded")
+                                               .Timeout(3000)
+                                               .Data("name=" + userName + "&password=" + password)
+                                               .GetResponse()
+                                               .ConfigureAwait(false))
+            {
+                return response.StatusCode == HttpStatusCode.OK;
+            }
         }
         public async Task<Cookie> GetSession() {
             var authCookie = cookiestore["authcookie"];
@@ -46,22 +47,25 @@ namespace LoveSeat.Support
             if (string.IsNullOrEmpty(username)) return null;
             var request = new CouchRequest(baseUri + "_session");
             request.GetRequest().Headers.Add("Authorization:Basic " + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(username + ":" + password)));
-            var response = await request.Post()
-                                        .Form()
-                                        .Data("name=" + username + "&password=" + password)
-                                        .GetResponse()
-                                        .ConfigureAwait(false);
+            using (var response = await request.Post()
+                                               .Form()
+                                               .Data("name=" + username + "&password=" + password)
+                                               .GetResponse()
+                                               .ConfigureAwait(false))
+            {
 
-            var header = response.Headers.Get("Set-Cookie");
-            if (header != null) {
-                var parts = header.Split(';')[0].Split('=');
-                authCookie = new Cookie(parts[0], parts[1])
-                    {
-                        Domain = response.Server
-                    };
-                cookiestore.Add("authcookie", authCookie, TimeSpan.FromMinutes(9));
+                var header = response.Headers.Get("Set-Cookie");
+                if (header != null)
+                {
+                    var parts = header.Split(';')[0].Split('=');
+                    authCookie = new Cookie(parts[0], parts[1])
+                        {
+                            Domain = response.Server
+                        };
+                    cookiestore.Add("authcookie", authCookie, TimeSpan.FromMinutes(9));
+                }
+                return authCookie;
             }
-            return authCookie;
         }
 
         public void SetTimeout(int timeoutMs)
