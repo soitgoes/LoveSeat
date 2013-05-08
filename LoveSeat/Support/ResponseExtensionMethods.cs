@@ -16,19 +16,25 @@ namespace LoveSeat.Support
         {
             using (var stream = response.GetResponseStream())
 			{
-				using (var streamReader = new StreamReader(stream))
-				{
-					var result = streamReader.ReadToEnd();
-                    if (string.IsNullOrEmpty(result)) return null;
-					return result;
-				}
+			    if (stream != null)
+			    {
+			        using (var streamReader = new StreamReader(stream))
+			        {
+			            var result = streamReader.ReadToEnd();
+			            return string.IsNullOrEmpty(result) ? null : result;
+			        }
+			    }
 			}
+
+            return null;
         }
+
 		public static CouchResponse GetJObject(this HttpWebResponse response)
 		{
-            var resp = new CouchResponse(JObject.Parse(response.GetResponseString()));
-		    resp.StatusCode = (int)response.StatusCode;
-		    return resp;
+            return new CouchResponse(JObject.Parse(response.GetResponseString()))
+            {
+                StatusCode = (int) response.StatusCode
+            };
 		}
 	}
 }
