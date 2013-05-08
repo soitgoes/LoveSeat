@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using LoveSeat.Interfaces;
@@ -30,8 +29,13 @@ namespace LoveSeat
             Values = new List<Document>();
         }
 
+        public Documents(IEnumerable<Document> values)
+        {
+            Values = values;
+        }
+
         [JsonProperty("docs")]
-        public List<Document> Values { get; set; }
+        public IEnumerable<Document> Values { get; set; }
     }
 
     /// <summary>
@@ -92,11 +96,22 @@ namespace LoveSeat
             set { this["_rev"] = value; }
         }
 
-        public string Type { get; private set; }
+        public new string Type { get; private set; }
 
         protected Document()
         {
         }
+
+        public Document(object obj)
+            : base(JObject.FromObject(obj))
+        {
+        }
+        
+        public Document(string json)
+            : base(JObject.Parse(json))
+        {
+        }
+
         public Document(JObject jobj)
             : base(jobj)
         {
@@ -109,10 +124,6 @@ namespace LoveSeat
                 this.Id = tmp.Value<string>();
             if (jobj.TryGetValue("_rev", out tmp))
                 this.Rev = tmp.Value<string>();
-        }
-        public Document(string json)
-            : base(JObject.Parse(json))
-        {
         }
         public bool HasAttachment
         {

@@ -11,8 +11,8 @@ able to utilize the full featureset of CouchDb.
 Tested compatibility
 ====================
 
- * CouchDB 1.0.1
- * .NET Framework 3.5, 4.0 or Mono 2.9 (compiled master branch from Nov 20 2010), and MonoDroid
+ * CouchDB 1.2
+ * .NET Framework 4.5
 
 
 LoveSeat usage
@@ -22,28 +22,28 @@ LoveSeat usage
 
     // assumes localhost:5984 with no credentials if constructor is left blank
     var client = new CouchClient();
-    var db= client.GetDatabase("Northwind");
+    var db = client.GetDatabase("Northwind");
     
     // set default design doc (not required)
     db.SetDefaultDesignDoc("docs"); 
     
     // get document by ID
-    Document myDoc = db.GetDocument("12345");
+    Document myDoc = await db.GetDocument("12345");
     
     // get document by ID (strongly typed POCO version)
-    MyObject myObj = db.GetDocument<MyObject>("12345"); 
+    MyObject myObj = await db.GetDocument<MyObject>("12345"); 
 
 **Simple view results**
 
     // get view results
-    var results = db.View<MyObject>("view_name");
+    var results = await db.View<MyObject>("view_name");
     
     // get view results with parameters
     var options = new ViewOptions();
     options.StartKey.Add("Atlanta");
     options.EndKey.Add("Washington");
     
-    var results = db.View<MyObject>("view_name", options);
+    var results = await db.View<MyObject>("view_name", options);
     
     // loop through strongly typed results
     foreach (var item in results.Items){ 
@@ -59,7 +59,7 @@ LoveSeat usage
     // generate ["foo",{},{}] endkey parameter
     options.EndKey.Add("foo", CouchValue.Empty, CouchValue.Empty);
     
-    var results = db.View<MyObject>("view_name", options);
+    var results = await db.View<MyObject>("view_name", options);
     
     // loop through strongly typed results
     foreach (var item in results.Items){ 
@@ -85,7 +85,7 @@ Assuming that view keys have complex structure, for example:
     options.StartKey.Add(new JRaw("[\"johny\",[\"work\"]"));
     options.EndKey.Add(new JRaw("[\"johny\",[\"work\",{}]]"));  
     
-    var results = db.View<MyObject>("view_name", options);
+    var results = await db.View<MyObject>("view_name", options);
     
     foreach (var item in results.Items){ 
         // do something 
@@ -97,7 +97,7 @@ contains "work".
 
 **Get the results of a List**
 
-    var results = db.List("list_name")
+    var results = await db.List("list_name")
 
 LoveSeat supports replication and user management off of the CouchClient as well.  Enjoy!
 

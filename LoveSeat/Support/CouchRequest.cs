@@ -1,6 +1,7 @@
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json.Linq;
 
@@ -53,7 +54,7 @@ namespace LoveSeat.Support {
             string userNAndPassword = username + ":" + password;
 
             // Base64 encode
-            string b64 = System.Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(userNAndPassword));
+            string b64 = System.Convert.ToBase64String(Encoding.ASCII.GetBytes(userNAndPassword));
 
             authValue = authValue + b64;
 
@@ -84,9 +85,9 @@ namespace LoveSeat.Support {
             request.Method = "DELETE";
             return this;
         }
-        public CouchRequest Data(Stream data)
+        public async Task<CouchRequest> Data(Stream data)
         {
-            using (var body = request.GetRequestStream())
+            using (var body = await request.GetRequestStreamAsync().ConfigureAwait(false))
             {
                 var buffer = new byte[STREAM_BUFFER_SIZE];
                 var bytesRead = 0;
@@ -138,10 +139,10 @@ namespace LoveSeat.Support {
             return request;
         }
 
-        public HttpWebResponse GetResponse() {
+        public async Task<HttpWebResponse> GetResponse() {
             bool failedAuth = false;
             try {
-                var response = (HttpWebResponse)request.GetResponse();
+                var response = (HttpWebResponse) await request.GetResponseAsync().ConfigureAwait(false);
                 string msg = "";
                 if (isAuthenticateOrAuthorized(response, ref msg) == false) {
                     failedAuth = true;
