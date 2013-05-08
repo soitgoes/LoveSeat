@@ -16,8 +16,8 @@ namespace LoveSeat.Repositories
                 item.CreatedAt = DateTime.Now;
             item.LastModifiedAt = DateTime.Now;
             if (item.Id == string.Empty)
-                item.Id = Guid.NewGuid().ToString();    
-            await base.Save(item);
+                item.Id = Guid.NewGuid().ToString();
+            await base.Save(item).ConfigureAwait(false);
         }
     }
 }

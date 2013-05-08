@@ -32,7 +32,8 @@ namespace LoveSeat.Support
                                         .ContentType("application/x-www-form-urlencoded")
                                         .Timeout(3000)
                                         .Data("name=" + userName + "&password=" + password)
-                                        .GetResponse();
+                                        .GetResponse()
+                                        .ConfigureAwait(false);
 
             return response.StatusCode == HttpStatusCode.OK;
         }
@@ -48,7 +49,8 @@ namespace LoveSeat.Support
             var response = await request.Post()
                                         .Form()
                                         .Data("name=" + username + "&password=" + password)
-                                        .GetResponse();
+                                        .GetResponse()
+                                        .ConfigureAwait(false);
 
             var header = response.Headers.Get("Set-Cookie");
             if (header != null) {
@@ -69,7 +71,7 @@ namespace LoveSeat.Support
 
         protected async Task<CouchRequest> GetRequest(string uri)
         {
-            return await GetRequest(uri, null);
+            return await GetRequest(uri, null).ConfigureAwait(false);
         }
 
         protected async Task<CouchRequest> GetRequest(string uri, string etag)
@@ -77,7 +79,7 @@ namespace LoveSeat.Support
             CouchRequest request;
             if (AuthenticationType.Cookie == this.authType)
             {
-                request = new CouchRequest(uri, await GetSession(), etag);
+                request = new CouchRequest(uri, await GetSession().ConfigureAwait(false), etag);
             }
             else if (AuthenticationType.Basic == this.authType) //Basic Authentication
             {
@@ -85,7 +87,7 @@ namespace LoveSeat.Support
             }
             else //default Cookie
             {
-                request = new CouchRequest(uri, await GetSession(), etag);
+                request = new CouchRequest(uri, await GetSession().ConfigureAwait(false), etag);
             }
             if (timeout.HasValue) request.Timeout(timeout.Value);
             return request;

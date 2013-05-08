@@ -17,12 +17,12 @@ namespace LoveSeat.Repositories
             if (item.Id == "")
                 item.Id = Guid.NewGuid().ToString();
             var doc = new Document<T>(item);
-            await db.SaveDocument(doc);
+            await db.SaveDocument(doc).ConfigureAwait(false);
         }
 
         public async virtual Task<T> Find(Guid id)
         {
-            return await db.GetDocument<T>(id.ToString());
+            return await db.GetDocument<T>(id.ToString()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace LoveSeat.Repositories
         /// <param name="obj"></param>
         public async virtual Task Delete(T obj)
         {
-            await db.DeleteDocument(obj.Id, obj.Rev);
+            await db.DeleteDocument(obj.Id, obj.Rev).ConfigureAwait(false);
         }
     }
 }

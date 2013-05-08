@@ -37,8 +37,8 @@ namespace LoveSeat
             if (jobj.Value<object>("_rev") == null)
                 jobj.Remove("_rev");
 
-            var request = await GetRequest(databaseBaseUri + "/" + id);
-            var resp = await request.Put().Form().Data(jobj.ToString(Formatting.None)).GetResponse();
+            var request = await GetRequest(databaseBaseUri + "/" + id).ConfigureAwait(false);
+            var resp = await request.Put().Form().Data(jobj.ToString(Formatting.None)).GetResponse().ConfigureAwait(false);
             return resp.GetJObject();
         }
 
@@ -47,9 +47,9 @@ namespace LoveSeat
             var serialized = ObjectSerializer.Serialize(doc);
             if (doc.Id != null)
             {
-                return await CreateDocument(doc.Id, serialized);
+                return await CreateDocument(doc.Id, serialized).ConfigureAwait(false);
             }
-            return await CreateDocument(serialized);
+            return await CreateDocument(serialized).ConfigureAwait(false);
         }
         /// <summary>
         /// Creates a document when you intend for Couch to generate the id for you.
@@ -59,9 +59,9 @@ namespace LoveSeat
         public async Task<CouchResponse> CreateDocument(string jsonForDocument)
         {
             JObject.Parse(jsonForDocument); //to make sure it's valid json
-                
-            var request = await GetRequest(databaseBaseUri + "/");
-            var response = await request.Post().Json().Data(jsonForDocument).GetResponse();
+
+            var request = await GetRequest(databaseBaseUri + "/").ConfigureAwait(false);
+            var response = await request.Post().Json().Data(jsonForDocument).GetResponse().ConfigureAwait(false);
 
             return response.GetJObject();
         }        
@@ -70,8 +70,8 @@ namespace LoveSeat
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(rev))
                 throw new Exception("Both id and rev must have a value that is not empty");
 
-            var request = await GetRequest(databaseBaseUri + "/" + id + "?rev=" + rev);
-            var response = await request.Delete().Form().GetResponse();
+            var request = await GetRequest(databaseBaseUri + "/" + id + "?rev=" + rev).ConfigureAwait(false);
+            var response = await request.Delete().Form().GetResponse().ConfigureAwait(false);
 
             return response.GetJObject();
         }
@@ -82,8 +82,8 @@ namespace LoveSeat
         /// <returns></returns>
         public async Task<T> GetDocument<T>(string id, bool attachments, IObjectSerializer objectSerializer)
         {
-            var request = await GetRequest(String.Format("{0}/{1}{2}", databaseBaseUri, id, attachments ? "?attachments=true" : string.Empty));
-            var response = await request.Get().Json().GetResponse();
+            var request = await GetRequest(String.Format("{0}/{1}{2}", databaseBaseUri, id, attachments ? "?attachments=true" : string.Empty)).ConfigureAwait(false);
+            var response = await request.Get().Json().GetResponse().ConfigureAwait(false);
 
             if (response.StatusCode == HttpStatusCode.NotFound) return default(T);
 
@@ -91,43 +91,43 @@ namespace LoveSeat
         }
         public async Task<T> GetDocument<T>(string id, IObjectSerializer objectSerializer)
         {
-            return await GetDocument<T>(id, false, objectSerializer);
+            return await GetDocument<T>(id, false, objectSerializer).ConfigureAwait(false);
         }
         public async Task<T> GetDocument<T>(string id, bool attachments)
         {
-            return await GetDocument<T>(id, attachments, ObjectSerializer);
+            return await GetDocument<T>(id, attachments, ObjectSerializer).ConfigureAwait(false);
         }
         public async Task<T> GetDocument<T>(string id)
         {
-            return await GetDocument<T>(id, false);
+            return await GetDocument<T>(id, false).ConfigureAwait(false);
         }
         public async Task<T> GetDocument<T>(Guid id, bool attachments, IObjectSerializer objectSerializer)
         {
-            return await GetDocument<T>(id.ToString(), attachments, objectSerializer);
+            return await GetDocument<T>(id.ToString(), attachments, objectSerializer).ConfigureAwait(false);
         }
         public async Task<T> GetDocument<T>(Guid id, IObjectSerializer objectSerializer)
         {
-            return await GetDocument<T>(id, false, objectSerializer);
+            return await GetDocument<T>(id, false, objectSerializer).ConfigureAwait(false);
         }
         public async Task<T> GetDocument<T>(Guid id, bool attachments)
         {
-            return await GetDocument<T>(id.ToString(), attachments);
+            return await GetDocument<T>(id.ToString(), attachments).ConfigureAwait(false);
         }
         public async Task<T> GetDocument<T>(Guid id)
         {
-            return await GetDocument<T>(id, false);
+            return await GetDocument<T>(id, false).ConfigureAwait(false);
         }
         public async Task<Document> GetDocument(string id, bool attachments)
         {
-            var request = await GetRequest(String.Format("{0}/{1}{2}", databaseBaseUri, id, attachments ? "?attachments=true" : string.Empty));
-            var response = await request.Get().Json().GetResponse();
+            var request = await GetRequest(String.Format("{0}/{1}{2}", databaseBaseUri, id, attachments ? "?attachments=true" : string.Empty)).ConfigureAwait(false);
+            var response = await request.Get().Json().GetResponse().ConfigureAwait(false);
 
             if (response.StatusCode == HttpStatusCode.NotFound) return null;
             return response.GetCouchDocument();
         }
         public async Task<Document> GetDocument(string id)
         {
-            return await GetDocument(id, false);
+            return await GetDocument(id, false).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -140,9 +140,9 @@ namespace LoveSeat
         {
             // serialize list of keys to json
             string data = JsonConvert.SerializeObject(keyLst);
-            
-            var request = await GetRequest(databaseBaseUri + "/_all_docs");
-            var response = await request.Post().Json().Data(data).GetResponse();
+
+            var request = await GetRequest(databaseBaseUri + "/_all_docs").ConfigureAwait(false);
+            var response = await request.Post().Json().Data(data).GetResponse().ConfigureAwait(false);
 
             if (response == null) return null;
 
@@ -162,15 +162,15 @@ namespace LoveSeat
         {
             string uri = databaseBaseUri + "/_bulk_docs";
 
-            string data = Newtonsoft.Json.JsonConvert.SerializeObject(docs);
+            string data = JsonConvert.SerializeObject(docs);
 
             if (all_or_nothing == true)
             {
                 uri = uri + "?all_or_nothing=true";
             }
 
-            var request = await GetRequest(uri);
-            var response = await request.Post().Json().Data(data).GetResponse();
+            var request = await GetRequest(uri).ConfigureAwait(false);
+            var response = await request.Post().Json().Data(data).GetResponse().ConfigureAwait(false);
 
             if (response == null)
             {
@@ -199,8 +199,8 @@ namespace LoveSeat
         /// <param name="contentType">Content Type must be specifed</param>	
         public async Task<CouchResponse> AddAttachment(string id, byte[] attachment, string filename, string contentType)
         {
-            var doc = await GetDocument(id);
-            return await AddAttachment(id, doc.Rev, attachment, filename, contentType);
+            var doc = await GetDocument(id).ConfigureAwait(false);
+            return await AddAttachment(id, doc.Rev, attachment, filename, contentType).ConfigureAwait(false);
         }
         /// <summary>
         /// Adds an attachment to the documnet.  Rev must be specified on this signature.  If you want to attach no matter what then use the method without the rev param
@@ -213,8 +213,8 @@ namespace LoveSeat
         /// <returns></returns>
         public async Task<CouchResponse> AddAttachment(string id, string rev, byte[] attachment, string filename, string contentType)
         {
-            var request = await GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, filename, rev));
-            var response = await request.Put().ContentType(contentType).Data(attachment).GetResponse();
+            var request = await GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, filename, rev)).ConfigureAwait(false);
+            var response = await request.Put().ContentType(contentType).Data(attachment).GetResponse().ConfigureAwait(false);
 
             return response.GetJObject();
         }
@@ -226,8 +226,8 @@ namespace LoveSeat
         /// <param name="contentType">Content Type must be specifed</param>	
         public async Task<CouchResponse> AddAttachment(string id, Stream attachmentStream, string filename, string contentType)
         {
-            var doc = await GetDocument(id);
-            return await AddAttachment(id, doc.Rev, attachmentStream, filename, contentType);
+            var doc = await GetDocument(id).ConfigureAwait(false);
+            return await AddAttachment(id, doc.Rev, attachmentStream, filename, contentType).ConfigureAwait(false);
         }
         /// <summary>
         /// Adds an attachment to the documnet.  Rev must be specified on this signature.  If you want to attach no matter what then use the method without the rev param
@@ -240,54 +240,54 @@ namespace LoveSeat
         /// <returns></returns>
         public async Task<CouchResponse> AddAttachment(string id, string rev, Stream attachmentStream, string filename, string contentType)
         {
-            var request = await GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, filename, rev));
-            request = await request.Put().ContentType(contentType).Data(attachmentStream);
+            var request = await GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, filename, rev)).ConfigureAwait(false);
+            request = await request.Put().ContentType(contentType).Data(attachmentStream).ConfigureAwait(false);
 
-            var response = await request.GetResponse();
+            var response = await request.GetResponse().ConfigureAwait(false);
 
             return response.GetJObject();
         }
 
         public async Task<Stream> GetAttachmentStream(Document doc, string attachmentName)
         {
-            return await GetAttachmentStream(doc.Id, doc.Rev, attachmentName);
+            return await GetAttachmentStream(doc.Id, doc.Rev, attachmentName).ConfigureAwait(false);
         }
 
         public async Task<Stream> GetAttachmentStream(string docId, string rev, string attachmentName)
         {
-            var request = await GetRequest(string.Format("{0}/{1}/{2}", databaseBaseUri, docId, HttpUtility.UrlEncode(attachmentName)));
-            var response = await request.Get().GetResponse();
+            var request = await GetRequest(string.Format("{0}/{1}/{2}", databaseBaseUri, docId, HttpUtility.UrlEncode(attachmentName))).ConfigureAwait(false);
+            var response = await request.Get().GetResponse().ConfigureAwait(false);
             
             return response.GetResponseStream();
         }
 
         public async Task<Stream> GetAttachmentStream(string docId, string attachmentName)
         {
-            var doc = await GetDocument(docId);
+            var doc = await GetDocument(docId).ConfigureAwait(false);
             if (doc == null) return null;
-            return await GetAttachmentStream(docId, doc.Rev, attachmentName);
+            return await GetAttachmentStream(docId, doc.Rev, attachmentName).ConfigureAwait(false);
         }
 
         public async Task<CouchResponse> DeleteAttachment(string id, string rev, string attachmentName)
         {
-            var request = await GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, attachmentName, rev));
-            var response = await request.Json().Delete().GetResponse();
+            var request = await GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, attachmentName, rev)).ConfigureAwait(false);
+            var response = await request.Json().Delete().GetResponse().ConfigureAwait(false);
             
             return response.GetJObject();
         }
         public async Task<CouchResponse> DeleteAttachment(string id, string attachmentName)
         {
-            var doc = await GetDocument(id);
-            return await DeleteAttachment(doc.Id, doc.Rev, attachmentName);
+            var doc = await GetDocument(id).ConfigureAwait(false);
+            return await DeleteAttachment(doc.Id, doc.Rev, attachmentName).ConfigureAwait(false);
         }
 
         public async Task<CouchResponse> SaveDocument(Document document)
         {
             if (document.Rev == null)
-                return await CreateDocument(document);
-                    
-            var request = await GetRequest(string.Format("{0}/{1}?rev={2}", databaseBaseUri, document.Id, document.Rev));
-            var response = await request.Put().Form().Data(document).GetResponse();
+                return await CreateDocument(document).ConfigureAwait(false);
+
+            var request = await GetRequest(string.Format("{0}/{1}?rev={2}", databaseBaseUri, document.Id, document.Rev)).ConfigureAwait(false);
+            var response = await request.Put().Form().Data(document).GetResponse().ConfigureAwait(false);
 
             return response.GetJObject();
         }
@@ -300,7 +300,7 @@ namespace LoveSeat
         /// <returns></returns>
         public async Task<ViewResult<T>> View<T>(string viewName, string designDoc)
         {
-            return await View<T>(viewName, null, designDoc);
+            return await View<T>(viewName, null, designDoc).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -312,12 +312,12 @@ namespace LoveSeat
         public async Task<ViewResult<T>> View<T>(string viewName)
         {
             ThrowDesignDocException();
-            return await View<T>(viewName, defaultDesignDoc);
+            return await View<T>(viewName, defaultDesignDoc).ConfigureAwait(false);
         }
         public async Task<ViewResult> View(string viewName)
         {
             ThrowDesignDocException();
-            return await View(viewName, new ViewOptions());
+            return await View(viewName, new ViewOptions()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -326,13 +326,13 @@ namespace LoveSeat
         /// <returns>JSON success statement if the response code is Accepted</returns>
         public async Task<JObject> ViewCleanup()
         {
-            return await DoCommand("_view_cleanup");
+            return await DoCommand("_view_cleanup").ConfigureAwait(false);
         }
 
         private async Task<JObject> DoCommand(string command)
         {
-            var request = await GetRequest(string.Format("{0}/{1}", databaseBaseUri, command));
-            var response = await request.Post().Json().GetResponse();
+            var request = await GetRequest(string.Format("{0}/{1}", databaseBaseUri, command)).ConfigureAwait(false);
+            var response = await request.Post().Json().GetResponse().ConfigureAwait(false);
 
             return CheckAccepted(response);
         }
@@ -343,7 +343,7 @@ namespace LoveSeat
         /// <returns></returns>
         public async Task<JObject> Compact()
         {
-            return await DoCommand("_compact");
+            return await DoCommand("_compact").ConfigureAwait(false);
         }
 
         /// <summary>
@@ -354,7 +354,7 @@ namespace LoveSeat
         /// <remarks>Requires admin permissions.</remarks>
         public async Task<JObject> Compact(string designDoc)
         {
-            return await DoCommand("_compact/" + designDoc);
+            return await DoCommand("_compact/" + designDoc).ConfigureAwait(false);
         }
 
         private static JObject CheckAccepted(HttpWebResponse resp)
@@ -375,7 +375,7 @@ namespace LoveSeat
         public async Task<string> Show(string showName, string docId)
         {
             ThrowDesignDocException();
-            return await Show(showName, docId,  defaultDesignDoc);
+            return await Show(showName, docId, defaultDesignDoc).ConfigureAwait(false);
         }
 
         private void ThrowDesignDocException()
@@ -388,23 +388,23 @@ namespace LoveSeat
         {
             //TODO:  add in Etag support for Shows
             var uri = string.Format("{0}/_design/{1}/_show/{2}/{3}", databaseBaseUri, designDoc, showName, docId);
-            var request = await GetRequest(uri);
-            var response = await request.GetResponse();
+            var request = await GetRequest(uri).ConfigureAwait(false);
+            var response = await request.GetResponse().ConfigureAwait(false);
             
             return response.GetResponseString();
         }
         public async Task<IListResult> List(string listName, string viewName, ViewOptions options, string designDoc)
         {            
 			var uri = string.Format("{0}/_design/{1}/_list/{2}/{3}{4}", databaseBaseUri, designDoc, listName, viewName, options.ToString());
-            
-            var request = await GetRequest(uri);
-            return new ListResult(request.GetRequest(), await request.GetResponse());
+
+            var request = await GetRequest(uri).ConfigureAwait(false);
+            return new ListResult(request.GetRequest(), await request.GetResponse().ConfigureAwait(false));
         }
 
         public async Task<IListResult> List(string listName, string viewName, ViewOptions options)
         {
             ThrowDesignDocException();
-            return await List(listName, viewName, options, defaultDesignDoc);
+            return await List(listName, viewName, options, defaultDesignDoc).ConfigureAwait(false);
         }
 
         public void SetDefaultDesignDoc(string designDoc)
@@ -413,8 +413,8 @@ namespace LoveSeat
         }
 
         private async Task<ViewResult<T>> ProcessGenericResults<T>(string uri, ViewOptions options) {
-            var req = await GetRequest(options, uri);
-            var resp = await req.GetResponse();
+            var req = await GetRequest(options, uri).ConfigureAwait(false);
+            var resp = await req.GetResponse().ConfigureAwait(false);
             if (resp.StatusCode == HttpStatusCode.BadRequest) {
                 throw new CouchException(req.GetRequest(), resp, resp.GetResponseString() + "\n" + req.GetRequest().RequestUri);
             }
@@ -437,7 +437,7 @@ namespace LoveSeat
         public async Task<ViewResult<T>> View<T>(string viewName, ViewOptions options, string designDoc)
         {
             var uri = string.Format("{0}/_design/{1}/_view/{2}", databaseBaseUri, designDoc, viewName);
-            return await ProcessGenericResults<T>(uri, options);
+            return await ProcessGenericResults<T>(uri, options).ConfigureAwait(false);
         }
         /// <summary>
         /// Allows you to specify options and uses the defaultDesignDoc Specified.
@@ -449,24 +449,24 @@ namespace LoveSeat
         public async Task<ViewResult<T>> View<T>(string viewName, ViewOptions options)
         {
             ThrowDesignDocException();
-             return await View<T>(viewName, options, defaultDesignDoc);
+            return await View<T>(viewName, options, defaultDesignDoc).ConfigureAwait(false);
         }
 
         public async Task<ViewResult> View(string viewName, ViewOptions options, string designDoc)
         {
             var uri = string.Format("{0}/_design/{1}/_view/{2}", databaseBaseUri, designDoc, viewName);
-            return await ProcessResults(uri, options);
+            return await ProcessResults(uri, options).ConfigureAwait(false);
         }
 
         public async Task<ViewResult> View(string viewName, ViewOptions options)
         {
             ThrowDesignDocException();
-            return await View(viewName, options, this.defaultDesignDoc);
+            return await View(viewName, options, this.defaultDesignDoc).ConfigureAwait(false);
         }
         private async Task<ViewResult> ProcessResults(string uri, ViewOptions options)
         {
-            var req = await GetRequest(options, uri);
-            var resp = await req.GetResponse();
+            var req = await GetRequest(options, uri).ConfigureAwait(false);
+            var resp = await req.GetResponse().ConfigureAwait(false);
             return new ViewResult(resp, req.GetRequest());
         }
         
@@ -474,8 +474,8 @@ namespace LoveSeat
         {
             if (options != null)
                 uri +=  options.ToString();
-            
-            var request = await GetRequest(uri, options == null ? null : options.Etag);
+
+            var request = await GetRequest(uri, options == null ? null : options.Etag).ConfigureAwait(false);
             return request.Get().Json();
         }
 
@@ -487,12 +487,12 @@ namespace LoveSeat
         public async Task<ViewResult> GetAllDocuments()
         {
             var uri = databaseBaseUri + "/_all_docs";
-            return await ProcessResults(uri, null);
+            return await ProcessResults(uri, null).ConfigureAwait(false);
         }
         public async Task<ViewResult> GetAllDocuments(ViewOptions options)
         {
             var uri = databaseBaseUri + "/_all_docs";
-            return await ProcessResults(uri, options);
+            return await ProcessResults(uri, options).ConfigureAwait(false);
         }
 
 
@@ -501,8 +501,8 @@ namespace LoveSeat
         #region Security
         public async Task<SecurityDocument> getSecurityConfiguration()
         {
-            var request = await GetRequest(databaseBaseUri + "/_security");
-            var response = await request.Get().Json().GetResponse();
+            var request = await GetRequest(databaseBaseUri + "/_security").ConfigureAwait(false);
+            var response = await request.Get().Json().GetResponse().ConfigureAwait(false);
             
             var docResult = response.GetJObject();
 
@@ -518,8 +518,8 @@ namespace LoveSeat
             // serialize SecurityDocument to json
             string data = JsonConvert.SerializeObject(sDoc);
 
-            var request = await GetRequest(databaseBaseUri + "/_security");
-            var result = await request.Put().Json().Data(data).GetResponse();
+            var request = await GetRequest(databaseBaseUri + "/_security").ConfigureAwait(false);
+            var result = await request.Put().Json().Data(data).GetResponse().ConfigureAwait(false);
 
             if (result.StatusCode != HttpStatusCode.OK) //Check if okay
             {
