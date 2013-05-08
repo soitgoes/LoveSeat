@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Text;
 using LoveSeat.Interfaces;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 namespace LoveSeat
 {
@@ -47,55 +44,57 @@ namespace LoveSeat
 
         public  override string ToString()
         {
-            string result = "";
+            var result = new StringBuilder();
+
             if ((Key != null) && (Key.Count > 0))
-                result += "&key=" + Key.ToString();
+                result.AppendFormat("&key={0}", Key.ToString());
             if (Keys != null)
-                result += "&keys=[" + String.Join(",", Keys.Select(k => k.ToString()).ToArray()) + "]";
+                result.AppendFormat("&keys=[{0}]", String.Join(",", Keys.Select(k => k.ToString()).ToArray()));
             if ((StartKey != null) && (StartKey.Count > 0))
                 if((StartKey.Count == 1) && (EndKey.Count > 1))
-                    result += "&startkey=[" + StartKey.ToString() + "]";
+                    result.AppendFormat("&startkey=[{0}]", StartKey.ToString());
                 else
-                    result += "&startkey=" + StartKey.ToString();
+                    result.AppendFormat("&startkey={0}", StartKey.ToString());
             if ((EndKey != null) && (EndKey.Count > 0))
-                result += "&endkey=" + EndKey.ToString();
+                result.AppendFormat("&endkey={0}", EndKey.ToString());
             if (Limit.HasValue)
-                result += "&limit=" + Limit.Value.ToString();
+                result.AppendFormat("&limit={0}", Limit.Value.ToString());
             if (Skip.HasValue)
-                result += "&skip=" + Skip.Value.ToString();
+                result.AppendFormat("&skip={0}", Skip.Value.ToString());
             if (Reduce.HasValue)
-                result += "&reduce=" + Reduce.Value.ToString().ToLower();
+                result.AppendFormat("&reduce={0}", Reduce.Value.ToString().ToLowerInvariant());
             if (Group.HasValue)
-                result += "&group=" + Group.Value.ToString().ToLower();
+                result.AppendFormat("&group={0}", Group.Value.ToString().ToLowerInvariant());
             if (IncludeDocs.HasValue)
-                result += "&include_docs=" + IncludeDocs.Value.ToString().ToLower();
+                result.AppendFormat("&include_docs={0}", IncludeDocs.Value.ToString().ToLowerInvariant());
             if (InclusiveEnd.HasValue)
-                result += "&inclusive_end=" + InclusiveEnd.Value.ToString().ToLower();
+                result.AppendFormat("&inclusive_end={0}", InclusiveEnd.Value.ToString().ToLowerInvariant());
             if (GroupLevel.HasValue)
-                result += "&group_level=" + GroupLevel.Value.ToString();
+                result.AppendFormat("&group_level={0}", GroupLevel.Value.ToString());
             if (Descending.HasValue)
-                result += "&descending=" + Descending.Value.ToString().ToLower();
+                result.AppendFormat("&descending={0}", Descending.Value.ToString().ToLowerInvariant());
             if (Stale.HasValue && Stale.Value)
             {
                 if(!string.IsNullOrEmpty(StaleOption))
                 {
-                    if (StaleOption.ToLower() == "ok")
-                        result += "&stale=ok";
-                    else if (StaleOption.ToLower() == "update_after")
-                        result += "&stale=update_after";
+                    if (StaleOption.ToLowerInvariant() == "ok")
+                        result.Append("&stale=ok");
+                    else if (StaleOption.ToLowerInvariant() == "update_after")
+                        result.Append("&stale=update_after");
                     else
                         throw new ArgumentException("Invalid StaleOption provided as a CouchDB ViewOption - as of v 1.1.0, valid options include 'ok' and 'update_after'.");
                 }
                 else
                 {
-                    result += "&stale=ok";
+                    result.Append("&stale=ok");
                 }
             }
             if (!string.IsNullOrEmpty(StartKeyDocId))
-                result += "&startkey_docid=" + StartKeyDocId;
+                result.AppendFormat("&startkey_docid={0}", StartKeyDocId);
             if (!string.IsNullOrEmpty(EndKeyDocId))
-                result += "&endkey_docid=" + EndKeyDocId;
-            return result.Length < 1 ? "" :  "?" + result.Substring(1);
+                result.AppendFormat("&endkey_docid={0}", EndKeyDocId);
+
+            return result.Length < 1 ? "" :  "?" + result.ToString().Substring(1);
         }
     }
    
