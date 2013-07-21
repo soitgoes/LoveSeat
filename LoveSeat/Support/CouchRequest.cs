@@ -49,15 +49,18 @@ namespace LoveSeat.Support {
             request.Headers.Clear(); //important
 
             // Deal with Authorization Header
-            string authValue = "Basic ";
-            string userNAndPassword = username + ":" + password;
+            if (username != null) {
+                string authValue = "Basic ";
+                string userNAndPassword = username + ":" + password;
 
-            // Base64 encode
-            string b64 = System.Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(userNAndPassword));
+                // Base64 encode
+                string b64 = System.Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(userNAndPassword));
 
-            authValue = authValue + b64;
+                authValue = authValue + b64;
 
-            request.Headers.Add("Authorization", authValue);
+                request.Headers.Add("Authorization", authValue);
+            }
+
             request.Headers.Add("Accept-Charset", "utf-8");
             request.Headers.Add("Accept-Language", "en-us");
             request.Referer = uri;
