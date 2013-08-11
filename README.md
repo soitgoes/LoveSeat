@@ -3,14 +3,16 @@ LoveSeat
 
 Love Seat is a simply architected [CouchDB](http://couchdb.apache.org/) C# client with the 
 intent to abstract away just enough so that it's easy to use, but not enough so that you 
-don't know what's going on.
+don't know what's going on.  LoveSeat will not introduce unneeded dependancies and will 
+attempt to remove programmer burden while leaving you close enough to the metal that you are 
+able to utilize the full featureset of CouchDb.
 
 
 Tested compatibility
 ====================
 
  * CouchDB 1.0.1
- * .NET Framework 4.0 or Mono 2.9 (compiled master branch from Nov 20 2010)
+ * .NET Framework 3.5, 4.0 or Mono 2.9 (compiled master branch from Nov 20 2010), and MonoDroid
 
 
 LoveSeat usage

@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Web;
@@ -7,6 +8,7 @@ namespace LoveSeat.Support {
     public class CouchRequest {
         private const string INVALID_USERNAME_OR_PASSWORD = "reason=Name or password is incorrect";
         private const string NOT_AUTHORIZED = "reason=You are not authorized to access this db.";
+        private const int STREAM_BUFFER_SIZE = 4096;
 
         private readonly HttpWebRequest request;
         public CouchRequest(string uri)
@@ -32,7 +34,7 @@ namespace LoveSeat.Support {
             request.KeepAlive = true;
             if (authCookie != null)
                 request.Headers.Add("Cookie", "AuthSession=" + authCookie.Value);
-            request.Timeout = Timeout.HasValue ? Timeout.Value : 10000;
+            request.Timeout = 10000;
         }
 
         /// <summary>
@@ -47,24 +49,27 @@ namespace LoveSeat.Support {
             request.Headers.Clear(); //important
 
             // Deal with Authorization Header
-            string authValue = "Basic ";
-            string userNAndPassword = username + ":" + password;
+            if (username != null) {
+                string authValue = "Basic ";
+                string userNAndPassword = username + ":" + password;
 
-            // Base64 encode
-            string b64 = System.Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(userNAndPassword));
+                // Base64 encode
+                string b64 = System.Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(userNAndPassword));
 
-            authValue = authValue + b64;
+                authValue = authValue + b64;
 
-            request.Headers.Add("Authorization", authValue);
+                request.Headers.Add("Authorization", authValue);
+            }
+
             request.Headers.Add("Accept-Charset", "utf-8");
             request.Headers.Add("Accept-Language", "en-us");
             request.Referer = uri;
             request.ContentType = "application/json";
             request.KeepAlive = true;
+            request.Timeout = 10000;
         }
 
 
-        public int? Timeout { get; set; }
         public CouchRequest Put() {
             request.Method = "PUT";
             return this;
@@ -80,6 +85,19 @@ namespace LoveSeat.Support {
         }
         public CouchRequest Delete() {
             request.Method = "DELETE";
+            return this;
+        }
+        public CouchRequest Data(Stream data)
+        {
+            using (var body = request.GetRequestStream())
+            {
+                var buffer = new byte[STREAM_BUFFER_SIZE];
+                var bytesRead = 0;
+                while (0 != (bytesRead = data.Read(buffer, 0, buffer.Length)))
+                {
+                    body.Write(buffer, 0, bytesRead);   
+                }
+            }
             return this;
         }
         public CouchRequest Data(string data) {
@@ -111,6 +129,11 @@ namespace LoveSeat.Support {
 
         public CouchRequest Json() {
             request.ContentType = "application/json";
+            return this;
+        }
+
+        public CouchRequest Timeout(int timeoutMs) {
+            request.Timeout = timeoutMs;
             return this;
         }
 

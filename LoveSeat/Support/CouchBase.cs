@@ -10,6 +10,7 @@ namespace LoveSeat.Support
         protected readonly AuthenticationType authType;
         protected string baseUri;
         private TtlDictionary<string, Cookie> cookiestore = new TtlDictionary<string, Cookie>();
+        private int? timeout;
 
         protected CouchBase()
         {
@@ -26,10 +27,10 @@ namespace LoveSeat.Support
             if (!baseUri.Contains("http://"))
                 baseUri = "http://" + baseUri;
             var request = new CouchRequest(baseUri + "/_session");
-            request.Timeout = 3000;
             var response = request.Post()
                 .ContentType("application/x-www-form-urlencoded")
                 .Data("name=" + userName + "&password=" + password)
+                .Timeout(3000)
                 .GetResponse();
             return response.StatusCode == HttpStatusCode.OK;
         }
@@ -56,6 +57,12 @@ namespace LoveSeat.Support
             }
             return authCookie;
         }
+
+        public void SetTimeout(int timeoutMs)
+        {
+            timeout = timeoutMs;
+        }
+
         protected CouchRequest GetRequest(string uri)
         {
             return GetRequest(uri, null);
@@ -63,18 +70,21 @@ namespace LoveSeat.Support
 
         protected CouchRequest GetRequest(string uri, string etag)
         {
+            CouchRequest request;
             if (AuthenticationType.Cookie == this.authType)
             {
-                return new CouchRequest(uri, GetSession(), etag);
+                request = new CouchRequest(uri, GetSession(), etag);
             }
             else if (AuthenticationType.Basic == this.authType) //Basic Authentication
             {
-                return new CouchRequest(uri, username, password);
+                request = new CouchRequest(uri, username, password);
             }
             else //default Cookie
             {
-                return new CouchRequest(uri, GetSession(), etag);
+                request = new CouchRequest(uri, GetSession(), etag);
             }
+            if (timeout.HasValue) request.Timeout(timeout.Value);
+            return request;
         }
 
 

@@ -20,12 +20,12 @@ namespace LoveSeat.IntegrationTest
 		private const string baseDatabase = "love-seat-test-base";
         private const string replicateDatabase = "love-seat-test-repli";
 
-		private readonly string host = ConfigurationManager.AppSettings["Host"].ToString();
-		private readonly int port = int.Parse(ConfigurationManager.AppSettings["Port"].ToString());
-		private readonly string username = ConfigurationManager.AppSettings["UserName"].ToString();
-		private readonly string password = ConfigurationManager.AppSettings["Password"].ToString();
+		private readonly string host = ConfigurationManager.AppSettings["Host"];
+		private readonly int port = int.Parse(ConfigurationManager.AppSettings["Port"]);
+		private readonly string username = ConfigurationManager.AppSettings["UserName"];
+		private readonly string password = ConfigurationManager.AppSettings["Password"];
 
-		[TestFixtureSetUp]
+		[SetUp]
 		public void Setup()
 		{
 			client = new CouchClient(host, port, username, password, false,AuthenticationType.Cookie);
@@ -38,7 +38,7 @@ namespace LoveSeat.IntegrationTest
                 client.CreateDatabase(replicateDatabase);
             }
 		}
-		[TestFixtureTearDown]
+		[TearDown]
 		public void TearDown()
 		{
             //delete the test database
@@ -218,6 +218,45 @@ namespace LoveSeat.IntegrationTest
             db.CreateDocument("{\"_id\":\""+ id+"\"}");
             Document doc= db.GetDocument(id);
             Assert.AreEqual(id, doc.Id);
+        }
+
+        [Test]
+        public void Should_Populate_Items_When_IncludeDocs_Set_In_ViewOptions()
+        {
+            string designDoc = "test";
+            string viewName = "testView";
+            var settings = new JsonSerializerSettings();
+            var converters = new List<JsonConverter> { new IsoDateTimeConverter() };
+            settings.Converters = converters;
+            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            settings.NullValueHandling = NullValueHandling.Ignore;
+
+            var doc = new
+                          {
+                              _id = "_design/" + designDoc,
+                              Language = "javascript",
+                              Views = new
+                                {
+                                    TestView = new
+                                    {
+                                        Map = "function(doc) {\n  if(doc.type == 'company') {\n    emit(doc._id, null);\n  }\n}"
+                                    }
+                                }
+                          };
+
+            var db = client.GetDatabase(baseDatabase);
+            db.CreateDocument(doc._id, JsonConvert.SerializeObject(doc, Formatting.Indented, settings));
+
+            var company = new Company();
+            company.Name = "foo";
+            db.CreateDocument(company);
+
+            // Without IncludeDocs
+            Assert.IsNull(db.View<Company>(viewName, designDoc).Items.ToList()[0]);
+
+            // With IncludeDocs
+            ViewOptions options = new ViewOptions { IncludeDocs = true };
+            Assert.AreEqual("foo", db.View<Company>(viewName, options, designDoc).Items.ToList()[0].Name);
         }
 	}
     public class Company : IBaseObject

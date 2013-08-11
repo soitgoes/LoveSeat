@@ -59,6 +59,7 @@ namespace LoveSeat.Interfaces
         CouchResponse DeleteAttachment(string id, string rev, string attachmentName);
         CouchResponse DeleteAttachment(string id, string attachmentName);
         CouchResponse SaveDocument(Document document);
+        BulkDocumentResponses SaveDocuments(Documents docs, bool all_or_nothing);
 
         /// <summary>
         /// Gets the results of a view with no view parameters.  Use the overload to pass parameters
@@ -108,7 +109,14 @@ namespace LoveSeat.Interfaces
         IListResult List(string listName, string viewName, ViewOptions options,  string designDoc);
         IListResult List(string listName, string viewName, ViewOptions options);
 
+        ViewResult View(string viewName, ViewOptions options, string designDoc);
         ViewResult View(string viewName, ViewOptions options);
         ViewResult View(string viewName);
+
+        /// <summary>
+        /// Set the timeout to be used for future HTTP requests
+        /// </summary>
+        /// <param name="timeoutMs">The timeout value, in milliseconds.</param>
+        void SetTimeout(int timeoutMs);
     }
 }

@@ -29,6 +29,8 @@ namespace LoveSeat.Interfaces
         /// </summary>
         IEnumerable<JToken> Docs { get; }
 
+        bool IncludeDocs { get; }
+
         /// <summary>
         /// An IEnumerable of strings insteda of the IEnumerable of JTokens
         /// </summary>

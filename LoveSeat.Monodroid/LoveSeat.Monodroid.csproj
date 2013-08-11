@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{01D175EC-4BEE-4B81-88AA-CF28395D68D0}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LoveSeat.Monodroid</RootNamespace>
+    <AssemblyName>LoveSeat.Monodroid</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Android" />
+    <Reference Include="mscorlib" />
+    <Reference Include="Newtonsoft.Json.MonoDroid">
+      <HintPath>..\Libraries\Newtonsoft.Json.MonoDroid.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\LoveSeat.Interfaces\IAuditableRecord.cs">
+      <Link>Interfaces\IAuditableRecord.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat.Interfaces\IBaseObject.cs">
+      <Link>Interfaces\IBaseObject.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat.Interfaces\IRepository.cs">
+      <Link>Interfaces\IRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\CouchClient.cs">
+      <Link>CouchClient.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\CouchConfiguration.cs">
+      <Link>CouchConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\CouchDatabase.cs">
+      <Link>CouchDatabase.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\CouchException.cs">
+      <Link>CouchException.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\CouchResponse.cs">
+      <Link>CouchResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\CouchUser.cs">
+      <Link>CouchUser.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\Document.cs">
+      <Link>Document.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\Interfaces\IDocumentDatabase.cs">
+      <Link>Interfaces\IDocumentDatabase.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\Interfaces\IKeyOptions.cs">
+      <Link>Interfaces\IKeyOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\Interfaces\IListResult.cs">
+      <Link>Interfaces\IListResult.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\Interfaces\IViewOptions.cs">
+      <Link>Interfaces\IViewOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\Interfaces\IViewResult.cs">
+      <Link>Interfaces\IViewResult.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\ListResult.cs">
+      <Link>ListResult.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\ObjectSerializer.cs">
+      <Link>ObjectSerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\PagingHelper.cs">
+      <Link>PagingHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\SecurityUtility.cs">
+      <Link>SecurityUtility.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\Support\CouchBase.cs">
+      <Link>Support\CouchBase.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\Support\CouchRequest.cs">
+      <Link>Support\CouchRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\Support\KeyOptions.cs">
+      <Link>Support\KeyOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\Support\NullableDictionary.cs">
+      <Link>Support\NullableDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\Support\ReplicationOptions.cs">
+      <Link>Support\ReplicationOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\Support\ResponseExtensionMethods.cs">
+      <Link>Support\ResponseExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\Support\TtlDictionary.cs">
+      <Link>Support\TtlDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\ViewOptions.cs">
+      <Link>ViewOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\LoveSeat\ViewResult.cs">
+      <Link>ViewResult.cs</Link>
+    </Compile>
+    <Compile Include="HttpException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
