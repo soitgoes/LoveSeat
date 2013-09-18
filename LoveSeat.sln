@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveSeat", "LoveSeat\LoveSeat.csproj", "{AF987164-0100-4A90-A767-D473F882EA8B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveSeat.IntegrationTest", "LoveSeat.IntegrationTest\LoveSeat.IntegrationTest.csproj", "{7496CEA9-442C-4468-8350-54F34693F64A}"
