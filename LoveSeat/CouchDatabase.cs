@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -130,8 +131,8 @@ namespace LoveSeat
         {
             // serialize list of keys to json
             string data = Newtonsoft.Json.JsonConvert.SerializeObject(keyLst);
-            
-            var resp = GetRequest(databaseBaseUri + "/_all_docs").Post().Json().Data(data).GetResponse();
+            ViewOptions viewOptions = new ViewOptions { IncludeDocs = true };
+            var resp = GetRequest(viewOptions, databaseBaseUri + "/_all_docs").Post().Json().Data(data).GetResponse();
 
             if (resp == null) return null;
 
@@ -438,7 +439,12 @@ namespace LoveSeat
         {
             if (options != null)
                 uri +=  options.ToString();
-            return GetRequest(uri, options == null ? null : options.Etag).Get().Json();
+            CouchRequest request = GetRequest(uri, options == null ? null : options.Etag).Get().Json();
+            if (options != null && options.Keys != null && options.Keys.Count() >= 100) {
+              string keys = "{\"keys\": [" + String.Join(",", options.Keys.Select(k => k.ToRawString()).ToArray()) + "]}";
+              request.Post().Data(keys);
+            }
+            return request;
         }
 
 

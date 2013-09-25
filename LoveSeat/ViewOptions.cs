@@ -50,7 +50,7 @@ namespace LoveSeat
             string result = "";
             if ((Key != null) && (Key.Count > 0))
                 result += "&key=" + Key.ToString();
-            if (Keys != null)
+            if (Keys != null && Keys.Count() < 100)
                 result += "&keys=[" + String.Join(",", Keys.Select(k => k.ToString()).ToArray()) + "]";
             if ((StartKey != null) && (StartKey.Count > 0))
                 if((StartKey.Count == 1) && (EndKey.Count > 1))
