@@ -154,11 +154,11 @@ namespace LoveSeat.Support {
                 return response;
             } catch (WebException webEx) {
                 if (failedAuth == true) {
-                    throw webEx;
+                    throw;
                 }
                 var response = (HttpWebResponse)webEx.Response;
                 if (response == null)
-                    throw new HttpException("Request failed to receive a response");
+                    throw new HttpException("Request failed to receive a response", webEx);
                 return response;
             }
             throw new HttpException("Request failed to receive a response");
