@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using LoveSeat.Support;
 
 namespace LoveSeat
 {
@@ -11,6 +12,11 @@ namespace LoveSeat
        {
            this.request = request;
            this.response = response;
+       }
+
+       public CouchException(HttpWebRequest request, CouchWebResponse response, string mesg)
+           : base(mesg)
+       {
        }
 
        public HttpWebRequest Request { get { return request; } }
