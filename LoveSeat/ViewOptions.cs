@@ -11,6 +11,11 @@ namespace LoveSeat
 {
     public class ViewOptions : IViewOptions
     {
+        /// <summary>
+        /// Limit the length of the Keys parameter to 1800 characters.
+        /// </summary>
+        private const int KeysLengthLimit = 1800;
+
         public ViewOptions()
         {
             Key = new KeyOptions();
@@ -50,7 +55,7 @@ namespace LoveSeat
             string result = "";
             if ((Key != null) && (Key.Count > 0))
                 result += "&key=" + Key.ToString();
-            if (Keys != null && Keys.Count() < 100)
+            if (Keys != null && !isAtKeysSizeLimit)
                 result += "&keys=[" + String.Join(",", Keys.Select(k => k.ToString()).ToArray()) + "]";
             if ((StartKey != null) && (StartKey.Count > 0))
                 if((StartKey.Count == 1) && (EndKey.Count > 1))
@@ -96,6 +101,16 @@ namespace LoveSeat
             if (!string.IsNullOrEmpty(EndKeyDocId))
                 result += "&endkey_docid=" + EndKeyDocId;
             return result.Length < 1 ? "" :  "?" + result.Substring(1);
+        }
+
+        /// <summary>
+        /// Get indication if the length of keys parameter went over the allowed limit.
+        /// This indicate that the Keys parameter should be encoded in the requeqst body
+        /// instead of URL paraemter.
+        /// </summary>
+        internal bool isAtKeysSizeLimit
+        {
+            get { return Keys != null && Keys.Any() && Keys.ToString().Length > KeysLengthLimit; }
         }
     }
    

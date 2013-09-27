@@ -40,11 +40,11 @@ namespace LoveSeat
                 .Put().Form()
                 .Data(jobj.ToString(Formatting.None))
                 .GetCouchResponse();
-            return 
+            return
                 resp.GetJObject();
         }
 
-        public CouchResponse CreateDocument(IBaseObject doc) 
+        public CouchResponse CreateDocument(IBaseObject doc)
         {
             var serialized = ObjectSerializer.Serialize(doc);
             if (doc.Id != null)
@@ -61,10 +61,10 @@ namespace LoveSeat
         public CouchResponse CreateDocument(string jsonForDocument)
         {
             var json = JObject.Parse(jsonForDocument); //to make sure it's valid json
-            var jobj = 
+            var jobj =
                 GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetCouchResponse().GetJObject();
             return jobj;
-        }        
+        }
         public CouchResponse DeleteDocument(string id, string rev)
         {
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(rev))
@@ -132,8 +132,13 @@ namespace LoveSeat
         {
             // serialize list of keys to json
             string data = Newtonsoft.Json.JsonConvert.SerializeObject(keyLst);
-            ViewOptions viewOptions = new ViewOptions { IncludeDocs = true };
-            CouchWebResponse resp = GetRequest(viewOptions, databaseBaseUri + "/_all_docs").Post().Json().Data(data).GetCouchResponse();
+            ViewOptions viewOptions = new ViewOptions
+            {
+                IncludeDocs = true,
+                Keys = keyLst.Values.Select(x => new KeyOptions(x)).ToArray()
+            };
+
+            CouchWebResponse resp = GetRequest(viewOptions, databaseBaseUri + "/_all_docs").GetCouchResponse();
 
             if (resp == null) return null;
 
@@ -143,7 +148,7 @@ namespace LoveSeat
 
             return vw;
         }
- 
+
         /// <summary>
         /// Using the bulk API for the loading of documents.
         /// </summary>
@@ -171,19 +176,19 @@ namespace LoveSeat
 
             if (resp.StatusCode != HttpStatusCode.Created)
             {
-                throw new System.Exception("Response returned with a HTTP status code of " + resp.StatusCode + " - " + resp.StatusDescription);    
+                throw new System.Exception("Response returned with a HTTP status code of " + resp.StatusCode + " - " + resp.StatusDescription);
             }
 
             // Get response
             string x = resp.ResponseString;
-                        
+
             // Convert to Bulk response
             BulkDocumentResponses bulk = Newtonsoft.Json.JsonConvert.DeserializeObject<BulkDocumentResponses>(x);
 
             return bulk;
         }
 
-        
+
         /// <summary>
         /// Adds an attachment to a document.  If revision is not specified then the most recent will be fetched and used.  Warning: if you need document update conflicts to occur please use the method that specifies the revision
         /// </summary>
@@ -264,7 +269,7 @@ namespace LoveSeat
         {
             if (document.Rev == null)
                 return CreateDocument(document);
-                    
+
             var resp = GetRequest(string.Format("{0}/{1}?rev={2}", databaseBaseUri, document.Id, document.Rev)).Put().Form().Data(document).GetCouchResponse();
             return resp.GetJObject();
         }
@@ -328,11 +333,13 @@ namespace LoveSeat
 
         private static JObject CheckAccepted(CouchWebResponse resp)
         {
-            if (resp == null) {
+            if (resp == null)
+            {
                 throw new System.Exception("Response returned null.");
             }
 
-            if (resp.StatusCode != HttpStatusCode.Accepted) {
+            if (resp.StatusCode != HttpStatusCode.Accepted)
+            {
                 throw new System.Exception(string.Format("Response return with a HTTP Code of {0} - {1}", resp.StatusCode, resp.StatusDescription));
             }
 
@@ -341,10 +348,10 @@ namespace LoveSeat
         }
 
 
-        public string Show (string showName, string docId)
+        public string Show(string showName, string docId)
         {
             ThrowDesignDocException();
-            return Show(showName, docId,  defaultDesignDoc);
+            return Show(showName, docId, defaultDesignDoc);
         }
 
         private void ThrowDesignDocException()
@@ -360,9 +367,9 @@ namespace LoveSeat
             var req = GetRequest(uri);
             return req.GetCouchResponse().ResponseString;
         }
-        public IListResult List(string listName, string viewName, ViewOptions options,  string designDoc)
-        {            
-			var uri = string.Format("{0}/_design/{1}/_list/{2}/{3}{4}", databaseBaseUri, designDoc, listName, viewName, options.ToString());
+        public IListResult List(string listName, string viewName, ViewOptions options, string designDoc)
+        {
+            var uri = string.Format("{0}/_design/{1}/_list/{2}/{3}{4}", databaseBaseUri, designDoc, listName, viewName, options.ToString());
             var req = GetRequest(uri);
             return new ListResult(req.GetRequest(), req.GetCouchResponse());
         }
@@ -378,7 +385,8 @@ namespace LoveSeat
             this.defaultDesignDoc = designDoc;
         }
 
-        private ViewResult<T> ProcessGenericResults<T>(string uri, ViewOptions options) {
+        private ViewResult<T> ProcessGenericResults<T>(string uri, ViewOptions options)
+        {
             CouchRequest req = GetRequest(options, uri);
             CouchWebResponse resp = req.GetCouchResponse();
 
@@ -409,12 +417,12 @@ namespace LoveSeat
         /// <param name="viewName"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public ViewResult<T>  View<T>(string viewName, ViewOptions options)
+        public ViewResult<T> View<T>(string viewName, ViewOptions options)
         {
             ThrowDesignDocException();
-             return View<T>(viewName, options, defaultDesignDoc);
+            return View<T>(viewName, options, defaultDesignDoc);
         }
-        
+
         public ViewResult View(string viewName, ViewOptions options, string designDoc)
         {
             var uri = string.Format("{0}/_design/{1}/_view/{2}", databaseBaseUri, designDoc, viewName);
@@ -432,15 +440,17 @@ namespace LoveSeat
             CouchWebResponse resp = req.GetCouchResponse();
             return new ViewResult(resp, req.GetRequest());
         }
-        
+
         private CouchRequest GetRequest(ViewOptions options, string uri)
         {
             if (options != null)
-                uri +=  options.ToString();
+                uri += options.ToString();
             CouchRequest request = GetRequest(uri, options == null ? null : options.Etag).Get().Json();
-            if (options != null && options.Keys != null && options.Keys.Count() >= 100) {
-              string keys = "{\"keys\": [" + String.Join(",", options.Keys.Select(k => k.ToRawString()).ToArray()) + "]}";
-              request.Post().Data(keys);
+            if (options.isAtKeysSizeLimit)
+            {
+                // Encode the keys parameter in the request body and turn it into a POST request.
+                string keys = "{\"keys\": [" + String.Join(",", options.Keys.Select(k => k.ToRawString()).ToArray()) + "]}";
+                request.Post().Data(keys);
             }
             return request;
         }
