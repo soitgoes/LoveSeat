@@ -31,7 +31,7 @@ namespace LoveSeat.Support
                 .ContentType("application/x-www-form-urlencoded")
                 .Data("name=" + userName + "&password=" + password)
                 .Timeout(3000)
-                .GetResponse();
+                .GetCouchResponse();
             return response.StatusCode == HttpStatusCode.OK;
         }
         public Cookie GetSession() {
@@ -43,19 +43,22 @@ namespace LoveSeat.Support
             if (string.IsNullOrEmpty(username)) return null;
             var request = new CouchRequest(baseUri + "_session");
             request.GetRequest().Headers.Add("Authorization:Basic " + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(username + ":" + password)));
-            var response = request.Post()
+            using (HttpWebResponse response = request.Post()
                 .Form()
                 .Data("name=" + username + "&password=" + password)
-                .GetResponse();
+                .GetHttpResponse())
+            {
 
-            var header = response.Headers.Get("Set-Cookie");
-            if (header != null) {
-                var parts = header.Split(';')[0].Split('=');
-                authCookie = new Cookie(parts[0], parts[1]);
-                authCookie.Domain = response.Server;
-                cookiestore.Add("authcookie", authCookie, TimeSpan.FromMinutes(9));
+                var header = response.Headers.Get("Set-Cookie");
+                if (header != null)
+                {
+                    var parts = header.Split(';')[0].Split('=');
+                    authCookie = new Cookie(parts[0], parts[1]);
+                    authCookie.Domain = response.Server;
+                    cookiestore.Add("authcookie", authCookie, TimeSpan.FromMinutes(9));
+                }
+                return authCookie;
             }
-            return authCookie;
         }
 
         public void SetTimeout(int timeoutMs)
