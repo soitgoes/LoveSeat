@@ -6,6 +6,9 @@ using Newtonsoft.Json.Linq;
 
 namespace LoveSeat.Support
 {
+    /// <summary>
+    /// Repersent a web request for CouchDB database.
+    /// </summary>
     public class CouchRequest
     {
         private const string INVALID_USERNAME_OR_PASSWORD = "reason=Name or password is incorrect";
@@ -160,7 +163,11 @@ namespace LoveSeat.Support
             return request;
         }
 
-        public CouchWebResponse GetCouchResponse()
+        /// <summary>
+        /// Get the response from CouchDB.
+        /// </summary>
+        /// <returns></returns>
+        public CouchResponse GetCouchResponse()
         {
             bool failedAuth = false;
             try
@@ -179,7 +186,7 @@ namespace LoveSeat.Support
                         throw new CouchException(request, response, response.GetResponseString() + "\n" + request.RequestUri);
                     }
 
-                    return new CouchWebResponse(response);
+                    return new CouchResponse(response);
                 }
             }
             catch (WebException webEx)
@@ -191,7 +198,7 @@ namespace LoveSeat.Support
                 var response = (HttpWebResponse)webEx.Response;
                 if (response == null)
                     throw new HttpException("Request failed to receive a response", webEx);
-                return new CouchWebResponse(response);
+                return new CouchResponse(response);
             }
             throw new HttpException("Request failed to receive a response");
         }

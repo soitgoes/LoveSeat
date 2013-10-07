@@ -14,7 +14,7 @@ namespace LoveSeat
     {
         private readonly IObjectSerializer objectSerializer = null;
         private CouchDictionary<T> dict = null;
-        public ViewResult(CouchWebResponse response, HttpWebRequest request, IObjectSerializer objectSerializer, bool includeDocs = false)
+        public ViewResult(CouchResponse response, HttpWebRequest request, IObjectSerializer objectSerializer, bool includeDocs = false)
             : base(response, request, includeDocs)
         {
             this.objectSerializer = objectSerializer;
@@ -52,12 +52,12 @@ namespace LoveSeat
 
     public class ViewResult : IViewResult
     {
-        private readonly CouchWebResponse response;
+        private readonly CouchResponse response;
         private readonly HttpWebRequest request;
         private JObject json = null;
 
         public JObject Json { get { return json ?? (json = JObject.Parse(response.ResponseString)); } }
-        public ViewResult(CouchWebResponse response, HttpWebRequest request, bool includeDocs = false)
+        public ViewResult(CouchResponse response, HttpWebRequest request, bool includeDocs = false)
         {
             this.response = response;
             this.request = request;

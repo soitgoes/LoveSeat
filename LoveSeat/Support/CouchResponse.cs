@@ -6,14 +6,14 @@ namespace LoveSeat.Support
     /// <summary>
     /// Repersent a web response from CouchDB database.
     /// </summary>
-    public class CouchWebResponse
+    public class CouchResponse
     {
         private readonly string responseString;
         private readonly HttpStatusCode statusCode;
         private readonly string statusDescription;
         private readonly string etag;
 
-        public CouchWebResponse(HttpWebResponse response)
+        public CouchResponse(HttpWebResponse response)
         {
             responseString = response.GetResponseString();
             statusCode = response.StatusCode;
@@ -29,13 +29,21 @@ namespace LoveSeat.Support
 
         public string ETag { get { return etag; } }
 
-        public CouchResponse GetJObject()
+        /// <summary>
+        /// Get the response string as JSON object.
+        /// </summary>
+        /// <returns></returns>
+        public CouchResponseObject GetJObject()
         {
-            var resp = new CouchResponse(JObject.Parse(responseString));
+            var resp = new CouchResponseObject(JObject.Parse(responseString));
             resp.StatusCode = (int)statusCode;
             return resp;
         }
 
+        /// <summary>
+        /// Get the response as raw document.
+        /// </summary>
+        /// <returns></returns>
         public Document GetCouchDocument()
         {
             var jobj = JObject.Parse(responseString);
