@@ -31,7 +31,7 @@ namespace LoveSeat
         /// <param name="id">Id of Document</param>
         /// <param name="jsonForDocument"></param>
         /// <returns></returns>
-        public CouchResponse CreateDocument(string id, string jsonForDocument)
+        public CouchResponseObject CreateDocument(string id, string jsonForDocument)
         {
             var jobj = JObject.Parse(jsonForDocument);
             if (jobj.Value<object>("_rev") == null)
@@ -44,7 +44,7 @@ namespace LoveSeat
                 resp.GetJObject();
         }
 
-        public CouchResponse CreateDocument(IBaseObject doc)
+        public CouchResponseObject CreateDocument(IBaseObject doc)
         {
             var serialized = ObjectSerializer.Serialize(doc);
             if (doc.Id != null)
@@ -58,14 +58,14 @@ namespace LoveSeat
         /// </summary>
         /// <param name="jsonForDocument">Json for creating the document</param>
         /// <returns>The response as a JObject</returns>
-        public CouchResponse CreateDocument(string jsonForDocument)
+        public CouchResponseObject CreateDocument(string jsonForDocument)
         {
             var json = JObject.Parse(jsonForDocument); //to make sure it's valid json
             var jobj =
                 GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetCouchResponse().GetJObject();
             return jobj;
         }
-        public CouchResponse DeleteDocument(string id, string rev)
+        public CouchResponseObject DeleteDocument(string id, string rev)
         {
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(rev))
                 throw new Exception("Both id and rev must have a value that is not empty");
@@ -138,7 +138,7 @@ namespace LoveSeat
                 Keys = keyLst.Values.Select(x => new KeyOptions(x)).ToArray()
             };
 
-            CouchWebResponse resp = GetRequest(viewOptions, databaseBaseUri + "/_all_docs").GetCouchResponse();
+            CouchResponse resp = GetRequest(viewOptions, databaseBaseUri + "/_all_docs").GetCouchResponse();
 
             if (resp == null) return null;
 
@@ -167,7 +167,7 @@ namespace LoveSeat
                 uri = uri + "?all_or_nothing=true";
             }
 
-            CouchWebResponse resp = GetRequest(uri).Post().Json().Data(data).GetCouchResponse();
+            CouchResponse resp = GetRequest(uri).Post().Json().Data(data).GetCouchResponse();
 
             if (resp == null)
             {
@@ -196,7 +196,7 @@ namespace LoveSeat
         /// <param name="attachment">byte[] of of the attachment.  Use File.ReadAllBytes()</param>
         /// <param name="filename">filename of the attachment</param>
         /// <param name="contentType">Content Type must be specifed</param>	
-        public CouchResponse AddAttachment(string id, byte[] attachment, string filename, string contentType)
+        public CouchResponseObject AddAttachment(string id, byte[] attachment, string filename, string contentType)
         {
             var doc = GetDocument(id);
             return AddAttachment(id, doc.Rev, attachment, filename, contentType);
@@ -210,7 +210,7 @@ namespace LoveSeat
         /// <param name="filename">filename of the attachment</param>
         /// <param name="contentType">Content Type must be specifed</param>			
         /// <returns></returns>
-        public CouchResponse AddAttachment(string id, string rev, byte[] attachment, string filename, string contentType)
+        public CouchResponseObject AddAttachment(string id, string rev, byte[] attachment, string filename, string contentType)
         {
             return
                 GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, filename, rev)).Put().ContentType(contentType).Data(attachment).GetCouchResponse().GetJObject();
@@ -221,7 +221,7 @@ namespace LoveSeat
         /// <param name="id">id of the couch Document</param>
         /// <param name="attachmentStream">Stream of the attachment.</param>
         /// <param name="contentType">Content Type must be specifed</param>	
-        public CouchResponse AddAttachment(string id, Stream attachmentStream, string filename, string contentType)
+        public CouchResponseObject AddAttachment(string id, Stream attachmentStream, string filename, string contentType)
         {
             var doc = GetDocument(id);
             return AddAttachment(id, doc.Rev, attachmentStream, filename, contentType);
@@ -235,7 +235,7 @@ namespace LoveSeat
         /// <param name="filename">filename of the attachment</param>
         /// <param name="contentType">Content Type must be specifed</param>			
         /// <returns></returns>
-        public CouchResponse AddAttachment(string id, string rev, Stream attachmentStream, string filename, string contentType)
+        public CouchResponseObject AddAttachment(string id, string rev, Stream attachmentStream, string filename, string contentType)
         {
             return
                 GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, filename, rev)).Put().ContentType(contentType).Data(attachmentStream).GetCouchResponse().GetJObject();
@@ -255,17 +255,17 @@ namespace LoveSeat
             if (doc == null) return null;
             return GetAttachmentStream(docId, doc.Rev, attachmentName);
         }
-        public CouchResponse DeleteAttachment(string id, string rev, string attachmentName)
+        public CouchResponseObject DeleteAttachment(string id, string rev, string attachmentName)
         {
             return GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, attachmentName, rev)).Json().Delete().GetCouchResponse().GetJObject();
         }
-        public CouchResponse DeleteAttachment(string id, string attachmentName)
+        public CouchResponseObject DeleteAttachment(string id, string attachmentName)
         {
             var doc = GetDocument(id);
             return DeleteAttachment(doc.Id, doc.Rev, attachmentName);
         }
 
-        public CouchResponse SaveDocument(Document document)
+        public CouchResponseObject SaveDocument(Document document)
         {
             if (document.Rev == null)
                 return CreateDocument(document);
@@ -331,7 +331,7 @@ namespace LoveSeat
             return CheckAccepted(GetRequest(databaseBaseUri + "/_compact/" + designDoc).Post().Json().GetCouchResponse());
         }
 
-        private static JObject CheckAccepted(CouchWebResponse resp)
+        private static JObject CheckAccepted(CouchResponse resp)
         {
             if (resp == null)
             {
@@ -388,7 +388,7 @@ namespace LoveSeat
         private ViewResult<T> ProcessGenericResults<T>(string uri, ViewOptions options)
         {
             CouchRequest req = GetRequest(options, uri);
-            CouchWebResponse resp = req.GetCouchResponse();
+            CouchResponse resp = req.GetCouchResponse();
 
             bool includeDocs = false;
             if (options != null)
@@ -437,7 +437,7 @@ namespace LoveSeat
         private ViewResult ProcessResults(string uri, ViewOptions options)
         {
             CouchRequest req = GetRequest(options, uri);
-            CouchWebResponse resp = req.GetCouchResponse();
+            CouchResponse resp = req.GetCouchResponse();
             return new ViewResult(resp, req.GetRequest());
         }
 

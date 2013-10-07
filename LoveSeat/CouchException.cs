@@ -14,7 +14,7 @@ namespace LoveSeat
            this.response = response;
        }
 
-       public CouchException(HttpWebRequest request, CouchWebResponse response, string mesg)
+       public CouchException(HttpWebRequest request, CouchResponse response, string mesg)
            : base(mesg)
        {
        }
