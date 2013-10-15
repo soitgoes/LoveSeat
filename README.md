@@ -15,8 +15,8 @@ This fork of LoveSeat adds features needed to connect to Cloudant including Luce
 Tested compatibility
 ====================
 
- * CouchDB 1.0.1
- * .NET Framework 3.5, 4.0 or Mono 2.9 (compiled master branch from Nov 20 2010), and MonoDroid
+ * Cloudant, CouchDb 1.4.0
+ * .NET Framework 4.0 or Mono 2.9 (compiled master branch from Nov 20 2010), and MonoDroid
 
 
 LoveSeat usage
