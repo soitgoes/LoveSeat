@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Net;
+using LoveSeat.Support;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat.Interfaces
@@ -16,7 +17,7 @@ namespace LoveSeat.Interfaces
         /// <summary>
         /// Typically won't be needed.  Provided for debugging assistance
         /// </summary>
-        HttpWebResponse Response { get; }
+        CouchResponse Response { get; }
 
         HttpStatusCode StatusCode { get; }
         string Etag { get; }

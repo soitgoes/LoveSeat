@@ -17,8 +17,9 @@ namespace LoveSeat
 
         private readonly string databaseBaseUri;
         private string defaultDesignDoc = null;
-        internal CouchDatabase(string baseUri, string databaseName, string username, string password, AuthenticationType aT)
-            : base(username, password, aT)
+
+        public CouchDatabase(string baseUri, string databaseName, string username, string password, AuthenticationType aT, DbType dbType)
+            : base(username, password, aT, dbType)
         {
             this.baseUri = baseUri;
             this.databaseBaseUri = baseUri + databaseName;
@@ -156,7 +157,7 @@ namespace LoveSeat
         /// <remarks>Here we assume you have either added the correct rev, id, or _deleted attribute to each document.  The response will indicate if there were any errors.
         /// Please note that the max_document_size configuration variable in CouchDB limits the maximum request size to CouchDB.</remarks>
         /// <returns>JSON of updated documents in the BulkDocumentResponse class.  </returns>
-        public BulkDocumentResponses SaveDocuments(Documents docs, bool all_or_nothing)
+        public virtual BulkDocumentResponses SaveDocuments(Documents docs, bool all_or_nothing)
         {
             string uri = databaseBaseUri + "/_bulk_docs";
 
@@ -174,7 +175,7 @@ namespace LoveSeat
                 throw new System.Exception("Response returned null.");
             }
 
-            if (resp.StatusCode != HttpStatusCode.Created)
+            if (resp.StatusCode != HttpStatusCode.Created && resp.StatusCode != HttpStatusCode.Accepted)
             {
                 throw new System.Exception("Response returned with a HTTP status code of " + resp.StatusCode + " - " + resp.StatusDescription);
             }
@@ -280,7 +281,7 @@ namespace LoveSeat
         /// <param name="viewName">The name of the view</param>
         /// <param name="designDoc">The design doc on which the view resides</param>
         /// <returns></returns>
-        public ViewResult<T> View<T>(string viewName, string designDoc)
+        public virtual ViewResult<T> View<T>(string viewName, string designDoc)
         {
             return View<T>(viewName, null, designDoc);
         }
@@ -291,12 +292,12 @@ namespace LoveSeat
         /// <typeparam name="T"></typeparam>
         /// <param name="viewName"></param>
         /// <returns></returns>
-        public ViewResult<T> View<T>(string viewName)
+		public virtual ViewResult<T> View<T>(string viewName)
         {
             ThrowDesignDocException();
             return View<T>(viewName, defaultDesignDoc);
         }
-        public ViewResult View(string viewName)
+        public virtual ViewResult View(string viewName)
         {
             ThrowDesignDocException();
             return View(viewName, new ViewOptions());
@@ -405,7 +406,7 @@ namespace LoveSeat
         /// <param name="options">Options such as startkey etc.</param>
         /// <param name="designDoc">The design doc on which the view resides</param>
         /// <returns></returns>
-        public ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc)
+		public virtual ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc)
         {
             var uri = string.Format("{0}/_design/{1}/_view/{2}", databaseBaseUri, designDoc, viewName);
             return ProcessGenericResults<T>(uri, options);
@@ -423,13 +424,13 @@ namespace LoveSeat
             return View<T>(viewName, options, defaultDesignDoc);
         }
 
-        public ViewResult View(string viewName, ViewOptions options, string designDoc)
+		public virtual ViewResult View(string viewName, ViewOptions options, string designDoc)
         {
             var uri = string.Format("{0}/_design/{1}/_view/{2}", databaseBaseUri, designDoc, viewName);
             return ProcessResults(uri, options);
         }
 
-        public ViewResult View(string viewName, ViewOptions options)
+		public virtual ViewResult View(string viewName, ViewOptions options)
         {
             ThrowDesignDocException();
             return View(viewName, options, this.defaultDesignDoc);
@@ -446,7 +447,7 @@ namespace LoveSeat
             if (options != null)
                 uri += options.ToString();
             CouchRequest request = GetRequest(uri, options == null ? null : options.Etag).Get().Json();
-            if (options.isAtKeysSizeLimit)
+            if (options != null && options.isAtKeysSizeLimit)
             {
                 // Encode the keys parameter in the request body and turn it into a POST request.
                 string keys = "{\"keys\": [" + String.Join(",", options.Keys.Select(k => k.ToRawString()).ToArray()) + "]}";
@@ -471,8 +472,37 @@ namespace LoveSeat
             return ProcessResults(uri, options);
         }
 
+		#region Exist
+		public bool DoesDbExist()
+		{
+			var uri = databaseBaseUri + "/_all_docs";
+			var request = GetRequest(uri);
+			request.GetRequest().Method = "HEAD";
 
+			var resp = request.GetCouchResponse();
 
+			return resp.StatusCode == HttpStatusCode.OK;
+		}
+		#endregion
+		#region Search
+
+		public JObject Search(string query)
+		{
+			var uri = databaseBaseUri + "/_design/rowindex/_search/rowindex?" + query;
+			var request = GetRequest(uri);
+			var resp = request.GetCouchResponse();
+			return resp.GetJObject();
+		}
+
+		public CouchRequest SearchRequest(string query, string designDoc, string index)
+		{
+			var uri = string.Format("{0}/_design/{1}/_search/{2}?{3}", databaseBaseUri, designDoc, index, query);
+            Logger.DebugFormat("SearchRequest: {0}", uri);
+			var request = GetRequest(uri);
+			return request;
+		}
+
+		#endregion
 
         #region Security
         public SecurityDocument getSecurityConfiguration()
@@ -522,9 +552,17 @@ namespace LoveSeat
             readers = new UserType();
         }
 
-
+    	public NobodyUserType cloudant;
         public UserType admins;
         public UserType readers;
+
+		public void AddCloudant()
+		{
+			cloudant = new NobodyUserType();
+			cloudant.nobody.Add("_reader");
+			cloudant.nobody.Add("_writer");
+			cloudant.nobody.Add("_admin");
+		}
     }
 
     public class UserType
@@ -538,6 +576,16 @@ namespace LoveSeat
         public List<string> names { get; set; }
         public List<string> roles { get; set; }
     }
+
+	public class NobodyUserType
+	{
+		public NobodyUserType()
+		{
+			nobody = new List<string>();
+		}
+
+		public List<string> nobody { get; set; }
+	}
     #endregion
 
 }

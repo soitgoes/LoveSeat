@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using LoveSeat.Interfaces;
+using LoveSeat.Support;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -28,7 +29,7 @@ namespace LoveSeat.IntegrationTest
 		[SetUp]
 		public void Setup()
 		{
-			client = new CouchClient(host, port, username, password, false,AuthenticationType.Cookie);
+			client = new CouchClient(host, port, username, password, false,AuthenticationType.Cookie, DbType.CouchDb);
 			if (!client.HasDatabase(baseDatabase))
 			{
 				client.CreateDatabase(baseDatabase);

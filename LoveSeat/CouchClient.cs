@@ -22,7 +22,7 @@ namespace LoveSeat
         /// This is only intended for use if your CouchDb is in Admin Party
         /// </summary>
         public CouchClient()
-            : this("localhost", 5984, null, null, false, AuthenticationType.Basic)
+            : this("localhost", 5984, null, null, false, AuthenticationType.Basic, DbType.CouchDb)
         {
         }
 
@@ -32,7 +32,7 @@ namespace LoveSeat
         /// <param name="username"></param>
         /// <param name="password"></param>
         public CouchClient(string username, string password)
-            : this("localhost", 5984, username, password, false, AuthenticationType.Basic)
+            : this("localhost", 5984, username, password, false, AuthenticationType.Basic, DbType.CouchDb)
         {
         }
 
@@ -43,8 +43,8 @@ namespace LoveSeat
         /// <param name="port">The port of the CouchDB instance</param>
         /// <param name="username">The username of the CouchDB instance</param>Cou
         /// <param name="password">The password of the CouchDB instance</param>
-        public CouchClient(string host, int port, string username, string password, bool isHttps, AuthenticationType aT)
-            : base(username, password, aT)
+        public CouchClient(string host, int port, string username, string password, bool isHttps, AuthenticationType aT, DbType dbType)
+            : base(username, password, aT, dbType)
         {
             if (isHttps == false)
             {
@@ -65,7 +65,7 @@ namespace LoveSeat
         /// </summary>
         /// <param name="config"></param>
         public CouchClient(CouchConfiguration config)
-            : this(config.Host, config.Port, config.User, config.Password, false, AuthenticationType.Basic)
+            : this(config.Host, config.Port, config.User, config.Password, false, AuthenticationType.Basic, DbType.CouchDb)
         {
         }
 
@@ -112,6 +112,11 @@ namespace LoveSeat
             return GetRequest(baseUri + databaseName).Delete().GetCouchResponse().GetJObject();
         }
 
+        public JArray ListDatabases()
+	    {
+            return JArray.Parse(GetRequest(BaseUri + "_all_dbs").Get().GetCouchResponse().ResponseString);
+	    }
+
         /// <summary>
         /// Gets a Database object
         /// </summary>
@@ -119,7 +124,7 @@ namespace LoveSeat
         /// <returns></returns>
         public CouchDatabase GetDatabase(string databaseName)
         {
-            return new CouchDatabase(baseUri, databaseName, username, password, this.authType);
+            return new CouchDatabase(BaseUri, databaseName, username, password, this.authType, this.dbType);
         }
 
         /// <summary>
@@ -198,7 +203,7 @@ namespace LoveSeat
         /// <returns></returns>
         public Document GetUser(string userId)
         {
-            var db = new CouchDatabase(baseUri, "_users", username, password, this.authType);
+			var db = new CouchDatabase(BaseUri, "_users", username, password, this.authType, this.dbType);
             userId = "org.couchdb.user:" + HttpUtility.UrlEncode(userId);
             return db.GetDocument(userId);
         }

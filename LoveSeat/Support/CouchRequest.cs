@@ -42,6 +42,8 @@ namespace LoveSeat.Support
             if (authCookie != null)
                 request.Headers.Add("Cookie", "AuthSession=" + authCookie.Value);
             request.Timeout = 10000;
+
+			//Logger.DebugFormat("Request cookie: {0}, issued: {1}, expires: {2}, expired: {3}", authCookie.Name, authCookie.TimeStamp.ToString("hh:mm:ss,FFF zzz"), authCookie.Expires, authCookie.Expired);
         }
 
         /// <summary>
@@ -50,8 +52,7 @@ namespace LoveSeat.Support
         /// <param name="uri"></param>
         /// <param name="username"></param>
         /// <param name="password"></param>
-        public CouchRequest(string uri, string username, string password)
-        {
+        public CouchRequest(string uri, string username, string password) {
 
             request = (HttpWebRequest)WebRequest.Create(uri);
             request.Headers.Clear(); //important
@@ -77,15 +78,19 @@ namespace LoveSeat.Support
             request.Timeout = 10000;
         }
 
-
-        public CouchRequest Put()
+        public CouchRequest Put() 
         {
             request.Method = "PUT";
             return this;
         }
 
-        public CouchRequest Get()
-        {
+		public CouchRequest Copy()
+		{
+			request.Method = "COPY";
+			return this;
+		}
+
+        public CouchRequest Get() {
             request.Method = "GET";
             return this;
         }
@@ -226,7 +231,7 @@ namespace LoveSeat.Support
                 }
                 var response = (HttpWebResponse)webEx.Response;
                 if (response == null)
-                    throw new HttpException("Request failed to receive a response");
+                    throw new HttpException("Request failed to receive a response. " + webEx.Message );
                 return response;
             }
             throw new HttpException("Request failed to receive a response");
