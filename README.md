@@ -7,6 +7,10 @@ don't know what's going on.  LoveSeat will not introduce unneeded dependancies a
 attempt to remove programmer burden while leaving you close enough to the metal that you are 
 able to utilize the full featureset of CouchDb.
 
+This Fork
+=========
+This fork of LoveSeat adds features needed to connect to Cloudant including Lucene based search
+
 
 Tested compatibility
 ====================
