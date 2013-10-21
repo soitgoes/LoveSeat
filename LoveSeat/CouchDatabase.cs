@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
@@ -13,16 +14,18 @@ namespace LoveSeat
 {
     public class CouchDatabase : CouchBase, IDocumentDatabase
     {
+        private readonly string databaseName;
         public IObjectSerializer ObjectSerializer = new DefaultSerializer();
 
-        private readonly string databaseBaseUri;
+        protected readonly string DatabaseBaseUri;
         private string defaultDesignDoc = null;
 
         public CouchDatabase(string baseUri, string databaseName, string username, string password, AuthenticationType aT, DbType dbType)
             : base(username, password, aT, dbType)
         {
+            this.databaseName = databaseName;
             this.baseUri = baseUri;
-            this.databaseBaseUri = baseUri + databaseName;
+            this.DatabaseBaseUri = baseUri + databaseName;
         }
 
         /// <summary>
@@ -37,7 +40,7 @@ namespace LoveSeat
             var jobj = JObject.Parse(jsonForDocument);
             if (jobj.Value<object>("_rev") == null)
                 jobj.Remove("_rev");
-            var resp = GetRequest(databaseBaseUri + "/" + id)
+            var resp = GetRequest(DatabaseBaseUri + "/" + id)
                 .Put().Form()
                 .Data(jobj.ToString(Formatting.None))
                 .GetCouchResponse();
@@ -63,14 +66,14 @@ namespace LoveSeat
         {
             var json = JObject.Parse(jsonForDocument); //to make sure it's valid json
             var jobj =
-                GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetCouchResponse().GetJObject();
+                GetRequest(DatabaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetCouchResponse().GetJObject();
             return jobj;
         }
         public CouchResponseObject DeleteDocument(string id, string rev)
         {
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(rev))
                 throw new Exception("Both id and rev must have a value that is not empty");
-            return GetRequest(databaseBaseUri + "/" + id + "?rev=" + rev).Delete().Form().GetCouchResponse().GetJObject();
+            return GetRequest(DatabaseBaseUri + "/" + id + "?rev=" + rev).Delete().Form().GetCouchResponse().GetJObject();
         }
         /// <summary>
         /// Returns null if document is not found
@@ -79,7 +82,7 @@ namespace LoveSeat
         /// <returns></returns>
         public T GetDocument<T>(string id, bool attachments, IObjectSerializer objectSerializer)
         {
-            var resp = GetRequest(String.Format("{0}/{1}{2}", databaseBaseUri, id, attachments ? "?attachments=true" : string.Empty)).Get().Json().GetCouchResponse();
+            var resp = GetRequest(String.Format("{0}/{1}{2}", DatabaseBaseUri, id, attachments ? "?attachments=true" : string.Empty)).Get().Json().GetCouchResponse();
             if (resp.StatusCode == HttpStatusCode.NotFound) return default(T);
             return objectSerializer.Deserialize<T>(resp.ResponseString);
         }
@@ -113,7 +116,7 @@ namespace LoveSeat
         }
         public Document GetDocument(string id, bool attachments)
         {
-            var resp = GetRequest(String.Format("{0}/{1}{2}", databaseBaseUri, id, attachments ? "?attachments=true" : string.Empty))
+            var resp = GetRequest(String.Format("{0}/{1}{2}", DatabaseBaseUri, id, attachments ? "?attachments=true" : string.Empty))
                 .Get().Json().GetCouchResponse();
             if (resp.StatusCode == HttpStatusCode.NotFound) return null;
             return resp.GetCouchDocument();
@@ -139,7 +142,7 @@ namespace LoveSeat
                 Keys = keyLst.Values.Select(x => new KeyOptions(x)).ToArray()
             };
 
-            CouchResponse resp = GetRequest(viewOptions, databaseBaseUri + "/_all_docs").GetCouchResponse();
+            CouchResponse resp = GetRequest(viewOptions, DatabaseBaseUri + "/_all_docs").GetCouchResponse();
 
             if (resp == null) return null;
 
@@ -159,7 +162,7 @@ namespace LoveSeat
         /// <returns>JSON of updated documents in the BulkDocumentResponse class.  </returns>
         public virtual BulkDocumentResponses SaveDocuments(Documents docs, bool all_or_nothing)
         {
-            string uri = databaseBaseUri + "/_bulk_docs";
+            string uri = DatabaseBaseUri + "/_bulk_docs";
 
             string data = Newtonsoft.Json.JsonConvert.SerializeObject(docs);
 
@@ -214,7 +217,7 @@ namespace LoveSeat
         public CouchResponseObject AddAttachment(string id, string rev, byte[] attachment, string filename, string contentType)
         {
             return
-                GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, filename, rev)).Put().ContentType(contentType).Data(attachment).GetCouchResponse().GetJObject();
+                GetRequest(string.Format("{0}/{1}/{2}?rev={3}", DatabaseBaseUri, id, filename, rev)).Put().ContentType(contentType).Data(attachment).GetCouchResponse().GetJObject();
         }
         /// <summary>
         /// Adds an attachment to a document.  If revision is not specified then the most recent will be fetched and used.  Warning: if you need document update conflicts to occur please use the method that specifies the revision
@@ -239,7 +242,7 @@ namespace LoveSeat
         public CouchResponseObject AddAttachment(string id, string rev, Stream attachmentStream, string filename, string contentType)
         {
             return
-                GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, filename, rev)).Put().ContentType(contentType).Data(attachmentStream).GetCouchResponse().GetJObject();
+                GetRequest(string.Format("{0}/{1}/{2}?rev={3}", DatabaseBaseUri, id, filename, rev)).Put().ContentType(contentType).Data(attachmentStream).GetCouchResponse().GetJObject();
         }
 
         public Stream GetAttachmentStream(Document doc, string attachmentName)
@@ -248,7 +251,7 @@ namespace LoveSeat
         }
         public Stream GetAttachmentStream(string docId, string rev, string attachmentName)
         {
-            return GetRequest(string.Format("{0}/{1}/{2}", databaseBaseUri, docId, HttpUtility.UrlEncode(attachmentName))).Get().GetHttpResponse().GetResponseStream();
+            return GetRequest(string.Format("{0}/{1}/{2}", DatabaseBaseUri, docId, HttpUtility.UrlEncode(attachmentName))).Get().GetHttpResponse().GetResponseStream();
         }
         public Stream GetAttachmentStream(string docId, string attachmentName)
         {
@@ -258,7 +261,7 @@ namespace LoveSeat
         }
         public CouchResponseObject DeleteAttachment(string id, string rev, string attachmentName)
         {
-            return GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, attachmentName, rev)).Json().Delete().GetCouchResponse().GetJObject();
+            return GetRequest(string.Format("{0}/{1}/{2}?rev={3}", DatabaseBaseUri, id, attachmentName, rev)).Json().Delete().GetCouchResponse().GetJObject();
         }
         public CouchResponseObject DeleteAttachment(string id, string attachmentName)
         {
@@ -271,7 +274,7 @@ namespace LoveSeat
             if (document.Rev == null)
                 return CreateDocument(document);
 
-            var resp = GetRequest(string.Format("{0}/{1}?rev={2}", databaseBaseUri, document.Id, document.Rev)).Put().Form().Data(document).GetCouchResponse();
+            var resp = GetRequest(string.Format("{0}/{1}?rev={2}", DatabaseBaseUri, document.Id, document.Rev)).Put().Form().Data(document).GetCouchResponse();
             return resp.GetJObject();
         }
 
@@ -309,7 +312,7 @@ namespace LoveSeat
         /// <returns>JSON success statement if the response code is Accepted</returns>
         public JObject ViewCleanup()
         {
-            return CheckAccepted(GetRequest(databaseBaseUri + "/_view_cleanup").Post().Json().GetCouchResponse());
+            return CheckAccepted(GetRequest(DatabaseBaseUri + "/_view_cleanup").Post().Json().GetCouchResponse());
         }
 
         /// <summary>
@@ -318,7 +321,7 @@ namespace LoveSeat
         /// <returns></returns>
         public JObject Compact()
         {
-            return CheckAccepted(GetRequest(databaseBaseUri + "/_compact").Post().Json().GetCouchResponse());
+            return CheckAccepted(GetRequest(DatabaseBaseUri + "/_compact").Post().Json().GetCouchResponse());
         }
 
         /// <summary>
@@ -329,7 +332,7 @@ namespace LoveSeat
         /// <remarks>Requires admin permissions.</remarks>
         public JObject Compact(string designDoc)
         {
-            return CheckAccepted(GetRequest(databaseBaseUri + "/_compact/" + designDoc).Post().Json().GetCouchResponse());
+            return CheckAccepted(GetRequest(DatabaseBaseUri + "/_compact/" + designDoc).Post().Json().GetCouchResponse());
         }
 
         private static JObject CheckAccepted(CouchResponse resp)
@@ -364,13 +367,13 @@ namespace LoveSeat
         public string Show(string showName, string docId, string designDoc)
         {
             //TODO:  add in Etag support for Shows
-            var uri = string.Format("{0}/_design/{1}/_show/{2}/{3}", databaseBaseUri, designDoc, showName, docId);
+            var uri = string.Format("{0}/_design/{1}/_show/{2}/{3}", DatabaseBaseUri, designDoc, showName, docId);
             var req = GetRequest(uri);
             return req.GetCouchResponse().ResponseString;
         }
         public IListResult List(string listName, string viewName, ViewOptions options, string designDoc)
         {
-            var uri = string.Format("{0}/_design/{1}/_list/{2}/{3}{4}", databaseBaseUri, designDoc, listName, viewName, options.ToString());
+            var uri = string.Format("{0}/_design/{1}/_list/{2}/{3}{4}", DatabaseBaseUri, designDoc, listName, viewName, options.ToString());
             var req = GetRequest(uri);
             return new ListResult(req.GetRequest(), req.GetCouchResponse());
         }
@@ -408,7 +411,7 @@ namespace LoveSeat
         /// <returns></returns>
 		public virtual ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc)
         {
-            var uri = string.Format("{0}/_design/{1}/_view/{2}", databaseBaseUri, designDoc, viewName);
+            var uri = string.Format("{0}/_design/{1}/_view/{2}", DatabaseBaseUri, designDoc, viewName);
             return ProcessGenericResults<T>(uri, options);
         }
         /// <summary>
@@ -426,7 +429,7 @@ namespace LoveSeat
 
 		public virtual ViewResult View(string viewName, ViewOptions options, string designDoc)
         {
-            var uri = string.Format("{0}/_design/{1}/_view/{2}", databaseBaseUri, designDoc, viewName);
+            var uri = string.Format("{0}/_design/{1}/_view/{2}", DatabaseBaseUri, designDoc, viewName);
             return ProcessResults(uri, options);
         }
 
@@ -463,19 +466,19 @@ namespace LoveSeat
         /// <returns></returns>
         public ViewResult GetAllDocuments()
         {
-            var uri = databaseBaseUri + "/_all_docs";
+            var uri = DatabaseBaseUri + "/_all_docs";
             return ProcessResults(uri, null);
         }
         public ViewResult GetAllDocuments(ViewOptions options)
         {
-            var uri = databaseBaseUri + "/_all_docs";
+            var uri = DatabaseBaseUri + "/_all_docs";
             return ProcessResults(uri, options);
         }
 
 		#region Exist
 		public bool DoesDbExist()
 		{
-			var uri = databaseBaseUri + "/_all_docs";
+			var uri = DatabaseBaseUri + "/_all_docs";
 			var request = GetRequest(uri);
 			request.GetRequest().Method = "HEAD";
 
@@ -484,11 +487,33 @@ namespace LoveSeat
 			return resp.StatusCode == HttpStatusCode.OK;
 		}
 		#endregion
-		#region Search
+		#region Cloudant
+
+        public void SetPermissions(string username, string[] roles, string account)
+        {
+            var postParams = new NameValueCollection
+                {
+                    {"database", string.Format("{0}/{1}", account, databaseName)},
+                    {"username", username},
+
+                };
+
+            Array.ForEach(roles, r => postParams.Add("roles", r));
+
+           // var uri = string.Format("https://cloudant.com/api/set_permissions?{0}", postParams.ToQueryString());
+            var uri = "https://cloudant.com/api/set_permissions?{0}";
+
+            var request = GetRequest(uri).Post().Data(postParams.ToQueryString()).ContentType("application/x-www-form-urlencoded");
+
+            var resp = request.GetCouchResponse();
+
+            if (!resp.GetJObject().Value<bool>("ok") )
+                throw new CouchException(request.GetRequest(), resp, "Failed to set permissions." + resp.ResponseString);
+        }
 
 		public JObject Search(string query)
 		{
-			var uri = databaseBaseUri + "/_design/rowindex/_search/rowindex?" + query;
+			var uri = DatabaseBaseUri + "/_design/rowindex/_search/rowindex?" + query;
 			var request = GetRequest(uri);
 			var resp = request.GetCouchResponse();
 			return resp.GetJObject();
@@ -496,7 +521,7 @@ namespace LoveSeat
 
 		public CouchRequest SearchRequest(string query, string designDoc, string index)
 		{
-			var uri = string.Format("{0}/_design/{1}/_search/{2}?{3}", databaseBaseUri, designDoc, index, query);
+			var uri = string.Format("{0}/_design/{1}/_search/{2}?{3}", DatabaseBaseUri, designDoc, index, query);
             Logger.DebugFormat("SearchRequest: {0}", uri);
 			var request = GetRequest(uri);
 			return request;
@@ -507,7 +532,7 @@ namespace LoveSeat
         #region Security
         public SecurityDocument getSecurityConfiguration()
         {
-            string request = databaseBaseUri + "/_security";
+            string request = DatabaseBaseUri + "/_security";
 
             var docResult = GetRequest(request).Get().Json().GetCouchResponse().GetJObject();
 
@@ -522,7 +547,7 @@ namespace LoveSeat
         /// <param name="sDoc"></param>
         public void UpdateSecurityDocument(SecurityDocument sDoc)
         {
-            string request = databaseBaseUri + "/_security";
+            string request = DatabaseBaseUri + "/_security";
 
             // serialize SecurityDocument to json
             string data = Newtonsoft.Json.JsonConvert.SerializeObject(sDoc);
