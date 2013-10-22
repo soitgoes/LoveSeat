@@ -80,37 +80,37 @@ namespace LoveSeat
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public T GetDocument<T>(string id, bool attachments, IObjectSerializer objectSerializer)
+        public virtual T GetDocument<T>(string id, bool attachments, IObjectSerializer objectSerializer)
         {
             var resp = GetRequest(String.Format("{0}/{1}{2}", DatabaseBaseUri, id, attachments ? "?attachments=true" : string.Empty)).Get().Json().GetCouchResponse();
             if (resp.StatusCode == HttpStatusCode.NotFound) return default(T);
             return objectSerializer.Deserialize<T>(resp.ResponseString);
         }
-        public T GetDocument<T>(string id, IObjectSerializer objectSerializer)
+        public virtual T GetDocument<T>(string id, IObjectSerializer objectSerializer)
         {
             return GetDocument<T>(id, false, objectSerializer);
         }
-        public T GetDocument<T>(string id, bool attachments)
+        public virtual T GetDocument<T>(string id, bool attachments)
         {
             return GetDocument<T>(id, attachments, ObjectSerializer);
         }
-        public T GetDocument<T>(string id)
+        public virtual T GetDocument<T>(string id)
         {
             return GetDocument<T>(id, false);
         }
-        public T GetDocument<T>(Guid id, bool attachments, IObjectSerializer objectSerializer)
+        public virtual T GetDocument<T>(Guid id, bool attachments, IObjectSerializer objectSerializer)
         {
             return GetDocument<T>(id.ToString(), attachments, objectSerializer);
         }
-        public T GetDocument<T>(Guid id, IObjectSerializer objectSerializer)
+        public virtual T GetDocument<T>(Guid id, IObjectSerializer objectSerializer)
         {
             return GetDocument<T>(id, false, objectSerializer);
         }
-        public T GetDocument<T>(Guid id, bool attachments)
+        public virtual T GetDocument<T>(Guid id, bool attachments)
         {
             return GetDocument<T>(id.ToString(), attachments);
         }
-        public T GetDocument<T>(Guid id)
+        public virtual T GetDocument<T>(Guid id)
         {
             return GetDocument<T>(id, false);
         }
