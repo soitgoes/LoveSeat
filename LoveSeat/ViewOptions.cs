@@ -110,7 +110,14 @@ namespace LoveSeat
         /// </summary>
         internal bool isAtKeysSizeLimit
         {
-            get { return Keys != null && Keys.Any() && Keys.ToString().Length > KeysLengthLimit; }
+            get
+            {
+                if (Keys == null)
+                    return false;
+
+                var keyString = new string(Keys.SelectMany(k => k.ToRawString()).ToArray());
+                return Keys.Any() && keyString.ToString().Length > KeysLengthLimit;
+            }
         }
     }
    

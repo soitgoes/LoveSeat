@@ -67,7 +67,10 @@ namespace LoveSeat
         /// Typically won't be needed.  Provided for debuging assistance
         /// </summary>
         public HttpWebRequest Request { get { return request; } }
-
+        /// <summary>
+        /// Typically won't be needed.  Provided for debugging assistance
+        /// </summary>
+        public CouchResponse Response { get { return response; } }
         public HttpStatusCode StatusCode { get { return response.StatusCode; } }
 
         public string Etag { get { return response.ETag; } }
@@ -163,11 +166,5 @@ namespace LoveSeat
         /// Provides a formatted version of the json returned from this Result.  (Avoid this method in favor of RawString as it's much more performant)
         /// </summary>
         public string FormattedResponse { get { return Json.ToString(Formatting.Indented); } }
-
-        public HttpWebResponse Response
-        {
-            get { throw new NotImplementedException(); }
-        }
-
     }
 }

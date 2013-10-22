@@ -21,6 +21,11 @@ namespace LoveSeat
             get { return request; }
         }
 
+        public CouchResponse Response
+        {
+            get { return response; }
+        }
+
         public HttpStatusCode StatusCode
         {
             get { return response.StatusCode; }

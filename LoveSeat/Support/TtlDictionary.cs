@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LoveSeat.Support
 {
-    internal class TtlDictionary<X, Y>
+	public class TtlDictionary<X, Y>
     {
         private readonly Dictionary<X, Y> items;
         private readonly Dictionary<X, DateTime> expiration;
@@ -16,26 +16,36 @@ namespace LoveSeat.Support
             expiration = new Dictionary<X, DateTime>();
         }
 
+    	public Dictionary<X, Y> Items
+    	{
+    		get { return items; }
+    	}
+
+    	public Dictionary<X, DateTime> Expiration
+    	{
+    		get { return expiration; }
+    	}
+
         public void Add(X key, Y value, TimeSpan ttl)
         {
-            if (items.ContainsKey(key))
+            if (Items.ContainsKey(key))
             {
-                items.Remove(key);
-                expiration.Remove(key);
+                Items.Remove(key);
+                Expiration.Remove(key);
             }
-            items.Add(key, value);
-            expiration.Add(key, DateTime.Now.Add(ttl));
+            Items.Add(key, value);
+            Expiration.Add(key, DateTime.Now.Add(ttl));
             RemoveExpiredKeys();
         }
 
         private void RemoveExpiredKeys()
         {
-            foreach (var key in expiration.Keys)
+            foreach (var key in Expiration.Keys)
             {
-                if (expiration[key] < DateTime.Now)
+                if (Expiration[key] < DateTime.Now)
                 {
-                    expiration.Remove(key);
-                    items.Remove(key);
+                    Expiration.Remove(key);
+                    Items.Remove(key);
                 }
             }
         }
@@ -43,9 +53,9 @@ namespace LoveSeat.Support
         {
             get
             {
-                if (expiration.ContainsKey(key) && expiration[key] > DateTime.Now)
+                if (Expiration.ContainsKey(key) && Expiration[key] > DateTime.Now)
                 {
-                    return items[key];
+                    return Items[key];
                 }
                 else
                 {

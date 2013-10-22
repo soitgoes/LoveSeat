@@ -3,6 +3,11 @@ using System.Net;
 
 namespace LoveSeat.Support
 {
+	public enum DbType
+	{
+		CouchDb,
+		Cloudant
+	}
     public abstract class CouchBase
     {
         protected readonly string username;
@@ -11,17 +16,27 @@ namespace LoveSeat.Support
         protected string baseUri;
         private TtlDictionary<string, Cookie> cookiestore = new TtlDictionary<string, Cookie>();
         private int? timeout;
+		public static log4net.ILog Logger = log4net.LogManager.GetLogger("LoveSeat");
+		protected DbType dbType;
 
         protected CouchBase()
         {
             throw new Exception("Should not be used.");
         }
-        protected CouchBase(string username, string password, AuthenticationType aT)
+        protected CouchBase(string username, string password, AuthenticationType aT, DbType dbType)
         {
             this.username = username;
             this.password = password;
             this.authType = aT;
+        	this.dbType = dbType;
         }
+
+    	public string BaseUri
+    	{
+    		get { return baseUri; }
+    		set { baseUri = value; }
+    	}
+
         public static bool Authenticate(string baseUri, string userName, string password)
         {
             if (!baseUri.Contains("http://"))
@@ -34,7 +49,9 @@ namespace LoveSeat.Support
                 .GetCouchResponse();
             return response.StatusCode == HttpStatusCode.OK;
         }
-        public Cookie GetSession() {
+
+        public Cookie GetSession()
+        {
             var authCookie = cookiestore["authcookie"];
 
             if (authCookie != null)
@@ -60,12 +77,13 @@ namespace LoveSeat.Support
                 return authCookie;
             }
         }
-
+        
         public void SetTimeout(int timeoutMs)
         {
             timeout = timeoutMs;
         }
 
+        
         protected CouchRequest GetRequest(string uri)
         {
             return GetRequest(uri, null);

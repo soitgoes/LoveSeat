@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using LoveSeat.Interfaces;
+using LoveSeat.Support;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -28,7 +29,7 @@ namespace LoveSeat.IntegrationTest
 		[SetUp]
 		public void Setup()
 		{
-			client = new CouchClient(host, port, username, password, false,AuthenticationType.Cookie);
+			client = new CouchClient(host, port, username, password, false,AuthenticationType.Cookie, DbType.CouchDb);
 			if (!client.HasDatabase(baseDatabase))
 			{
 				client.CreateDatabase(baseDatabase);
@@ -257,6 +258,34 @@ namespace LoveSeat.IntegrationTest
             // With IncludeDocs
             ViewOptions options = new ViewOptions { IncludeDocs = true };
             Assert.AreEqual("foo", db.View<Company>(viewName, options, designDoc).Items.ToList()[0].Name);
+        }
+
+        [Test]
+        public void Should_Use_Post_With_Many_Keys()
+        {
+            //this test ensures that request with lots of keys still work
+            //it should switch from get to post
+            var db = client.GetDatabase(baseDatabase);
+
+            var docIds = new HashSet<string>();
+            //create 1000 documents
+            for (int i = 0; i < 1000; i++)
+            {
+                var doc = new Document<Bunny>(new Bunny());
+                doc.Id = Guid.NewGuid().ToString();
+           
+                db.CreateDocument(doc);
+
+                docIds.Add(doc.Id);
+            }
+
+            var keys = new Keys();
+            keys.Values.AddRange(docIds);
+
+            var docs = db.GetDocuments(keys);
+            Assert.IsNotNull(docs, "Should be able to get many docs");
+
+            Assert.AreEqual(1000, docs.Keys.Count());
         }
 	}
     public class Company : IBaseObject
