@@ -114,14 +114,14 @@ namespace LoveSeat
         {
             return GetDocument<T>(id, false);
         }
-        public Document GetDocument(string id, bool attachments)
+        public virtual Document GetDocument(string id, bool attachments)
         {
             var resp = GetRequest(String.Format("{0}/{1}{2}", DatabaseBaseUri, id, attachments ? "?attachments=true" : string.Empty))
                 .Get().Json().GetCouchResponse();
             if (resp.StatusCode == HttpStatusCode.NotFound) return null;
             return resp.GetCouchDocument();
         }
-        public Document GetDocument(string id)
+        public virtual Document GetDocument(string id)
         {
             return GetDocument(id, false);
         }
@@ -132,7 +132,7 @@ namespace LoveSeat
         /// </summary>
         /// <param name="keyLst"></param>
         /// <returns></returns>
-        public ViewResult GetDocuments(Keys keyLst)
+        public virtual ViewResult GetDocuments(Keys keyLst)
         {
             // serialize list of keys to json
             string data = Newtonsoft.Json.JsonConvert.SerializeObject(keyLst);
