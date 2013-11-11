@@ -118,5 +118,7 @@ namespace LoveSeat.Interfaces
         /// </summary>
         /// <param name="timeoutMs">The timeout value, in milliseconds.</param>
         void SetTimeout(int timeoutMs);
+
+        void SetDefaultDesignDoc(string designDoc);
     }
 }
