@@ -177,6 +177,7 @@ namespace LoveSeat.Support
             bool failedAuth = false;
             try
             {
+                CouchBase.Logger.DebugFormat("GetCouchResponse {1} {0}", request.RequestUri, request.Method);
                 using (var response = (HttpWebResponse)request.GetResponse())
                 {
                     string msg = "";
