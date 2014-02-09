@@ -4,6 +4,8 @@ using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
+    using LoveSeat.Interfaces;
+
     public class CouchConfiguration
     {
         public CouchConfiguration()

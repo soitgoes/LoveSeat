@@ -7,6 +7,11 @@ namespace LoveSeat
     /// </summary>
     public class CouchResponseObject : JObject
     {
+        public CouchResponseObject()
+            : base()
+        {
+        }
+
         public CouchResponseObject(JObject obj)
             : base(obj)
         {

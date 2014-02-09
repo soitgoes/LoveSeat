@@ -3,11 +3,16 @@ using System.Net;
 
 namespace LoveSeat.Support
 {
+    using LoveSeat.Interfaces;
+
     public abstract class CouchBase
     {
         protected readonly string username;
         protected readonly string password;
         protected readonly AuthenticationType authType;
+
+        protected readonly IConfigWebRequest configWebRequest;
+
         protected string baseUri;
         private TtlDictionary<string, Cookie> cookiestore = new TtlDictionary<string, Cookie>();
         private int? timeout;
@@ -16,11 +21,12 @@ namespace LoveSeat.Support
         {
             throw new Exception("Should not be used.");
         }
-        protected CouchBase(string username, string password, AuthenticationType aT)
+        protected CouchBase(string username, string password, AuthenticationType aT, IConfigWebRequest configWebRequest = null)
         {
             this.username = username;
             this.password = password;
             this.authType = aT;
+            this.configWebRequest = configWebRequest;
         }
         public static bool Authenticate(string baseUri, string userName, string password)
         {
@@ -76,15 +82,15 @@ namespace LoveSeat.Support
             CouchRequest request;
             if (AuthenticationType.Cookie == this.authType)
             {
-                request = new CouchRequest(uri, GetSession(), etag);
+                request = new CouchRequest(uri, GetSession(), etag, configWebRequest);
             }
             else if (AuthenticationType.Basic == this.authType) //Basic Authentication
             {
-                request = new CouchRequest(uri, username, password);
+                request = new CouchRequest(uri, username, password, configWebRequest);
             }
             else //default Cookie
             {
-                request = new CouchRequest(uri, GetSession(), etag);
+                request = new CouchRequest(uri, GetSession(), etag, configWebRequest);
             }
             if (timeout.HasValue) request.Timeout(timeout.Value);
             return request;
