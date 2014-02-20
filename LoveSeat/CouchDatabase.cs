@@ -17,8 +17,8 @@ namespace LoveSeat
 
         private readonly string databaseBaseUri;
         private string defaultDesignDoc = null;
-        internal CouchDatabase(string baseUri, string databaseName, string username, string password, AuthenticationType aT)
-            : base(username, password, aT)
+        internal CouchDatabase(string baseUri, string databaseName, string username, string password, AuthenticationType aT, IConfigWebRequest configWebRequest)
+            : base(username, password, aT, configWebRequest)
         {
             this.baseUri = baseUri;
             this.databaseBaseUri = baseUri + databaseName;
@@ -37,7 +37,7 @@ namespace LoveSeat
             if (jobj.Value<object>("_rev") == null)
                 jobj.Remove("_rev");
             var resp = GetRequest(databaseBaseUri + "/" + id)
-                .Put().Form()
+                .Put().Json()
                 .Data(jobj.ToString(Formatting.None))
                 .GetCouchResponse();
             return
@@ -446,7 +446,7 @@ namespace LoveSeat
             if (options != null)
                 uri += options.ToString();
             CouchRequest request = GetRequest(uri, options == null ? null : options.Etag).Get().Json();
-            if (options.isAtKeysSizeLimit)
+            if (options != null && options.isAtKeysSizeLimit)
             {
                 // Encode the keys parameter in the request body and turn it into a POST request.
                 string keys = "{\"keys\": [" + String.Join(",", options.Keys.Select(k => k.ToRawString()).ToArray()) + "]}";

@@ -6,6 +6,8 @@ using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
+    using LoveSeat.Interfaces;
+
     // type of authentication used in request to CouchDB
     public enum AuthenticationType
     { Basic, Cookie };
@@ -43,8 +45,8 @@ namespace LoveSeat
         /// <param name="port">The port of the CouchDB instance</param>
         /// <param name="username">The username of the CouchDB instance</param>Cou
         /// <param name="password">The password of the CouchDB instance</param>
-        public CouchClient(string host, int port, string username, string password, bool isHttps, AuthenticationType aT)
-            : base(username, password, aT)
+        public CouchClient(string host, int port, string username, string password, bool isHttps, AuthenticationType aT, IConfigWebRequest configWebRequest = null)
+            : base(username, password, aT, configWebRequest)
         {
             if (isHttps == false)
             {
@@ -119,7 +121,7 @@ namespace LoveSeat
         /// <returns></returns>
         public CouchDatabase GetDatabase(string databaseName)
         {
-            return new CouchDatabase(baseUri, databaseName, username, password, this.authType);
+            return new CouchDatabase(baseUri, databaseName, username, password, this.authType, configWebRequest);
         }
 
         /// <summary>
@@ -198,7 +200,7 @@ namespace LoveSeat
         /// <returns></returns>
         public Document GetUser(string userId)
         {
-            var db = new CouchDatabase(baseUri, "_users", username, password, this.authType);
+            var db = new CouchDatabase(baseUri, "_users", username, password, this.authType, configWebRequest);
             userId = "org.couchdb.user:" + HttpUtility.UrlEncode(userId);
             return db.GetDocument(userId);
         }

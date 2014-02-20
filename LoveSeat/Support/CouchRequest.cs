@@ -6,6 +6,8 @@ using Newtonsoft.Json.Linq;
 
 namespace LoveSeat.Support
 {
+    using LoveSeat.Interfaces;
+
     /// <summary>
     /// Repersent a web request for CouchDB database.
     /// </summary>
@@ -21,13 +23,14 @@ namespace LoveSeat.Support
         {
         }
 
+
         /// <summary>
         /// Request with Cookie authentication
         /// </summary>
         /// <param name="uri"></param>
         /// <param name="authCookie"></param>
         /// <param name="eTag"></param>
-        public CouchRequest(string uri, Cookie authCookie, string eTag)
+        public CouchRequest(string uri, Cookie authCookie, string eTag, IConfigWebRequest configWebRequest = null)
         {
             request = (HttpWebRequest)WebRequest.Create(uri);
             request.Headers.Clear(); //important
@@ -42,6 +45,10 @@ namespace LoveSeat.Support
             if (authCookie != null)
                 request.Headers.Add("Cookie", "AuthSession=" + authCookie.Value);
             request.Timeout = 10000;
+            if (configWebRequest != null)
+            {
+                configWebRequest.ConfigWebRequest(request);
+            }
         }
 
         /// <summary>
@@ -50,7 +57,7 @@ namespace LoveSeat.Support
         /// <param name="uri"></param>
         /// <param name="username"></param>
         /// <param name="password"></param>
-        public CouchRequest(string uri, string username, string password)
+        public CouchRequest(string uri, string username, string password, IConfigWebRequest configWebRequest = null)
         {
 
             request = (HttpWebRequest)WebRequest.Create(uri);
@@ -75,6 +82,10 @@ namespace LoveSeat.Support
             request.ContentType = "application/json";
             request.KeepAlive = true;
             request.Timeout = 10000;
+            if (configWebRequest != null)
+            {
+                configWebRequest.ConfigWebRequest(request);    
+            }
         }
 
 
