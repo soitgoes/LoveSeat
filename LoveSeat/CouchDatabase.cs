@@ -15,7 +15,12 @@ namespace LoveSeat
     public class CouchDatabase : CouchBase, IDocumentDatabase
     {
         private readonly string databaseName;
-        public IObjectSerializer ObjectSerializer = new DefaultSerializer();
+        private IObjectSerializer objectSerializer;
+        public IObjectSerializer ObjectSerializer
+        {
+            get { return objectSerializer ?? (objectSerializer = new DefaultSerializer()); }
+            set { objectSerializer = value; }
+        }
 
         protected readonly string DatabaseBaseUri;
         private string defaultDesignDoc = null;
