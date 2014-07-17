@@ -511,7 +511,28 @@ namespace LoveSeat
                 throw new CouchException(request.GetRequest(), resp, "Failed to set permissions." + resp.ResponseString);
         }
 
-		public JObject Search(string query)
+        public GenerateApiKeyResponse GenerateApiKey()
+        {
+            var uri = "https://cloudant.com/api/generate_api_key";
+
+            var request = GetRequest(uri).Post();
+
+            var resp = request.GetCouchResponse();
+
+
+            var response = JsonConvert.DeserializeObject<GenerateApiKeyResponse>(resp.ResponseString);
+
+            return response;
+        }
+
+        public class GenerateApiKeyResponse
+        {
+            public bool Ok { get; set; }
+            public string Key { get; set; }
+            public string Password { get; set; }
+        }
+
+        public JObject Search(string query)
 		{
 			var uri = DatabaseBaseUri + "/_design/rowindex/_search/rowindex?" + query;
 			var request = GetRequest(uri);
