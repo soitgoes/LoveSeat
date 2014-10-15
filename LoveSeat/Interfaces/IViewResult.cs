@@ -5,6 +5,12 @@ using Newtonsoft.Json.Linq;
 
 namespace LoveSeat.Interfaces
 {
+    public interface IViewResult<T> : IViewResult
+    {
+        CouchDictionary<T> Dictionary { get; }
+        IEnumerable<T> Items { get; }
+    }
+
     public interface IViewResult : System.IEquatable<IListResult>
     {
         JObject Json { get; }

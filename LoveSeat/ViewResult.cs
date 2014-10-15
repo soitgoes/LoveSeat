@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
-    public class ViewResult<T> : ViewResult
+    public class ViewResult<T> : ViewResult, IViewResult<T>
     {
         private readonly IObjectSerializer objectSerializer = null;
         private CouchDictionary<T> dict = null;
