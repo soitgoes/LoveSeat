@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,21 +8,21 @@ namespace LoveSeat.Support
 {
 	public class TtlDictionary<X, Y>
     {
-        private readonly Dictionary<X, Y> items;
-        private readonly Dictionary<X, DateTime> expiration;
+        private readonly ConcurrentDictionary<X, Y> items;
+        private readonly ConcurrentDictionary<X, DateTime> expiration;
 
         public TtlDictionary()
         {
-            items = new Dictionary<X, Y>();
-            expiration = new Dictionary<X, DateTime>();
+            items = new ConcurrentDictionary<X, Y>();
+            expiration = new ConcurrentDictionary<X, DateTime>();
         }
 
-    	public Dictionary<X, Y> Items
+        public ConcurrentDictionary<X, Y> Items
     	{
     		get { return items; }
     	}
 
-    	public Dictionary<X, DateTime> Expiration
+        public ConcurrentDictionary<X, DateTime> Expiration
     	{
     		get { return expiration; }
     	}
@@ -30,11 +31,14 @@ namespace LoveSeat.Support
         {
             if (Items.ContainsKey(key))
             {
-                Items.Remove(key);
-                Expiration.Remove(key);
+                var removed = default(Y);
+                Items.TryRemove(key, out removed);
+
+                DateTime removeDateTime;
+                Expiration.TryRemove(key, out removeDateTime);
             }
-            Items.Add(key, value);
-            Expiration.Add(key, DateTime.Now.Add(ttl));
+            Items.TryAdd(key, value);
+            Expiration.TryAdd(key, DateTime.Now.Add(ttl));
             RemoveExpiredKeys();
         }
 
@@ -44,8 +48,12 @@ namespace LoveSeat.Support
             {
                 if (Expiration[key] < DateTime.Now)
                 {
-                    Expiration.Remove(key);
-                    Items.Remove(key);
+                    var removed = default(Y);
+
+                    DateTime removeDateTime;
+
+                    Expiration.TryRemove(key, out removeDateTime);
+                    Items.TryRemove(key, out removed);
                 }
             }
         }

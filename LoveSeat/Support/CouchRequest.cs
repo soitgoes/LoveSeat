@@ -174,6 +174,7 @@ namespace LoveSeat.Support
         /// <returns></returns>
         public CouchResponse GetCouchResponse()
         {
+
             bool failedAuth = false;
             try
             {

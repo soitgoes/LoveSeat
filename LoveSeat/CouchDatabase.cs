@@ -26,7 +26,7 @@ namespace LoveSeat
         private string defaultDesignDoc = null;
 
         public CouchDatabase(string baseUri, string databaseName, string username, string password, AuthenticationType aT, DbType dbType)
-            : base(username, password, aT, dbType)
+            : base(username, password, aT, dbType, baseUri)
         {
             this.databaseName = databaseName;
             this.baseUri = baseUri;

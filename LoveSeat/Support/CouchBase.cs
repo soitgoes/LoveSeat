@@ -18,17 +18,21 @@ namespace LoveSeat.Support
         private int? timeout;
 		public static log4net.ILog Logger = log4net.LogManager.GetLogger("LoveSeat");
 		protected DbType dbType;
+        private Cookie sessionCookie;
 
         protected CouchBase()
         {
             throw new Exception("Should not be used.");
         }
-        protected CouchBase(string username, string password, AuthenticationType aT, DbType dbType)
+        protected CouchBase(string username, string password, AuthenticationType aT, DbType dbType, string baseUri)
         {
             this.username = username;
             this.password = password;
             this.authType = aT;
         	this.dbType = dbType;
+            this.baseUri = baseUri;
+            if (aT == AuthenticationType.Cookie)
+                sessionCookie = GetSession();
         }
 
     	public string BaseUri
@@ -76,6 +80,7 @@ namespace LoveSeat.Support
                 }
                 return authCookie;
             }
+
         }
         
         public void SetTimeout(int timeoutMs)
@@ -94,7 +99,7 @@ namespace LoveSeat.Support
             CouchRequest request;
             if (AuthenticationType.Cookie == this.authType)
             {
-                request = new CouchRequest(uri, GetSession(), etag);
+                request = new CouchRequest(uri, sessionCookie, etag);
             }
             else if (AuthenticationType.Basic == this.authType) //Basic Authentication
             {
@@ -102,7 +107,7 @@ namespace LoveSeat.Support
             }
             else //default Cookie
             {
-                request = new CouchRequest(uri, GetSession(), etag);
+                request = new CouchRequest(uri, sessionCookie, etag);
             }
             if (timeout.HasValue) request.Timeout(timeout.Value);
             return request;

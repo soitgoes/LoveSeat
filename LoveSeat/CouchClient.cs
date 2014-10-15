@@ -16,7 +16,7 @@ namespace LoveSeat
     public class CouchClient : CouchBase
     {
         // Authentication type used in request to CouchDB
-        protected readonly AuthenticationType authType;
+        //protected readonly AuthenticationType authType;
 
         /// <summary>
         /// This is only intended for use if your CouchDb is in Admin Party
@@ -44,19 +44,24 @@ namespace LoveSeat
         /// <param name="username">The username of the CouchDB instance</param>Cou
         /// <param name="password">The password of the CouchDB instance</param>
         public CouchClient(string host, int port, string username, string password, bool isHttps, AuthenticationType aT, DbType dbType)
-            : base(username, password, aT, dbType)
+            : base(username, password, aT, dbType, GetBaseUri(host, port, isHttps))
         {
-            if (isHttps == false)
-            {
-                baseUri = "http://" + host + ":" + port + "/";
-            }
-            else
-            {
-                baseUri = "https://" + host + ":" + port + "/";
-            }
+            //if (isHttps == false)
+            //{
+            //    baseUri = "http://" + host + ":" + port + "/";
+            //}
+            //else
+            //{
+            //    baseUri = "https://" + host + ":" + port + "/";
+            //}
 
-            authType = aT;
+            //authType = aT;
 
+        }
+
+        private static string GetBaseUri(string host, int port, bool isHttps)
+        {
+            return isHttps ? "https://" + host + ":" + port + "/" : "http://" + host + ":" + port + "/";
         }
 
 

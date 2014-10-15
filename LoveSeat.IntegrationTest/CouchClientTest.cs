@@ -209,7 +209,7 @@ namespace LoveSeat.IntegrationTest
             db.CreateDocument(@"{""_id"":""test_eTag_exception""}");
             ViewResult result = db.GetAllDocuments();
 	        ViewResult cachedResult = db.GetAllDocuments(new ViewOptions {Etag = result.Etag});
-            Assert.AreEqual(cachedResult.StatusCode, HttpStatusCode.NotModified);
+            Assert.AreEqual(HttpStatusCode.NotModified, cachedResult.StatusCode);
 	    } 
         [Test]
         public void Should_Get_Id_From_Existing_Document()
