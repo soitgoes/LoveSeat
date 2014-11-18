@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Management.Instrumentation;
 using System.Net;
 using LoveSeat.Interfaces;
 using LoveSeat.Support;
@@ -29,7 +30,16 @@ namespace LoveSeat.IntegrationTest
 		[SetUp]
 		public void Setup()
 		{
-			client = new CouchClient(host, port, username, password, false,AuthenticationType.Cookie, DbType.CouchDb);
+		    var connection = new CouchConnection()
+		    {
+		        Username = username,
+		        Password = password,
+		        AuthenticationType = AuthenticationType.Cookie,
+		        DbType = DbType.CouchDb,
+                DatabaseName = baseDatabase
+		    };
+		    connection.ConfigureBaseUri(host, port, false);
+            client = new CouchClient(connection);
 			if (!client.HasDatabase(baseDatabase))
 			{
 				client.CreateDatabase(baseDatabase);

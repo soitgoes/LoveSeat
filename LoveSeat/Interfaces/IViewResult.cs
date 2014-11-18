@@ -23,7 +23,7 @@ namespace LoveSeat.Interfaces
         /// <summary>
         /// Typically won't be needed.  Provided for debugging assistance
         /// </summary>
-        CouchResponse Response { get; }
+        ICouchResponse Response { get; }
 
         HttpStatusCode StatusCode { get; }
         string Etag { get; }

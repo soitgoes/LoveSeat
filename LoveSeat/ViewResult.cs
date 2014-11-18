@@ -14,7 +14,7 @@ namespace LoveSeat
     {
         private readonly IObjectSerializer objectSerializer = null;
         private CouchDictionary<T> dict = null;
-        public ViewResult(CouchResponse response, HttpWebRequest request, IObjectSerializer objectSerializer, bool includeDocs = false)
+        public ViewResult(ICouchResponse response, HttpWebRequest request, IObjectSerializer objectSerializer, bool includeDocs = false)
             : base(response, request, includeDocs)
         {
             this.objectSerializer = objectSerializer;
@@ -52,12 +52,12 @@ namespace LoveSeat
 
     public class ViewResult : IViewResult
     {
-        private readonly CouchResponse response;
+        private readonly ICouchResponse response;
         private readonly HttpWebRequest request;
         private JObject json = null;
 
         public JObject Json { get { return json ?? (json = JObject.Parse(response.ResponseString)); } }
-        public ViewResult(CouchResponse response, HttpWebRequest request, bool includeDocs = false)
+        public ViewResult(ICouchResponse response, HttpWebRequest request, bool includeDocs = false)
         {
             this.response = response;
             this.request = request;
@@ -70,7 +70,7 @@ namespace LoveSeat
         /// <summary>
         /// Typically won't be needed.  Provided for debugging assistance
         /// </summary>
-        public CouchResponse Response { get { return response; } }
+        public ICouchResponse Response { get { return response; } }
         public HttpStatusCode StatusCode { get { return response.StatusCode; } }
 
         public string Etag { get { return response.ETag; } }

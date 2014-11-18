@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat.Interfaces
@@ -120,5 +121,37 @@ namespace LoveSeat.Interfaces
         void SetTimeout(int timeoutMs);
 
         void SetDefaultDesignDoc(string designDoc);
+        Uri DatabaseBaseUri { get; }
+
+        /// <summary>
+        /// Has the session expired
+        /// </summary>
+        /// <returns></returns>
+        bool HasSessionExpired { get; }
+
+        Task<T> GetDocumentAsync<T>(string id);
+        Task<T> GetDocumentAsync<T>(string id, bool attachments);
+        Task<T> GetDocumentAsync<T>(string id, IObjectSerializer objectSerializer);
+        Task<T> GetDocumentAsync<T>(string id, bool attachments, IObjectSerializer objectSerializer);
+        Task<T> GetDocumentAsync<T>(Guid id);
+        Task<T> GetDocumentAsync<T>(Guid id, bool attachments);
+        Task<Document> GetDocumentAsync(string id, bool attachments);
+        Task<Document> GetDocumentAsync(string id);
+
+        /// <summary>
+        /// Updates security configuration for the database
+        /// </summary>
+        /// <param name="sDoc"></param>
+        void UpdateSecurityDocument(object sDoc);
+
+        object GetSecurityDocument();
+
+        /// <summary>
+        /// Request multiple documents 
+        /// in a single request.
+        /// </summary>
+        /// <param name="keyLst"></param>
+        /// <returns></returns>
+        ViewResult GetDocuments(Keys keyLst);
     }
 }

@@ -8,9 +8,9 @@ namespace LoveSeat
     public class ListResult : IListResult
     {
         private readonly HttpWebRequest request;
-        private readonly CouchResponse response;
+        private readonly ICouchResponse response;
 
-        public ListResult(HttpWebRequest request, CouchResponse response)
+        public ListResult(HttpWebRequest request, ICouchResponse response)
         {
             this.request = request;
             this.response = response;
@@ -21,7 +21,7 @@ namespace LoveSeat
             get { return request; }
         }
 
-        public CouchResponse Response
+        public ICouchResponse Response
         {
             get { return response; }
         }

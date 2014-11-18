@@ -1,22 +1,51 @@
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json.Linq;
 
 namespace LoveSeat.Support
 {
+    public interface ICouchRequest
+    {
+        ICouchRequest Put();
+        ICouchRequest Copy();
+        ICouchRequest Get();
+        ICouchRequest Post();
+        ICouchRequest Delete();
+        ICouchRequest Data(Stream data);
+        ICouchRequest Data(string data);
+        ICouchRequest Data(byte[] attachment);
+        ICouchRequest Data(JObject obj);
+        ICouchRequest ContentType(string contentType);
+        ICouchRequest Form();
+        ICouchRequest Json();
+        ICouchRequest Timeout(int timeoutMs);
+        HttpWebRequest GetRequest();
+
+        /// <summary>
+        /// Get the response from CouchDB.
+        /// </summary>
+        /// <returns></returns>
+        ICouchResponse GetCouchResponse();
+
+        HttpWebResponse GetHttpResponse();
+        Task<ICouchResponse> GetCouchResponseAsync();
+    }
+
     /// <summary>
     /// Repersent a web request for CouchDB database.
     /// </summary>
-    public class CouchRequest
+    public class CouchRequest : ICouchRequest
     {
         private const string INVALID_USERNAME_OR_PASSWORD = "reason=Name or password is incorrect";
         private const string NOT_AUTHORIZED = "reason=You are not authorized to access this db.";
         private const int STREAM_BUFFER_SIZE = 4096;
 
         private readonly HttpWebRequest request;
-        public CouchRequest(string uri)
+        public CouchRequest(Uri uri)
             : this(uri, new Cookie(), null)
         {
         }
@@ -27,7 +56,7 @@ namespace LoveSeat.Support
         /// <param name="uri"></param>
         /// <param name="authCookie"></param>
         /// <param name="eTag"></param>
-        public CouchRequest(string uri, Cookie authCookie, string eTag)
+        public CouchRequest(Uri uri, Cookie authCookie, string eTag)
         {
             request = (HttpWebRequest)WebRequest.Create(uri);
             request.Headers.Clear(); //important
@@ -36,7 +65,7 @@ namespace LoveSeat.Support
             request.Headers.Add("Accept-Charset", "utf-8");
             request.Headers.Add("Accept-Language", "en-us");
             request.Accept = "application/json";
-            request.Referer = uri;
+            request.Referer = uri.ToString();
             request.ContentType = "application/json";
             request.KeepAlive = true;
             if (authCookie != null)
@@ -52,7 +81,7 @@ namespace LoveSeat.Support
         /// <param name="uri"></param>
         /// <param name="username"></param>
         /// <param name="password"></param>
-        public CouchRequest(string uri, string username, string password) {
+        public CouchRequest(Uri uri, string username, string password) {
 
             request = (HttpWebRequest)WebRequest.Create(uri);
             request.Headers.Clear(); //important
@@ -78,33 +107,34 @@ namespace LoveSeat.Support
             request.Timeout = 10000;
         }
 
-        public CouchRequest Put() 
+        public ICouchRequest Put() 
         {
             request.Method = "PUT";
             return this;
         }
 
-		public CouchRequest Copy()
+        public ICouchRequest Copy()
 		{
 			request.Method = "COPY";
 			return this;
 		}
 
-        public CouchRequest Get() {
+        public ICouchRequest Get()
+        {
             request.Method = "GET";
             return this;
         }
-        public CouchRequest Post()
+        public ICouchRequest Post()
         {
             request.Method = "POST";
             return this;
         }
-        public CouchRequest Delete()
+        public ICouchRequest Delete()
         {
             request.Method = "DELETE";
             return this;
         }
-        public CouchRequest Data(Stream data)
+        public ICouchRequest Data(Stream data)
         {
             using (var body = request.GetRequestStream())
             {
@@ -117,7 +147,7 @@ namespace LoveSeat.Support
             }
             return this;
         }
-        public CouchRequest Data(string data)
+        public ICouchRequest Data(string data)
         {
             using (var body = request.GetRequestStream())
             {
@@ -126,7 +156,7 @@ namespace LoveSeat.Support
             }
             return this;
         }
-        public CouchRequest Data(byte[] attachment)
+        public ICouchRequest Data(byte[] attachment)
         {
             using (var body = request.GetRequestStream())
             {
@@ -134,30 +164,30 @@ namespace LoveSeat.Support
             }
             return this;
         }
-        public CouchRequest Data(JObject obj)
+        public ICouchRequest Data(JObject obj)
         {
             return Data(obj.ToString());
         }
 
-        public CouchRequest ContentType(string contentType)
+        public ICouchRequest ContentType(string contentType)
         {
             request.ContentType = contentType;
             return this;
         }
 
-        public CouchRequest Form()
+        public ICouchRequest Form()
         {
             request.ContentType = "application/x-www-form-urlencoded";
             return this;
         }
 
-        public CouchRequest Json()
+        public ICouchRequest Json()
         {
             request.ContentType = "application/json";
             return this;
         }
 
-        public CouchRequest Timeout(int timeoutMs)
+        public ICouchRequest Timeout(int timeoutMs)
         {
             request.Timeout = timeoutMs;
             return this;
@@ -168,11 +198,49 @@ namespace LoveSeat.Support
             return request;
         }
 
+
+        public async Task<ICouchResponse> GetCouchResponseAsync()
+        {
+            bool failedAuth = false;
+            try
+            {
+                CouchBase.Logger.DebugFormat("GetCouchResponse {1} {0}", request.RequestUri, request.Method);
+                using (var response = (HttpWebResponse)(await request.GetResponseAsync()))
+                {
+                    string msg = "";
+                    if (isAuthenticateOrAuthorized(response, ref msg) == false)
+                    {
+                        failedAuth = true;
+                        throw new WebException(msg);
+                    }
+
+                    if (response.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        throw new CouchException(request, response, response.GetResponseString() + "\n" + request.RequestUri);
+                    }
+
+                    return new CouchResponse(response);
+                }
+            }
+            catch (WebException webEx)
+            {
+                if (failedAuth == true)
+                {
+                    throw;
+                }
+                var response = (HttpWebResponse)webEx.Response;
+                if (response == null)
+                    throw new HttpException("Request failed to receive a response", webEx);
+                return new CouchResponse(response);
+            }
+            throw new HttpException("Request failed to receive a response");
+        }
+
         /// <summary>
         /// Get the response from CouchDB.
         /// </summary>
         /// <returns></returns>
-        public CouchResponse GetCouchResponse()
+        public ICouchResponse GetCouchResponse()
         {
 
             bool failedAuth = false;

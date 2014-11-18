@@ -10,42 +10,35 @@ namespace LoveSeat.Support
 	}
     public abstract class CouchBase
     {
-        protected readonly string username;
-        protected readonly string password;
-        protected readonly AuthenticationType authType;
-        protected string baseUri;
+        //protected readonly string username;
+        //protected readonly string password;
+        //protected readonly AuthenticationType authType;
+        //protected string baseUri;
         private TtlDictionary<string, Cookie> cookiestore = new TtlDictionary<string, Cookie>();
-        private int? timeout;
-		public static log4net.ILog Logger = log4net.LogManager.GetLogger("LoveSeat");
-		protected DbType dbType;
-        private Cookie sessionCookie;
+        //private int? timeout;
+        //private Cookie sessionCookie;
+        public static log4net.ILog Logger = log4net.LogManager.GetLogger("LoveSeat");
+        //protected DbType dbType;
+        protected ICouchConnection couchConnection;
+        private ICouchFactory couchFactory = new CouchFactory();
 
         protected CouchBase()
         {
             throw new Exception("Should not be used.");
         }
-        protected CouchBase(string username, string password, AuthenticationType aT, DbType dbType, string baseUri)
+        protected CouchBase(ICouchConnection couchConnection)
         {
-            this.username = username;
-            this.password = password;
-            this.authType = aT;
-        	this.dbType = dbType;
-            this.baseUri = baseUri;
-            if (aT == AuthenticationType.Cookie)
-                sessionCookie = GetSession();
-        }
+            this.couchConnection = couchConnection;
 
-    	public string BaseUri
-    	{
-    		get { return baseUri; }
-    		set { baseUri = value; }
-    	}
+            if (couchConnection.AuthenticationType == AuthenticationType.Cookie)
+                couchConnection.SessionCookie = GetSession();
+        }
 
         public static bool Authenticate(string baseUri, string userName, string password)
         {
             if (!baseUri.Contains("http://"))
                 baseUri = "http://" + baseUri;
-            var request = new CouchRequest(baseUri + "/_session");
+            var request = new CouchRequest(new Uri(baseUri + "/_session"));
             var response = request.Post()
                 .ContentType("application/x-www-form-urlencoded")
                 .Data("name=" + userName + "&password=" + password)
@@ -58,15 +51,15 @@ namespace LoveSeat.Support
         {
             var authCookie = cookiestore["authcookie"];
 
-            if (authCookie != null)
+            if (authCookie != null && !authCookie.Expired)
                 return authCookie;
 
-            if (string.IsNullOrEmpty(username)) return null;
-            var request = new CouchRequest(baseUri + "_session");
-            request.GetRequest().Headers.Add("Authorization:Basic " + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(username + ":" + password)));
+            if (string.IsNullOrEmpty(couchConnection.Username)) return null;
+            var request = new CouchRequest(couchConnection.BaseUri.Combine("_session"));
+            request.GetRequest().Headers.Add("Authorization:Basic " + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(couchConnection.Username + ":" + couchConnection.Password)));
             using (HttpWebResponse response = request.Post()
                 .Form()
-                .Data("name=" + username + "&password=" + password)
+                .Data("name=" + couchConnection.Username + "&password=" + couchConnection.Password)
                 .GetHttpResponse())
             {
 
@@ -82,35 +75,31 @@ namespace LoveSeat.Support
             }
 
         }
-        
-        public void SetTimeout(int timeoutMs)
+
+        public bool HasSessionExpired
         {
-            timeout = timeoutMs;
+            get
+            {
+                return this.GetSession().Expired;
+            }
+            
         }
 
-        
-        protected CouchRequest GetRequest(string uri)
+        public void SetTimeout(int timeoutMs)
+        {
+            couchConnection.Timeout = timeoutMs;
+        }
+
+
+        protected ICouchRequest GetRequest(Uri uri)
         {
             return GetRequest(uri, null);
         }
 
-        protected CouchRequest GetRequest(string uri, string etag)
+        protected ICouchRequest GetRequest(Uri uri, string etag)
         {
-            CouchRequest request;
-            if (AuthenticationType.Cookie == this.authType)
-            {
-                request = new CouchRequest(uri, sessionCookie, etag);
-            }
-            else if (AuthenticationType.Basic == this.authType) //Basic Authentication
-            {
-                request = new CouchRequest(uri, username, password);
-            }
-            else //default Cookie
-            {
-                request = new CouchRequest(uri, sessionCookie, etag);
-            }
-            if (timeout.HasValue) request.Timeout(timeout.Value);
-            return request;
+            return couchFactory.GetRequest(uri, etag, couchConnection);
+
         }
 
 

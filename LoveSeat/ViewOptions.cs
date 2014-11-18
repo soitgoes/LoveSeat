@@ -12,10 +12,10 @@ namespace LoveSeat
     public class ViewOptions : IViewOptions
     {
         /// <summary>
-        /// Limit the length of the Keys parameter to 6000 characters.
-        /// Services such as Cloudant limit the URL length to 8k so 6000 should be on the safe side.
+        /// Limit the length of the Keys parameter to 4000 characters.
+        /// Services such as Cloudant limit the URL length to 8k so 4000 should be on the safe side.
         /// </summary>
-        private const int KeysLengthLimit = 6000;
+        private const int KeysLengthLimit = 4000;
 
         public ViewOptions()
         {
