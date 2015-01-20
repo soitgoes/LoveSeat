@@ -54,6 +54,27 @@ namespace LoveSeat
             return result;
         }
 
+        public string ToRawString() 
+        {
+          if (objects.Count == 0) {
+            return "";
+          }
+          if (objects.Count == 1) {
+            return objects[0].ToString(Formatting.None, new IsoDateTimeConverter());
+          }
+
+          string result = "[";
+          bool first = true;
+          foreach (var item in objects) {
+            if (!first)
+              result += ",";
+            first = false;
+            result += item.ToString(Formatting.None, new IsoDateTimeConverter());
+          }
+          result += "]";
+          return result;
+        }
+
         public void Insert(int index, JToken item)
         {
             objects.Insert(index, item);

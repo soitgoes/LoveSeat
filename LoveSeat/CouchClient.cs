@@ -76,19 +76,19 @@ namespace LoveSeat
         /// <param name="target">Uri or database name of database to replicate to</param>
         /// <param name="continuous">Whether or not CouchDB should continue to replicate going forward on it's own</param>
         /// <returns></returns>
-        public CouchResponse TriggerReplication(string source, string target, bool continuous)
+        public CouchResponseObject TriggerReplication(string source, string target, bool continuous)
         {
             var request = GetRequest(baseUri + "_replicate");
 
             var options = new ReplicationOptions(source, target, continuous);
             var response = request.Post()
                 .Data(options.ToString())
-                .GetResponse();
+                .GetCouchResponse();
 
             return response.GetJObject();
         }
 
-        public CouchResponse TriggerReplication(string source, string target)
+        public CouchResponseObject TriggerReplication(string source, string target)
         {
             return TriggerReplication(source, target, false);
         }
@@ -98,18 +98,18 @@ namespace LoveSeat
         /// </summary>
         /// <param name="databaseName">Name of new database</param>
         /// <returns></returns>
-        public CouchResponse CreateDatabase(string databaseName)
+        public CouchResponseObject CreateDatabase(string databaseName)
         {
-            return GetRequest(baseUri + databaseName).Put().GetResponse().GetJObject();
+            return GetRequest(baseUri + databaseName).Put().GetCouchResponse().GetJObject();
         }
         /// <summary>
         /// Deletes the specified database
         /// </summary>
         /// <param name="databaseName">Database to delete</param>
         /// <returns></returns>
-        public CouchResponse DeleteDatabase(string databaseName)
+        public CouchResponseObject DeleteDatabase(string databaseName)
         {
-            return GetRequest(baseUri + databaseName).Delete().GetResponse().GetJObject();
+            return GetRequest(baseUri + databaseName).Delete().GetCouchResponse().GetJObject();
         }
 
         /// <summary>
@@ -128,17 +128,17 @@ namespace LoveSeat
         /// <param name="usernameToCreate"></param>
         /// <param name="passwordToCreate"></param>
         /// <returns></returns>
-        public CouchResponse CreateAdminUser(string usernameToCreate, string passwordToCreate)
+        public CouchResponseObject CreateAdminUser(string usernameToCreate, string passwordToCreate)
         {
             //Creates the user in the local.ini
             var iniResult = GetRequest(baseUri + "_config/admins/" + HttpUtility.UrlEncode(usernameToCreate))
-                .Put().Json().Data("\"" + passwordToCreate + "\"").GetResponse();
+                .Put().Json().Data("\"" + passwordToCreate + "\"").GetCouchResponse();
 
             var user = @"{ ""name"": ""%name%"",
   ""_id"": ""org.couchdb.user:%name%"", ""type"": ""user"", ""roles"": [],
 }".Replace("%name%", usernameToCreate).Replace("\r\n", "");
             var docResult = GetRequest(baseUri + "_users/org.couchdb.user:" + HttpUtility.UrlEncode(usernameToCreate))
-                .Put().Json().Data(user).GetResponse().GetJObject();
+                .Put().Json().Data(user).GetCouchResponse().GetJObject();
             return docResult;
 
         }
@@ -150,7 +150,7 @@ namespace LoveSeat
         public void DeleteAdminUser(string userToDelete)
         {
             var iniResult = GetRequest(baseUri + "_config/admins/" + HttpUtility.UrlEncode(userToDelete))
-                .Delete().Json().GetResponse();
+                .Delete().Json().GetCouchResponse();
 
             var userDb = this.GetDatabase("_users");
             var userId = "org.couchdb.user:" + HttpUtility.UrlEncode(userToDelete);
@@ -169,8 +169,8 @@ namespace LoveSeat
       public bool HasDatabase(string databaseName) {
             var request = GetRequest(baseUri + databaseName).Timeout(-1);
 
-            var response = request.GetResponse();
-            var pDocResult = new Document(response.GetResponseString());
+            var response = request.GetCouchResponse();
+            var pDocResult = new Document(response.ResponseString);
 
             if (pDocResult["error"] == null) {
                 return (true);
@@ -210,7 +210,7 @@ namespace LoveSeat
         /// <param name="usernameToCreate"></param>
         /// <param name="passwordToCreate"></param>
         /// <returns></returns>
-        public CouchResponse CreateUser(string usernameToCreate, string passwordToCreate)
+        public CouchResponseObject CreateUser(string usernameToCreate, string passwordToCreate)
         {
 
             var user = "";
@@ -238,7 +238,7 @@ namespace LoveSeat
                 .Replace("\r\n", "");
 
             var docResult = GetRequest(baseUri + "_users/org.couchdb.user:" + HttpUtility.UrlEncode(usernameToCreate))
-                .Put().Json().Data(user).GetResponse();
+                .Put().Json().Data(user).GetCouchResponse();
 
             if (docResult.StatusCode == HttpStatusCode.Created)
             {
@@ -291,7 +291,7 @@ namespace LoveSeat
             }
 
             var x = GetRequest(request);
-            String str = x.Get().Json().GetResponse().GetJObject().ToString();
+            string str = x.Get().Json().GetCouchResponse().GetJObject().ToString();
             UniqueIdentifiers y = Newtonsoft.Json.JsonConvert.DeserializeObject<UniqueIdentifiers>(str);
 
             return y;

@@ -13,18 +13,18 @@ namespace LoveSeat.Interfaces
         /// <param name="id">Id of Document</param>
         /// <param name="jsonForDocument"></param>
         /// <returns>The status from CouchDb as a JObject</returns>
-        CouchResponse CreateDocument(string id, string jsonForDocument);
+        CouchResponseObject CreateDocument(string id, string jsonForDocument);
 
-        CouchResponse CreateDocument(IBaseObject doc);
+        CouchResponseObject CreateDocument(IBaseObject doc);
 
         /// <summary>
         /// Creates a document when you intend for Couch to generate the id for you.
         /// </summary>
         /// <param name="jsonForDocument">Json for creating the document</param>
         /// <returns>Returns the status from Couchdb as a JObject</returns>
-        CouchResponse CreateDocument(string jsonForDocument);
+        CouchResponseObject CreateDocument(string jsonForDocument);
 
-        CouchResponse DeleteDocument(string id, string rev);
+        CouchResponseObject DeleteDocument(string id, string rev);
 
         /// <summary>
         /// Returns null if document is not found
@@ -40,7 +40,7 @@ namespace LoveSeat.Interfaces
         /// <param name="id">id of the couch Document</param>
         /// <param name="attachment">byte[] of of the attachment.  Use File.ReadAllBytes()</param>
         /// <param name="contentType">Content Type must be specifed</param>	
-        CouchResponse AddAttachment(string id, byte[] attachment, string filename, string contentType);
+        CouchResponseObject AddAttachment(string id, byte[] attachment, string filename, string contentType);
 
         /// <summary>
         /// Adds an attachment to the documnet.  Rev must be specified on this signature.  If you want to attach no matter what then use the method without the rev param
@@ -51,14 +51,14 @@ namespace LoveSeat.Interfaces
         /// <param name="filename">filename of the attachment</param>
         /// <param name="contentType">Content Type must be specifed</param>			
         /// <returns></returns>
-        CouchResponse AddAttachment(string id, string rev, byte[] attachment, string filename, string contentType);
+        CouchResponseObject AddAttachment(string id, string rev, byte[] attachment, string filename, string contentType);
 
         Stream GetAttachmentStream(Document doc, string attachmentName);
         Stream GetAttachmentStream(string docId, string rev, string attachmentName);
         Stream GetAttachmentStream(string docId, string attachmentName);
-        CouchResponse DeleteAttachment(string id, string rev, string attachmentName);
-        CouchResponse DeleteAttachment(string id, string attachmentName);
-        CouchResponse SaveDocument(Document document);
+        CouchResponseObject DeleteAttachment(string id, string rev, string attachmentName);
+        CouchResponseObject DeleteAttachment(string id, string attachmentName);
+        CouchResponseObject SaveDocument(Document document);
         BulkDocumentResponses SaveDocuments(Documents docs, bool all_or_nothing);
 
         /// <summary>
@@ -118,5 +118,7 @@ namespace LoveSeat.Interfaces
         /// </summary>
         /// <param name="timeoutMs">The timeout value, in milliseconds.</param>
         void SetTimeout(int timeoutMs);
+
+        void SetDefaultDesignDoc(string designDoc);
     }
 }

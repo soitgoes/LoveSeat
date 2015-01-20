@@ -10,11 +10,11 @@ using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
-    public class ViewResult<T> : ViewResult
+    public class ViewResult<T> : ViewResult, IViewResult<T>
     {
         private readonly IObjectSerializer objectSerializer = null;
         private CouchDictionary<T> dict = null;
-        public ViewResult(HttpWebResponse response, HttpWebRequest request, IObjectSerializer objectSerializer, bool includeDocs = false)
+        public ViewResult(CouchResponse response, HttpWebRequest request, IObjectSerializer objectSerializer, bool includeDocs = false)
             : base(response, request, includeDocs)
         {
             this.objectSerializer = objectSerializer;
@@ -52,30 +52,25 @@ namespace LoveSeat
 
     public class ViewResult : IViewResult
     {
-        private readonly HttpWebResponse response;
+        private readonly CouchResponse response;
         private readonly HttpWebRequest request;
         private JObject json = null;
-        private readonly string responseString;
 
-        public JObject Json { get { return json ?? (json = JObject.Parse(responseString)); } }
-        public ViewResult(HttpWebResponse response, HttpWebRequest request, bool includeDocs = false)
+        public JObject Json { get { return json ?? (json = JObject.Parse(response.ResponseString)); } }
+        public ViewResult(CouchResponse response, HttpWebRequest request, bool includeDocs = false)
         {
             this.response = response;
             this.request = request;
-            this.responseString = response.GetResponseString();
             this.IncludeDocs = includeDocs;
         }
         /// <summary>
         /// Typically won't be needed.  Provided for debuging assistance
         /// </summary>
         public HttpWebRequest Request { get { return request; } }
-        /// <summary>
-        /// Typically won't be needed.  Provided for debugging assistance
-        /// </summary>
-        public HttpWebResponse Response { get { return response; } }
+
         public HttpStatusCode StatusCode { get { return response.StatusCode; } }
 
-        public string Etag { get { return response.Headers["ETag"]; } }
+        public string Etag { get { return response.ETag; } }
         public int TotalRows
         {
             get
@@ -151,7 +146,7 @@ namespace LoveSeat
         }
         public string RawString
         {
-            get { return responseString; }
+            get { return response.ResponseString; }
         }
 
         public bool Equals(IListResult other)
@@ -162,11 +157,17 @@ namespace LoveSeat
 
         public override string ToString()
         {
-            return responseString;
+            return response.ResponseString;
         }
         /// <summary>
         /// Provides a formatted version of the json returned from this Result.  (Avoid this method in favor of RawString as it's much more performant)
         /// </summary>
         public string FormattedResponse { get { return Json.ToString(Formatting.Indented); } }
+
+        public HttpWebResponse Response
+        {
+            get { throw new NotImplementedException(); }
+        }
+
     }
 }

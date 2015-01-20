@@ -67,7 +67,7 @@
   <ItemGroup>
     <Compile Include="CouchConfiguration.cs" />
     <Compile Include="CouchException.cs" />
-    <Compile Include="CouchResponse.cs" />
+    <Compile Include="CouchResponseObject.cs" />
     <Compile Include="Document.cs" />
     <Compile Include="CouchUser.cs" />
     <Compile Include="Interfaces\IDocumentDatabase.cs" />
@@ -84,6 +84,7 @@
     <Compile Include="CouchDatabase.cs" />
     <Compile Include="Support\CouchRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Support\CouchResponse.cs" />
     <Compile Include="Support\NullableDictionary.cs" />
     <Compile Include="Support\ReplicationOptions.cs" />
     <Compile Include="Support\ResponseExtensionMethods.cs" />

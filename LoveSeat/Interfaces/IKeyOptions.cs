@@ -9,6 +9,7 @@ namespace LoveSeat.Interfaces
     public interface IKeyOptions
     {
         string ToString();
+        string ToRawString();
         void Insert(int index, JToken item);
         void RemoveAt(int index);
         void Add(JToken item);

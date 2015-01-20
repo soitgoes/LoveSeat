@@ -8,9 +8,9 @@ namespace LoveSeat
     public class ListResult : IListResult
     {
         private readonly HttpWebRequest request;
-        private readonly HttpWebResponse response;
+        private readonly CouchResponse response;
 
-        public ListResult(HttpWebRequest request , HttpWebResponse response)
+        public ListResult(HttpWebRequest request, CouchResponse response)
         {
             this.request = request;
             this.response = response;
@@ -21,24 +21,19 @@ namespace LoveSeat
             get { return request; }
         }
 
-        public HttpWebResponse Response
-        {
-            get { return response; }
-        }
-
         public HttpStatusCode StatusCode
         {
-            get { return Response.StatusCode; }
+            get { return response.StatusCode; }
         }
 
         public string Etag
         {
-            get { return Response.Headers["ETag"]; }
+            get { return response.ETag; }
         }
 
         public string RawString
         {
-            get { return Response.GetResponseString(); }
+            get { return response.ResponseString; }
         }
 
         public bool Equals(IListResult other)
