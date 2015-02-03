@@ -124,7 +124,9 @@ namespace LoveSeat
             get
             {
                 var arry = (JArray)Json["rows"];
-                return arry.Select(item => item.ToString());
+                return arry == null
+                    ? new List<string> ()
+                    : arry.Select(item => item.ToString());
             }
         }
 
@@ -133,7 +135,9 @@ namespace LoveSeat
             get
             {
                 var arry = (JArray)Json["rows"];
-                return arry.Select(item => item["value"].ToString());
+                return arry == null
+                    ? new List<string>()
+                    : arry.Select(item => item["value"].ToString());
             }
         }
         public IEnumerable<string> RawDocs
@@ -141,7 +145,9 @@ namespace LoveSeat
             get
             {
                 var arry = (JArray)Json["rows"];
-                return arry.Select(item => item["doc"].ToString());
+                return arry == null
+                    ? new List<string>()
+                    : arry.Select(item => item["doc"].ToString());
             }
         }
         public string RawString
