@@ -37,7 +37,7 @@ namespace LoveSeat
             if (jobj.Value<object>("_rev") == null)
                 jobj.Remove("_rev");
             var resp = GetRequest(databaseBaseUri + "/" + id)
-                .Put().Form()
+                .Put().Json()
                 .Data(jobj.ToString(Formatting.None))
                 .GetCouchResponse();
             return
