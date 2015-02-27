@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveSeat", "LoveSeat\LoveSeat.csproj", "{AF987164-0100-4A90-A767-D473F882EA8B}"
-EndProject
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveSeat.IntegrationTest", "LoveSeat.IntegrationTest\LoveSeat.IntegrationTest.csproj", "{7496CEA9-442C-4468-8350-54F34693F64A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveSeat.Repositories", "LoveSeat.Repository\LoveSeat.Repositories.csproj", "{95A18B36-B97A-4A39-8920-B245ACD12AAD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveSeat.Interfaces", "LoveSeat.Interfaces\LoveSeat.Interfaces.csproj", "{18833FC5-9145-451D-82D4-41A1886B0BE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveSeat", "LoveSeat\LoveSeat.csproj", "{C28D615C-BBAD-499C-9AFA-8DE1089BD977}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AF987164-0100-4A90-A767-D473F882EA8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AF987164-0100-4A90-A767-D473F882EA8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AF987164-0100-4A90-A767-D473F882EA8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AF987164-0100-4A90-A767-D473F882EA8B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7496CEA9-442C-4468-8350-54F34693F64A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7496CEA9-442C-4468-8350-54F34693F64A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7496CEA9-442C-4468-8350-54F34693F64A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -31,6 +29,10 @@ Global
 		{18833FC5-9145-451D-82D4-41A1886B0BE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18833FC5-9145-451D-82D4-41A1886B0BE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18833FC5-9145-451D-82D4-41A1886B0BE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C28D615C-BBAD-499C-9AFA-8DE1089BD977}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C28D615C-BBAD-499C-9AFA-8DE1089BD977}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C28D615C-BBAD-499C-9AFA-8DE1089BD977}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C28D615C-BBAD-499C-9AFA-8DE1089BD977}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
