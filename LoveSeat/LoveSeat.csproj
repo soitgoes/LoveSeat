@@ -1,37 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{AF987164-0100-4A90-A767-D473F882EA8B}</ProjectGuid>
+    <ProjectGuid>{C28D615C-BBAD-499C-9AFA-8DE1089BD977}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LoveSeat</RootNamespace>
     <AssemblyName>LoveSeat</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
     <TargetFrameworkProfile />
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,25 +31,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net35\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Net">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CouchClient.cs" />
     <Compile Include="CouchConfiguration.cs" />
+    <Compile Include="CouchDatabase.cs" />
     <Compile Include="CouchException.cs" />
     <Compile Include="CouchResponseObject.cs" />
-    <Compile Include="Document.cs" />
     <Compile Include="CouchUser.cs" />
+    <Compile Include="Document.cs" />
     <Compile Include="Interfaces\IDocumentDatabase.cs" />
     <Compile Include="Interfaces\IKeyOptions.cs" />
     <Compile Include="Interfaces\IListResult.cs" />
@@ -78,44 +59,25 @@
     <Compile Include="ListResult.cs" />
     <Compile Include="ObjectSerializer.cs" />
     <Compile Include="PagingHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecurityUtility.cs" />
     <Compile Include="Support\CouchBase.cs" />
-    <Compile Include="CouchClient.cs" />
-    <Compile Include="CouchDatabase.cs" />
     <Compile Include="Support\CouchRequest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\CouchResponse.cs" />
+    <Compile Include="Support\KeyOptions.cs" />
     <Compile Include="Support\NullableDictionary.cs" />
     <Compile Include="Support\ReplicationOptions.cs" />
     <Compile Include="Support\ResponseExtensionMethods.cs" />
-    <Compile Include="Support\KeyOptions.cs" />
     <Compile Include="Support\TtlDictionary.cs" />
     <Compile Include="ViewOptions.cs" />
     <Compile Include="ViewResult.cs" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LoveSeat.Interfaces\LoveSeat.Interfaces.csproj">
-      <Project>{18833FC5-9145-451D-82D4-41A1886B0BE7}</Project>
+      <Project>{18833fc5-9145-451d-82d4-41a1886b0be7}</Project>
       <Name>LoveSeat.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
