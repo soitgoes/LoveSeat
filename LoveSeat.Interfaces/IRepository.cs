@@ -7,5 +7,6 @@ namespace LoveSeat.Interfaces
     {
         void Save(T item);
         T Find(Guid id);
+        T Find(string id);
     }
 }
