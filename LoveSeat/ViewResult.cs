@@ -106,6 +106,8 @@ namespace LoveSeat
             get
             {
                 var arry = (JArray)Json["rows"];
+                if (arry == null)
+                    return null;
                 return arry.Select(item => item["doc"]);
             }
         }

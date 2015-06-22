@@ -70,7 +70,7 @@ namespace LoveSeat.Support
             request.KeepAlive = true;
             if (authCookie != null)
                 request.Headers.Add("Cookie", "AuthSession=" + authCookie.Value);
-            request.Timeout = 10000;
+            request.Timeout = 30000;
 
 			//Logger.DebugFormat("Request cookie: {0}, issued: {1}, expires: {2}, expired: {3}", authCookie.Name, authCookie.TimeStamp.ToString("hh:mm:ss,FFF zzz"), authCookie.Expires, authCookie.Expired);
         }
@@ -104,7 +104,7 @@ namespace LoveSeat.Support
             request.Headers.Add("Accept-Language", "en-us");
             request.ContentType = "application/json";
             request.KeepAlive = true;
-            request.Timeout = 10000;
+            request.Timeout = 30000;
         }
 
         public ICouchRequest Put() 
