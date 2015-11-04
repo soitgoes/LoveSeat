@@ -129,6 +129,25 @@ namespace LoveSeat.IntegrationTest
 		}
 
 		[Test]
+		public void Should_UrlEncode_Attachment_Names()
+		{
+			// Attachment filenames should be URL-encoded to allow them to be round-tripped.
+			// e.g. given a filename of "url%20encoded.jpg", note that it is already url-encoded ('%20' is the encoded form of ' ').
+			// Thus, in order to preserve the filename, it must be url-encoded an additional time.
+			
+			var db = client.GetDatabase(baseDatabase);
+			db.CreateDocument(@"{""_id"":""upload""}");
+			var attachment = File.ReadAllBytes("../../Files/martin.jpg");
+			db.AddAttachment("upload", attachment, "url%20encoded.jpg", "image/jpeg");
+			db.AddAttachment("upload", attachment, "not url encoded.jpg", "image/jpeg");
+			var doc = db.GetDocument("upload");
+			var attachments = doc.GetAttachmentNames().ToList();
+			foreach (var filename in attachments) { System.Diagnostics.Trace.WriteLine(filename); }
+			Assert.IsTrue(attachments.Contains("url%20encoded.jpg"), "Attachments with filenames that are already url-encoded should be encoded to round-trip their name accurately.");
+			Assert.IsTrue(attachments.Contains("not url encoded.jpg"), "Attachments with non-url-encoded filenames should be persisted accurately.");
+		}
+
+		[Test]
 		public void Should_Create_Admin_User()
 		{			
 			client.CreateAdminUser("Leela", "Turanga");

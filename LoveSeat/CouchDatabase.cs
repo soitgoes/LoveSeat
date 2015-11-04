@@ -213,7 +213,7 @@ namespace LoveSeat
         public CouchResponseObject AddAttachment(string id, string rev, byte[] attachment, string filename, string contentType)
         {
             return
-                GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, filename, rev)).Put().ContentType(contentType).Data(attachment).GetCouchResponse().GetJObject();
+                GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, HttpUtility.UrlEncode(filename), rev)).Put().ContentType(contentType).Data(attachment).GetCouchResponse().GetJObject();
         }
         /// <summary>
         /// Adds an attachment to a document.  If revision is not specified then the most recent will be fetched and used.  Warning: if you need document update conflicts to occur please use the method that specifies the revision
@@ -238,7 +238,7 @@ namespace LoveSeat
         public CouchResponseObject AddAttachment(string id, string rev, Stream attachmentStream, string filename, string contentType)
         {
             return
-                GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, filename, rev)).Put().ContentType(contentType).Data(attachmentStream).GetCouchResponse().GetJObject();
+                GetRequest(string.Format("{0}/{1}/{2}?rev={3}", databaseBaseUri, id, HttpUtility.UrlEncode(filename), rev)).Put().ContentType(contentType).Data(attachmentStream).GetCouchResponse().GetJObject();
         }
 
         public Stream GetAttachmentStream(Document doc, string attachmentName)
