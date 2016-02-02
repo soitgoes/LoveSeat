@@ -1,21 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7496CEA9-442C-4468-8350-54F34693F64A}</ProjectGuid>
+    <ProjectGuid>{D257B3DA-3C5B-4F55-8129-E279F993EDA4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LoveSeat.IntegrationTest</RootNamespace>
-    <AssemblyName>LoveSeat.IntegrationTest</AssemblyName>
+    <RootNamespace>LoveSeat.DocUpdater</RootNamespace>
+    <AssemblyName>LoveSeat.DocUpdater</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,7 +21,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,56 +31,36 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Moq">
-      <HintPath>..\Libraries\Moq\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net35\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\nunit.framework.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\LoveSeat.IntegrationTest\bin\Release\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CouchClientTest.cs" />
-    <Compile Include="DocUpdaterTest.cs" />
-    <Compile Include="NewtonSoftTests.cs" />
-    <Compile Include="PagingHelperTest.cs" />
+    <Compile Include="DesignDoc.cs" />
+    <Compile Include="DesignDocUpdater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sha1Util.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LoveSeat.DocUpdater\LoveSeat.DocUpdater.csproj">
-      <Project>{d257b3da-3c5b-4f55-8129-e279f993eda4}</Project>
-      <Name>LoveSeat.DocUpdater</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LoveSeat.Interfaces\LoveSeat.Interfaces.csproj">
       <Project>{18833FC5-9145-451D-82D4-41A1886B0BE7}</Project>
       <Name>LoveSeat.Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LoveSeat.Repository\LoveSeat.Repositories.csproj">
+      <Project>{95a18b36-b97a-4a39-8920-b245acd12aad}</Project>
+      <Name>LoveSeat.Repositories</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LoveSeat\LoveSeat.csproj">
-      <Project>{c28d615c-bbad-499c-9afa-8de1089bd977}</Project>
+      <Project>{C28D615C-BBAD-499C-9AFA-8DE1089BD977}</Project>
       <Name>LoveSeat</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <Content Include="couch_views\test.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Files\martin.jpg" />
-    <Content Include="Files\test_upload.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

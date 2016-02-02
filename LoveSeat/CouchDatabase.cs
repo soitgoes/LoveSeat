@@ -25,6 +25,16 @@ namespace LoveSeat
         }
 
         /// <summary>
+        /// Full uri including database
+        /// </summary>
+        /// <param name="uri"></param>
+        public CouchDatabase(Uri uri)
+        {
+            this.baseUri = uri.AbsoluteUri.Replace(uri.AbsolutePath, "");
+            this.databaseBaseUri = uri.AbsoluteUri;
+        }
+
+        /// <summary>
         /// Creates a document using the json provided. 
         /// No validation or smarts attempted here by design for simplicities sake
         /// </summary>
