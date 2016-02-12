@@ -35,7 +35,7 @@ namespace LoveSeat
             catch (Exception ex)
             {
                 //TODO: Build Logger Property and record exception   
-                Console.WriteLine(ex,);
+                Console.WriteLine(ex);
             }
             return default(T);
         }
