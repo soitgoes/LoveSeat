@@ -10,7 +10,7 @@ namespace LoveSeat.Support
         protected readonly AuthenticationType authType;
         protected string baseUri;
         private TtlDictionary<string, Cookie> cookiestore = new TtlDictionary<string, Cookie>();
-        private int? timeout;
+        protected int? timeout;
 
         protected CouchBase()
         {

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -41,7 +42,6 @@ namespace LoveSeat.Support
             request.KeepAlive = true;
             if (authCookie != null)
                 request.Headers.Add("Cookie", "AuthSession=" + authCookie.Value);
-            request.Timeout = 10000;
         }
 
         /// <summary>
@@ -74,7 +74,6 @@ namespace LoveSeat.Support
             request.Headers.Add("Accept-Language", "en-us");
             request.ContentType = "application/json";
             request.KeepAlive = true;
-            request.Timeout = 10000;
         }
 
 
@@ -152,9 +151,16 @@ namespace LoveSeat.Support
             return this;
         }
 
-        public CouchRequest Timeout(int timeoutMs)
+        public CouchRequest Timeout(int? timeoutMs)
         {
-            request.Timeout = timeoutMs;
+            if (timeoutMs.HasValue)
+            {
+                request.Timeout = timeoutMs.Value;
+            }
+            else
+            {
+                request.Timeout = (int)TimeSpan.FromHours(1).TotalMilliseconds;
+            }
             return this;
         }
 
@@ -193,7 +199,7 @@ namespace LoveSeat.Support
             {
                 if (failedAuth == true)
                 {
-                    throw;
+                    throw webEx;
                 }
                 var response = (HttpWebResponse)webEx.Response;
                 if (response == null)
