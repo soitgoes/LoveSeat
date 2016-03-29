@@ -14,7 +14,6 @@ namespace LoveSeat.Support
 
         protected CouchBase()
         {
-            throw new Exception("Should not be used.");
         }
         protected CouchBase(string username, string password, AuthenticationType aT)
         {
