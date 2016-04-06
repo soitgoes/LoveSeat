@@ -85,17 +85,30 @@ namespace LoveSeat
         /// <param name="source">Uri or database name of database to replicate from</param>
         /// <param name="target">Uri or database name of database to replicate to</param>
         /// <param name="continuous">Whether or not CouchDB should continue to replicate going forward on it's own</param>
+        /// <param name="docIds">Array of document IDs; if given, only these documents will be replicated.</param>
         /// <returns></returns>
-        public CouchResponseObject TriggerReplication(string source, string target, bool continuous)
+        public CouchResponseObject TriggerReplication(string source, string target, bool continuous, string[] docIds)
         {
             var request = GetRequest(baseUri + "_replicate");
 
-            var options = new ReplicationOptions(source, target, continuous);
+            var options = new ReplicationOptions(source, target, continuous, docIds);
             var response = request.Post()
                 .Data(options.ToString())
                 .GetCouchResponse();
 
             return response.GetJObject();
+        }
+
+        /// <summary>
+        /// Triggers one way replication from the source to target.  If bidirection is needed call this method twice with the source and target args reversed.
+        /// </summary>
+        /// <param name="source">Uri or database name of database to replicate from</param>
+        /// <param name="target">Uri or database name of database to replicate to</param>
+        /// <param name="continuous">Whether or not CouchDB should continue to replicate going forward on it's own</param>
+        /// <returns></returns>
+        public CouchResponseObject TriggerReplication(string source, string target, bool continuous)
+        {
+            return TriggerReplication(source, target, continuous, null);
         }
 
         public CouchResponseObject TriggerReplication(string source, string target)
