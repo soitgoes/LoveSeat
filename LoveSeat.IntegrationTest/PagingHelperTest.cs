@@ -1,5 +1,4 @@
 ﻿using LoveSeat.Interfaces;
-using LoveSeat.Support;
 using Moq;
 using NUnit.Framework;
 
