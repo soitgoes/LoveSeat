@@ -5,14 +5,24 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using LoveSeat.Interfaces;
+using LoveSeat.Repositories;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 using LoveSeat;
 
 namespace LoveSeat.IntegrationTest
 {
+    public class Person : Document
+    {
+        [JsonProperty("firstName")]
+        public string FirstName { get; set; }
+        [JsonProperty("lastName")]
+        public string LastName { get; set; }
+    }
+
     [TestFixture]
 	public class CouchClientTest
 	{
@@ -53,6 +63,15 @@ namespace LoveSeat.IntegrationTest
             }
 		}
 
+        [Test]
+        public void ShouldAddAttachment()
+        {
+            var doc = new Document("{}");
+            var data = File.ReadAllBytes("../../Files/martin.jpg");
+            doc.AddAttachment("martin.jpg", data);
+            Assert.IsNotNull(doc["_attachments"]);
+        }
+
 		[Test]
 		public void Should_Trigger_Replication()
 		{
@@ -72,6 +91,29 @@ namespace LoveSeat.IntegrationTest
             db.CreateDocument(doc);
             var savedDoc = db.GetDocument("myid");
             Assert.IsNotNull(savedDoc, "Saved doc should be able to be retrieved by the same id");
+        }
+
+        [Test]
+        public void Should_Save_A_Serialized_Document_with_Id()
+        {
+            var jobj = new JObject();
+            var id = Guid.NewGuid();
+            jobj["_id"] = id;
+            jobj["_rev"] = null;
+            var doc = new Document(jobj.ToString());
+            var db = client.GetDatabase(baseDatabase);
+            var response=  db.SaveDocument(doc);
+            Assert.IsTrue(response["ok"].ToObject<bool>());
+        }
+
+        [Test]
+        public void Should_Save_A_New_Document_with_no_rev_and_no_id()
+        {
+            var person = new Person {FirstName = "Professor", LastName = "Farnsworth"};
+            var doc = new Document<Person>(person);
+            var db = client.GetDatabase(baseDatabase);
+            var response = db.SaveDocument(doc);
+            Assert.IsTrue(response.StatusCode==201);
         }
 
 		[Test]
@@ -218,6 +260,18 @@ namespace LoveSeat.IntegrationTest
             db.CreateDocument("{\"_id\":\""+ id+"\"}");
             Document doc= db.GetDocument(id);
             Assert.AreEqual(id, doc.Id);
+        }
+
+        [Test]
+        public void Should_Serialize_and_Deserialize_a_Doc_with_Attachments()
+        {
+            var db = client.GetDatabase(baseDatabase);
+            var personRepo = new CouchRepository<Person>(db);
+            var person = new Person {Id = "bender", FirstName = "Bender", LastName = "Robot"};
+            person.AddAttachment("attach.jpg", File.ReadAllBytes("../../Files/martin.jpg"));
+            personRepo.Save(person);
+            var afterSave = personRepo.Find("bender");
+            Assert.IsTrue(afterSave.HasAttachment);
         }
 
         [Test]

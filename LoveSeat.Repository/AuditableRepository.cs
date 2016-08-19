@@ -1,5 +1,4 @@
 ﻿using System;
-using Accounting.Domain;
 using LoveSeat.Interfaces;
 
 namespace LoveSeat.Repositories

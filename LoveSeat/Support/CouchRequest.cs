@@ -17,7 +17,7 @@ namespace LoveSeat.Support
         private const int STREAM_BUFFER_SIZE = 4096;
 
         private readonly HttpWebRequest request;
-        public CouchRequest(string uri)
+        public CouchRequest(Uri uri)
             : this(uri, new Cookie(), null)
         {
         }
@@ -28,7 +28,7 @@ namespace LoveSeat.Support
         /// <param name="uri"></param>
         /// <param name="authCookie"></param>
         /// <param name="eTag"></param>
-        public CouchRequest(string uri, Cookie authCookie, string eTag)
+        public CouchRequest(Uri uri, Cookie authCookie, string eTag)
         {
             request = (HttpWebRequest)WebRequest.Create(uri);
             request.Headers.Clear(); //important
@@ -37,7 +37,7 @@ namespace LoveSeat.Support
             request.Headers.Add("Accept-Charset", "utf-8");
             request.Headers.Add("Accept-Language", "en-us");
             request.Accept = "application/json";
-            request.Referer = uri;
+            request.Referer = uri.ToString();
             request.ContentType = "application/json";
             request.KeepAlive = true;
             if (authCookie != null)
@@ -50,7 +50,7 @@ namespace LoveSeat.Support
         /// <param name="uri"></param>
         /// <param name="username"></param>
         /// <param name="password"></param>
-        public CouchRequest(string uri, string username, string password)
+        public CouchRequest(Uri uri, string username, string password)
         {
 
             request = (HttpWebRequest)WebRequest.Create(uri);
