@@ -16,7 +16,6 @@ namespace LoveSeat
         public Document(T obj, IObjectSerializer objectSerializer) : base(objectSerializer.Serialize<T>(obj))
         {            
         }
-
     }
 
     #region Bulk documents
@@ -118,14 +117,6 @@ namespace LoveSeat
         public bool HasAttachment
         {
             get { return this["_attachments"] != null; }
-        }
-
-        public void AddAttachment(string filename, byte[] data)
-        {
-            var jobj = this.GetValue("_attachments") as JObject ?? new JObject();
-            jobj[filename] = new JObject();
-            jobj[filename]["data"] = Convert.ToBase64String(data);
-            this["_attachments"] = jobj;
         }
 
         public IEnumerable<string> GetAttachmentNames()

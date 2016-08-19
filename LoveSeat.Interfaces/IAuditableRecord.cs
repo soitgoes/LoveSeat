@@ -1,6 +1,7 @@
 ﻿using System;
+using LoveSeat.Interfaces;
 
-namespace LoveSeat.Interfaces
+namespace Accounting.Domain
 {
     public interface IAuditableRecord : IBaseObject
     {

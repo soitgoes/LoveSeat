@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LoveSeat.Repositories</RootNamespace>
     <AssemblyName>LoveSeat.Repositories</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -32,8 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\Libraries\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net35\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -45,13 +46,16 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LoveSeat.Interfaces\LoveSeat.Interfaces.csproj">
-      <Project>{18833fc5-9145-451d-82d4-41a1886b0be7}</Project>
+      <Project>{18833FC5-9145-451D-82D4-41A1886B0BE7}</Project>
       <Name>LoveSeat.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\LoveSeat\LoveSeat.csproj">
       <Project>{c28d615c-bbad-499c-9afa-8de1089bd977}</Project>
       <Name>LoveSeat</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

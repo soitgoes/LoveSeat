@@ -78,7 +78,7 @@ namespace LoveSeat
         /// <returns></returns>
         public CouchResponseObject TriggerReplication(string source, string target, bool continuous)
         {
-            var request = GetRequest(new Uri(baseUri + "_replicate"));
+            var request = GetRequest(baseUri + "_replicate");
 
             var options = new ReplicationOptions(source, target, continuous);
             var response = request.Post()
@@ -100,7 +100,7 @@ namespace LoveSeat
         /// <returns></returns>
         public CouchResponseObject CreateDatabase(string databaseName)
         {
-            return GetRequest(new Uri(baseUri + databaseName)).Put().GetCouchResponse().GetJObject();
+            return GetRequest(baseUri + databaseName).Put().GetCouchResponse().GetJObject();
         }
         /// <summary>
         /// Deletes the specified database
@@ -109,7 +109,7 @@ namespace LoveSeat
         /// <returns></returns>
         public CouchResponseObject DeleteDatabase(string databaseName)
         {
-            return GetRequest(new Uri(baseUri + databaseName)).Delete().GetCouchResponse().GetJObject();
+            return GetRequest(baseUri + databaseName).Delete().GetCouchResponse().GetJObject();
         }
 
         /// <summary>
@@ -131,13 +131,13 @@ namespace LoveSeat
         public CouchResponseObject CreateAdminUser(string usernameToCreate, string passwordToCreate)
         {
             //Creates the user in the local.ini
-            var iniResult = GetRequest(new Uri(baseUri + "_config/admins/" + HttpUtility.UrlEncode(usernameToCreate)))
+            var iniResult = GetRequest(baseUri + "_config/admins/" + HttpUtility.UrlEncode(usernameToCreate))
                 .Put().Json().Data("\"" + passwordToCreate + "\"").GetCouchResponse();
 
             var user = @"{ ""name"": ""%name%"",
   ""_id"": ""org.couchdb.user:%name%"", ""type"": ""user"", ""roles"": [],
 }".Replace("%name%", usernameToCreate).Replace("\r\n", "");
-            var docResult = GetRequest(new Uri(baseUri + "_users/org.couchdb.user:" + HttpUtility.UrlEncode(usernameToCreate)))
+            var docResult = GetRequest(baseUri + "_users/org.couchdb.user:" + HttpUtility.UrlEncode(usernameToCreate))
                 .Put().Json().Data(user).GetCouchResponse().GetJObject();
             return docResult;
 
@@ -149,7 +149,7 @@ namespace LoveSeat
         /// <param name="userToDelete"></param>
         public void DeleteAdminUser(string userToDelete)
         {
-            var iniResult = GetRequest(new Uri(baseUri + "_config/admins/" + HttpUtility.UrlEncode(userToDelete)))
+            var iniResult = GetRequest(baseUri + "_config/admins/" + HttpUtility.UrlEncode(userToDelete))
                 .Delete().Json().GetCouchResponse();
 
             var userDb = this.GetDatabase("_users");
@@ -167,7 +167,7 @@ namespace LoveSeat
         /// <param name="databaseName"></param>
         /// <returns></returns>
       public bool HasDatabase(string databaseName) {
-            var request = GetRequest(new Uri(baseUri + databaseName)).Timeout(-1);
+            var request = GetRequest(baseUri + databaseName).Timeout(-1);
 
             var response = request.GetCouchResponse();
             var pDocResult = new Document(response.ResponseString);
@@ -237,7 +237,7 @@ namespace LoveSeat
                 .Replace("%salt%", salt)
                 .Replace("\r\n", "");
 
-            var docResult = GetRequest(new Uri(baseUri + "_users/org.couchdb.user:" + HttpUtility.UrlEncode(usernameToCreate)))
+            var docResult = GetRequest(baseUri + "_users/org.couchdb.user:" + HttpUtility.UrlEncode(usernameToCreate))
                 .Put().Json().Data(user).GetCouchResponse();
 
             if (docResult.StatusCode == HttpStatusCode.Created)
@@ -290,7 +290,7 @@ namespace LoveSeat
                 request = request + "?Count=" + Convert.ToString(count);
             }
 
-            var x = GetRequest(new Uri(request));
+            var x = GetRequest(request);
             string str = x.Get().Json().GetCouchResponse().GetJObject().ToString();
             UniqueIdentifiers y = Newtonsoft.Json.JsonConvert.DeserializeObject<UniqueIdentifiers>(str);
 

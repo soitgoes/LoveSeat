@@ -26,7 +26,7 @@ namespace LoveSeat.Support
         {
             if (!baseUri.Contains("http://"))
                 baseUri = "http://" + baseUri;
-            var request = new CouchRequest(new Uri(baseUri + "/_session"));
+            var request = new CouchRequest(baseUri + "/_session");
             var response = request.Post()
                 .ContentType("application/x-www-form-urlencoded")
                 .Data("name=" + userName + "&password=" + password)
@@ -41,7 +41,7 @@ namespace LoveSeat.Support
                 return authCookie;
 
             if (string.IsNullOrEmpty(username)) return null;
-            var request = new CouchRequest(new Uri(baseUri + "_session"));
+            var request = new CouchRequest(baseUri + "_session");
             request.GetRequest().Headers.Add("Authorization:Basic " + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(username + ":" + password)));
             using (HttpWebResponse response = request.Post()
                 .Form()
@@ -66,12 +66,12 @@ namespace LoveSeat.Support
             timeout = timeoutMs;
         }
 
-        protected CouchRequest GetRequest(Uri uri)
+        protected CouchRequest GetRequest(string uri)
         {
             return GetRequest(uri, null);
         }
 
-        protected CouchRequest GetRequest(Uri uri, string etag)
+        protected CouchRequest GetRequest(string uri, string etag)
         {
             CouchRequest request;
             if (AuthenticationType.Cookie == this.authType)
