@@ -73,6 +73,7 @@ namespace LoveSeat.Support
             request.Headers.Add("Accept-Charset", "utf-8");
             request.Headers.Add("Accept-Language", "en-us");
             request.ContentType = "application/json";
+            request.Accept = "application/json";
             request.KeepAlive = true;
         }
 
