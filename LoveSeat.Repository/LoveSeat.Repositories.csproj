@@ -45,10 +45,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LoveSeat.Interfaces\LoveSeat.Interfaces.csproj">
-      <Project>{18833FC5-9145-451D-82D4-41A1886B0BE7}</Project>
-      <Name>LoveSeat.Interfaces</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LoveSeat\LoveSeat.csproj">
       <Project>{c28d615c-bbad-499c-9afa-8de1089bd977}</Project>
       <Name>LoveSeat</Name>

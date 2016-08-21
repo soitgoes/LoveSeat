@@ -15,7 +15,6 @@ namespace LoveSeat
     /// </summary>
     public class CouchClient : CouchBase
     {
-        private readonly string baseUri;
         // Authentication type used in request to CouchDB
         protected readonly AuthenticationType authType;
 
@@ -57,7 +56,6 @@ namespace LoveSeat
             }
 
             authType = aT;
-
         }
         /// <summary>
         /// The full uri for the couch constructor

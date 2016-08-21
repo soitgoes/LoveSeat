@@ -50,9 +50,12 @@
     <Compile Include="CouchResponseObject.cs" />
     <Compile Include="CouchUser.cs" />
     <Compile Include="Document.cs" />
+    <Compile Include="Interfaces\IAuditableRecord.cs" />
+    <Compile Include="Interfaces\IBaseObject.cs" />
     <Compile Include="Interfaces\IDocumentDatabase.cs" />
     <Compile Include="Interfaces\IKeyOptions.cs" />
     <Compile Include="Interfaces\IListResult.cs" />
+    <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\IViewOptions.cs" />
     <Compile Include="Interfaces\IViewResult.cs" />
     <Compile Include="ListResult.cs" />
@@ -73,12 +76,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LoveSeat.Interfaces\LoveSeat.Interfaces.csproj">
-      <Project>{18833fc5-9145-451d-82d4-41a1886b0be7}</Project>
-      <Name>LoveSeat.Interfaces</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

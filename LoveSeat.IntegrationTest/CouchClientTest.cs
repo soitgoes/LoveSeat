@@ -185,7 +185,7 @@ namespace LoveSeat.IntegrationTest
             company.Name = "Whiteboard-IT";
             db.CreateDocument(company);
             var doc = db.GetDocument<Company>("1234");
-            Assert.AreEqual(company.Name, doc.Name);
+            Assert.AreEqual(company.Name, doc.Item.Name);
         }
         [Test]
         public void JsonConvert_Should_Serialize_Properly()

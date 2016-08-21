@@ -20,12 +20,12 @@ namespace LoveSeat.Repositories
             db.SaveDocument(doc);
         }
 
-        public virtual T Find(Guid id)
+        public virtual Document<T> Find(Guid id)
         {
             return db.GetDocument<T>(id.ToString());
         }
 
-        public virtual T Find(string id)
+        public virtual Document<T> Find(string id)
         {
             return db.GetDocument<T>(id);
         }

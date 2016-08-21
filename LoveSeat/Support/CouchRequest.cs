@@ -205,6 +205,7 @@ namespace LoveSeat.Support
                 var response = (HttpWebResponse)webEx.Response;
                 if (response == null)
                     throw new HttpException("Request failed to receive a response", webEx);
+                
                 return new CouchResponse(response);
             }
             throw new HttpException("Request failed to receive a response");

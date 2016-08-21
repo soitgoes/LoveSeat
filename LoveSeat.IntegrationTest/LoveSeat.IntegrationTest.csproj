@@ -65,10 +65,6 @@
       <Project>{d257b3da-3c5b-4f55-8129-e279f993eda4}</Project>
       <Name>LoveSeat.DocUpdater</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LoveSeat.Interfaces\LoveSeat.Interfaces.csproj">
-      <Project>{18833FC5-9145-451D-82D4-41A1886B0BE7}</Project>
-      <Name>LoveSeat.Interfaces</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LoveSeat\LoveSeat.csproj">
       <Project>{c28d615c-bbad-499c-9afa-8de1089bd977}</Project>
       <Name>LoveSeat</Name>

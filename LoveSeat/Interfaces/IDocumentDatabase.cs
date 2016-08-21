@@ -33,7 +33,7 @@ namespace LoveSeat.Interfaces
         /// <returns></returns>
         Document GetDocument(string id);
 
-        T GetDocument<T>(string id);
+        Document<T> GetDocument<T>(string id);
         /// <summary>
         /// Adds an attachment to a document.  If revision is not specified then the most recent will be fetched and used.  Warning: if you need document update conflicts to occur please use the method that specifies the revision
         /// </summary>
@@ -103,8 +103,8 @@ namespace LoveSeat.Interfaces
         /// <returns></returns>
         ViewResult<T>  View<T>(string viewName, ViewOptions options);
 
-        T GetDocument<T>(Guid id , IObjectSerializer objectSerializer);
-        T GetDocument<T>(Guid id);
+        Document<T> GetDocument<T>(Guid id , IObjectSerializer objectSerializer);
+        Document<T> GetDocument<T>(Guid id);
         string Show (string showName, string docId);
         IListResult List(string listName, string viewName, ViewOptions options,  string designDoc);
         IListResult List(string listName, string viewName, ViewOptions options);

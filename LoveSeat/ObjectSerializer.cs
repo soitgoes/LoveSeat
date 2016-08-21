@@ -10,6 +10,7 @@ namespace LoveSeat
     {
         T Deserialize<T>(string json);
         string Serialize<T>(T obj);
+        Document<T> DeserializeToDoc<T>(string json);
     }   
     public class DefaultSerializer : IObjectSerializer
     {
@@ -23,6 +24,11 @@ namespace LoveSeat
         }
 
         public bool DefaultValueIfFailedSerialization = true;
+
+        public Document<T> DeserializeToDoc<T>(string json)
+        {
+            return new Document<T>(json);
+        }
 
         public T Deserialize<T>(string json)
         {

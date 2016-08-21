@@ -16,7 +16,10 @@ namespace LoveSeat
         public Document(T obj, IObjectSerializer objectSerializer) : base(objectSerializer.Serialize<T>(obj))
         {            
         }
-
+        public Document(string json) : base(json)
+        {
+            
+        }
         public T Item { get { return this.ToObject<T>(); } }        
     }
 

@@ -29,21 +29,21 @@ namespace LoveSeat.DocUpdater
                 var doc = db.GetDocument<DesignDoc>(designId);
                 if (doc == null )
                 {
-                    doc = new DesignDoc
+                   var newDoc = new DesignDoc
                         {
                             Id = designId,
                             Hash = hash,
                             Views = obj
                         };
-                    repo.Save(doc);
+                    repo.Save(newDoc);
+                    return;
                 }
-                else if( hash != doc.Hash)
-                {
-                    doc.Views = obj;
-                    doc.Hash = hash;
-                    repo.Save(doc);
-                }
-            }
+                var designDoc = doc.Item;
+
+                designDoc.Views = obj;
+                designDoc.Hash = hash;
+                repo.Save(designDoc);
+       }
         }
     }
 }
