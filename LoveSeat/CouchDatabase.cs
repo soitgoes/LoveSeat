@@ -279,6 +279,9 @@ namespace LoveSeat
 
         public CouchResponseObject SaveDocument(Document document)
         {
+            if (document == null)
+                throw new Exception("Cannot pass null to CouchDatabase.SaveDocument");
+
             if (document.Rev == null)
                 return CreateDocument(document);
 
