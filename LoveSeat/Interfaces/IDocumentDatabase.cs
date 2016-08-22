@@ -33,7 +33,7 @@ namespace LoveSeat.Interfaces
         /// <returns></returns>
         Document GetDocument(string id);
 
-        Document<T> GetDocument<T>(string id);
+        Document<T> GetDocument<T>(string id) where T: class;
         /// <summary>
         /// Adds an attachment to a document.  If revision is not specified then the most recent will be fetched and used.  Warning: if you need document update conflicts to occur please use the method that specifies the revision
         /// </summary>
@@ -67,7 +67,7 @@ namespace LoveSeat.Interfaces
         /// <param name="viewName">The name of the view</param>
         /// <param name="designDoc">The design doc on which the view resides</param>
         /// <returns></returns>
-        ViewResult<T> View<T>(string viewName, string designDoc);
+        ViewResult<T> View<T>(string viewName, string designDoc) where T:class;
 
         /// <summary>
         /// Gets the results of the view using any and all parameters
@@ -76,7 +76,7 @@ namespace LoveSeat.Interfaces
         /// <param name="options">Options such as startkey etc.</param>
         /// <param name="designDoc">The design doc on which the view resides</param>
         /// <returns></returns>
-        ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc);
+        ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc) where T:class;
 
         /// <summary>
         /// Gets all the documents in the database using the _all_docs uri
@@ -92,7 +92,7 @@ namespace LoveSeat.Interfaces
         /// <typeparam name="T"></typeparam>
         /// <param name="viewName"></param>
         /// <returns></returns>
-        ViewResult<T> View<T>(string viewName);
+        ViewResult<T> View<T>(string viewName) where T:class;
 
         /// <summary>
         /// Allows you to specify options and uses the defaultDesignDoc Specified.
@@ -101,10 +101,10 @@ namespace LoveSeat.Interfaces
         /// <param name="viewName"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        ViewResult<T>  View<T>(string viewName, ViewOptions options);
+        ViewResult<T>  View<T>(string viewName, ViewOptions options) where T:class;
 
-        Document<T> GetDocument<T>(Guid id , IObjectSerializer objectSerializer);
-        Document<T> GetDocument<T>(Guid id);
+        Document<T> GetDocument<T>(Guid id , IObjectSerializer objectSerializer) where T: class;
+        Document<T> GetDocument<T>(Guid id) where T: class;
         string Show (string showName, string docId);
         IListResult List(string listName, string viewName, ViewOptions options,  string designDoc);
         IListResult List(string listName, string viewName, ViewOptions options);

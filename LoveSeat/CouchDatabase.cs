@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Web;
+using LoveSeat;
 using LoveSeat.Interfaces;
 using LoveSeat.Support;
 using Newtonsoft.Json;
@@ -86,37 +87,38 @@ namespace LoveSeat
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Document<T> GetDocument<T>(string id, bool attachments, IObjectSerializer objectSerializer)
+        public Document<T> GetDocument<T>(string id, bool attachments, IObjectSerializer objectSerializer) where T: class
         {
             var resp = GetRequest(String.Format("{0}/{1}{2}", databaseBaseUri, id, attachments ? "?attachments=true" : string.Empty)).Get().Json().GetCouchResponse();
             if (resp.StatusCode == HttpStatusCode.NotFound) return null;
             return objectSerializer.DeserializeToDoc<T>(resp.ResponseString);
         }
-        public Document<T> GetDocument<T>(string id, IObjectSerializer objectSerializer)
+        public Document<T> GetDocument<T>(string id, IObjectSerializer objectSerializer) where T: class
         {
             return GetDocument<T>(id, false, objectSerializer);
         }
-        public Document<T> GetDocument<T>(string id, bool attachments)
+
+        public Document<T> GetDocument<T>(string id, bool attachments) where T : class
         {
             return GetDocument<T>(id, attachments, ObjectSerializer);
         }
-        public Document<T> GetDocument<T>(string id)
+        public Document<T> GetDocument<T>(string id) where T:class 
         {
             return GetDocument<T>(id, false);
         }
-        public Document<T> GetDocument<T>(Guid id, bool attachments, IObjectSerializer objectSerializer)
+        public Document<T> GetDocument<T>(Guid id, bool attachments, IObjectSerializer objectSerializer) where T: class
         {
             return GetDocument<T>(id.ToString(), attachments, objectSerializer);
         }
-        public Document<T> GetDocument<T>(Guid id, IObjectSerializer objectSerializer)
+        public Document<T> GetDocument<T>(Guid id, IObjectSerializer objectSerializer) where T: class
         {
             return GetDocument<T>(id, false, objectSerializer);
         }
-        public Document<T> GetDocument<T>(Guid id, bool attachments)
+        public Document<T> GetDocument<T>(Guid id, bool attachments) where T: class
         {
             return GetDocument<T>(id.ToString(), attachments);
         }
-        public Document<T> GetDocument<T>(Guid id)
+        public Document<T> GetDocument<T>(Guid id) where T: class
         {
             return GetDocument<T>(id, false);
         }
@@ -280,7 +282,7 @@ namespace LoveSeat
             if (document.Rev == null)
                 return CreateDocument(document);
 
-            var resp = GetRequest(string.Format("{0}/{1}?rev={2}", databaseBaseUri, document.Id, document.Rev)).Put().Form().Data(document).GetCouchResponse();
+            var resp = GetRequest(string.Format("{0}/{1}?rev={2}", databaseBaseUri, document.Id, document.Rev)).Put().Form().Data(document.JObject).GetCouchResponse();
             return resp.GetJObject();
         }
 
@@ -290,7 +292,7 @@ namespace LoveSeat
         /// <param name="viewName">The name of the view</param>
         /// <param name="designDoc">The design doc on which the view resides</param>
         /// <returns></returns>
-        public ViewResult<T> View<T>(string viewName, string designDoc)
+        public ViewResult<T> View<T>(string viewName, string designDoc) where T:class
         {
             return View<T>(viewName, null, designDoc);
         }
@@ -301,7 +303,7 @@ namespace LoveSeat
         /// <typeparam name="T"></typeparam>
         /// <param name="viewName"></param>
         /// <returns></returns>
-        public ViewResult<T> View<T>(string viewName)
+        public ViewResult<T> View<T>(string viewName) where T:class
         {
             ThrowDesignDocException();
             return View<T>(viewName, defaultDesignDoc);
@@ -395,7 +397,7 @@ namespace LoveSeat
             this.defaultDesignDoc = designDoc;
         }
 
-        private ViewResult<T> ProcessGenericResults<T>(string uri, ViewOptions options)
+        private ViewResult<T> ProcessGenericResults<T>(string uri, ViewOptions options) where T:class
         {
             CouchRequest req = GetRequest(options, uri);
             CouchResponse resp = req.GetCouchResponse();
@@ -415,7 +417,7 @@ namespace LoveSeat
         /// <param name="options">Options such as startkey etc.</param>
         /// <param name="designDoc">The design doc on which the view resides</param>
         /// <returns></returns>
-        public ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc)
+        public ViewResult<T> View<T>(string viewName, ViewOptions options, string designDoc) where T:class 
         {
             var uri = string.Format("{0}/_design/{1}/_view/{2}", databaseBaseUri, designDoc, viewName);
             return ProcessGenericResults<T>(uri, options);
@@ -427,7 +429,7 @@ namespace LoveSeat
         /// <param name="viewName"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public ViewResult<T> View<T>(string viewName, ViewOptions options)
+        public ViewResult<T> View<T>(string viewName, ViewOptions options) where T:class
         {
             ThrowDesignDocException();
             return View<T>(viewName, options, defaultDesignDoc);

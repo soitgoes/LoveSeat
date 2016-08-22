@@ -59,9 +59,12 @@ namespace LoveSeat.IntegrationTest
 			var obj  = client.TriggerReplication("http://Professor:Farnsworth@"+ host+":5984/" +replicateDatabase, baseDatabase);
 			Assert.IsTrue(obj != null);
 		}
-        public class Bunny {
+        public class Bunny : IBaseObject{
             public Bunny() { }
             public string Name { get; set; }
+            public string Id { get; set; }
+            public string Rev { get; set; }
+            public string Type { get { return "bunny"; } }
         }
         [Test]
         public void Creating_A_Document_Should_Keep_Id_If_Supplied()
@@ -90,10 +93,10 @@ namespace LoveSeat.IntegrationTest
             var db = client.GetDatabase(baseDatabase);
             var result = db.CreateDocument("fdas", obj);
             var doc = db.GetDocument("fdas");
-            doc["test"] = "newprop";
+            doc.JObject["test"] = "newprop";
             db.SaveDocument(doc);
             var newresult= db.GetDocument("fdas");
-            Assert.AreEqual(newresult.Value<string>("test"), "newprop");
+            Assert.AreEqual(newresult.JObject.Value<string>("test"), "newprop");
         }
 
 		[Test]
@@ -105,7 +108,20 @@ namespace LoveSeat.IntegrationTest
 			var result = 	db.DeleteDocument(doc.Id, doc.Rev);
 			Assert.IsNull(db.GetDocument("asdf"));
 		}
+        [Test]
+        public void Should_Save_And_Retrieve_A_Document_With_Generics()
+        {
+            var id = Guid.NewGuid().ToString();
+            var db = client.GetDatabase(baseDatabase);
+            var bunny = new Bunny {Id=id, Name = "Hippity Hop"};
+            var doc = new Document<Bunny>(bunny);
 
+            byte[] attachment = File.ReadAllBytes("../../Files/martin.jpg");
+            doc.AddAttachment("martin.jpg", attachment);
+            db.SaveDocument(doc);
+            var persistedBunny= db.GetDocument<Bunny>(id);
+            Assert.IsTrue(persistedBunny.HasAttachment);
+        }
 
 		[Test]
 		public void Should_Determine_If_Doc_Has_Attachment()

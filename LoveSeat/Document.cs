@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LoveSeat;
 using LoveSeat.Interfaces;
+using LoveSeat.Support;
+using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
+using System.Reflection.Emit;
 namespace LoveSeat
 {
-    public class Document<T> : Document
+    public class Document<T> : Document where T : class
     {
         private static IObjectSerializer objectSerializer = new DefaultSerializer();
 
@@ -20,7 +23,33 @@ namespace LoveSeat
         {
             
         }
-        public T Item { get { return this.ToObject<T>(); } }        
+
+        public void UpdateFromItem(T item)
+        {
+            jObject.CopyFromObj(item);
+        }
+
+        public T Item { 
+            get
+            {
+                return jObject.ToObject<T>();
+                 //var moqObject = new Moq.Mock<T>(MockBehavior.Loose);
+                 //var properties = typeof (T).GetProperties();
+                 //var tItem = objectSerializer.Deserialize<T>(jObject.ToString()); //So that it adhere's to the Strategy
+                 //foreach (var prop in properties)
+                 //{
+
+                 //    var setMethod = prop.GetSetMethod();
+                 //    var method = setMethod.GetMethodBody();
+
+                 //    moqObject.SetupGet(X => ).Returns(prop.GetValue(tItem));
+
+                 //    moqObject.SetupSet<T>(x =>  x).Callback(x => x.)
+                 //}
+
+                 //return moqObject.Object;
+            } 
+        }        
     }
 
     #region Bulk documents
@@ -76,34 +105,37 @@ namespace LoveSeat
 
 
 
-    public class Document : JObject, IBaseObject
+    public class Document : IBaseObject
     {
+        protected JObject jObject;
         [JsonIgnore]
         public string Id
         {
             get { 
                 JToken id;
-                return this.TryGetValue("_id", out id) ? id.ToString() : null;
+                return jObject.TryGetValue("_id", out id) ? id.ToString() : null;
             } 
-            set { this["_id"] = value; }
+            set { jObject["_id"] = value; }
         }
 
         [JsonIgnore]
         public string Rev { 
             get { 
                 JToken rev;
-                return this.TryGetValue("_rev", out rev) ? rev.ToString() : null;
+                return jObject.TryGetValue("_rev", out rev) ? rev.ToString() : null;
             }
-            set { this["_rev"] = value; }
+            set { jObject["_rev"] = value; }
         }
 
         public string Type { get; private set; }
+
+        public JObject JObject { get { return jObject; } set { jObject = value; } }
 
         protected Document()
         {
         }
         public Document(JObject jobj)
-            : base(jobj)
+            
         {
             JToken tmp;
             if (jobj.TryGetValue("id", out tmp))
@@ -114,27 +146,28 @@ namespace LoveSeat
                 this.Id = tmp.Value<string>();
             if (jobj.TryGetValue("_rev", out tmp))
                 this.Rev = tmp.Value<string>();
+            this.jObject = jobj;
         }
         public Document(string json)
-            : base(JObject.Parse(json))
         {
+            JObject = JObject.Parse(json);
         }
         public bool HasAttachment
         {
-            get { return this["_attachments"] != null; }
+            get { return jObject["_attachments"] != null; }
         }
 
         public void AddAttachment(string filename, byte[] data)
         {
-            var jobj = this.GetValue("_attachments") as JObject ?? new JObject();
+            var jobj = jObject.GetValue("_attachments") as JObject ?? new JObject();
             jobj[filename] = new JObject();
             jobj[filename]["data"] = Convert.ToBase64String(data);
-            this["_attachments"] = jobj;
+            jObject["_attachments"] = jobj;
         }
 
         public IEnumerable<string> GetAttachmentNames()
         {
-            var attachment = this["_attachments"];
+            var attachment = jObject["_attachments"];
             if (attachment == null) return null;
             return attachment.Select(x => x.Value<JProperty>().Name);
         }

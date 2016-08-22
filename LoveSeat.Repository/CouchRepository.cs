@@ -3,7 +3,7 @@ using LoveSeat.Interfaces;
 
 namespace LoveSeat.Repositories
 {
-    public class CouchRepository<T> : IRepository<T> where T : IBaseObject
+    public class CouchRepository<T> : IRepository<T> where T : class,IBaseObject
     {
         protected readonly CouchDatabase db = null;
 

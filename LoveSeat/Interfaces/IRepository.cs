@@ -4,7 +4,7 @@ using LoveSeat;
 
 namespace LoveSeat.Interfaces
 {
-    public interface IRepository<T> where T : IBaseObject
+    public interface IRepository<T> where T : class, IBaseObject
     {
         void Save(T item);
         Document<T> Find(Guid id);

@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using LoveSeat;
 
 namespace LoveSeat
 {
     public interface IObjectSerializer
     {
-        T Deserialize<T>(string json);
-        string Serialize<T>(T obj);
-        Document<T> DeserializeToDoc<T>(string json);
+        T Deserialize<T>(string json) where T: class;
+        string Serialize<T>(T obj) where T : class;
+        Document<T> DeserializeToDoc<T>(string json) where T : class;
     }   
     public class DefaultSerializer : IObjectSerializer
     {
@@ -25,12 +26,12 @@ namespace LoveSeat
 
         public bool DefaultValueIfFailedSerialization = true;
 
-        public Document<T> DeserializeToDoc<T>(string json)
+        public Document<T> DeserializeToDoc<T>(string json) where T: class
         {
             return new Document<T>(json);
         }
 
-        public T Deserialize<T>(string json)
+        public T Deserialize<T>(string json) where T: class
         {
             if (!DefaultValueIfFailedSerialization)
                 return JsonConvert.DeserializeObject<T>(json, settings);
@@ -46,7 +47,7 @@ namespace LoveSeat
             return default(T);
         }
 
-        public string Serialize<T>(T obj)
+        public string Serialize<T>(T obj) where T: class
         {
             return JsonConvert.SerializeObject(obj, Formatting.Indented, settings);
         }

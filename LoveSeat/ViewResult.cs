@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web;
+using LoveSeat;
 using LoveSeat.Interfaces;
 using LoveSeat.Support;
 using Newtonsoft.Json;
@@ -10,7 +11,7 @@ using Newtonsoft.Json.Linq;
 
 namespace LoveSeat
 {
-    public class ViewResult<T> : ViewResult, IViewResult<T>
+    public class ViewResult<T> : ViewResult, IViewResult<T> where T:class
     {
         private readonly IObjectSerializer objectSerializer = null;
         private CouchDictionary<T> dict = null;
@@ -21,7 +22,7 @@ namespace LoveSeat
 
         }
 
-        public CouchDictionary<T> Dictionary
+        public CouchDictionary<T> Dictionary 
         {
             get
             {
@@ -32,10 +33,10 @@ namespace LoveSeat
                     dict.Add(row.Value<JToken>("key").ToString(Formatting.None), objectSerializer.Deserialize<T>(row.Value<string>("value")));
                 }
                 return dict;
-            }
+            } 
         }
 
-        public IEnumerable<T> Items
+        public IEnumerable<T> Items 
         {
             get
             {

@@ -4,7 +4,7 @@ using LoveSeat.Interfaces;
 
 namespace LoveSeat.Repositories
 {
-    public abstract class AuditableRepository<T> : CouchRepository<T> where T : IAuditableRecord
+    public abstract class AuditableRepository<T> : CouchRepository<T> where T : class,IAuditableRecord
     {
         protected AuditableRepository(CouchDatabase db) : base(db)
         {

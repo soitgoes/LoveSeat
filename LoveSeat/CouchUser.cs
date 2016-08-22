@@ -14,11 +14,11 @@ namespace LoveSeat
 		{
 			get
 			{
-				if (!this["roles"].HasValues)
+				if (!this.jObject["roles"].HasValues)
 				{
 					yield return null;
 				}
-				foreach (var role in this["roles"].Values())
+				foreach (var role in this.jObject["roles"].Values())
 				{
 					yield return role.Value<string>();
 				}

@@ -180,13 +180,13 @@ namespace LoveSeat
             var response = request.GetCouchResponse();
             var pDocResult = new Document(response.ResponseString);
 
-            if (pDocResult["error"] == null) {
+            if (pDocResult.JObject["error"] == null) {
                 return (true);
             }
-            if (pDocResult["error"].Value<String>() == "not_found") {
+            if (pDocResult.JObject["error"].Value<String>() == "not_found") {
                 return (false);
             }
-            throw new Exception(pDocResult["error"].Value<String>());
+            throw new Exception(pDocResult.JObject["error"].Value<String>());
       }
 
         /// <summary>
