@@ -15,6 +15,7 @@ namespace LoveSeat
     /// </summary>
     public class CouchClient : CouchBase
     {
+        private readonly string baseUri;
         // Authentication type used in request to CouchDB
         protected readonly AuthenticationType authType;
 
@@ -57,6 +58,15 @@ namespace LoveSeat
 
             authType = aT;
 
+        }
+        /// <summary>
+        /// The full uri for the couch constructor
+        /// </summary>
+        /// <param name="baseUri">Base Url with authentication to couch.  Should NOT include database</param>
+        public CouchClient(string baseUri)
+        {
+            this.baseUri = baseUri.EndsWith("/") ? baseUri : baseUri + "/"; //Ensure trailing slash
+            authType = AuthenticationType.Basic;
         }
 
 

@@ -22,9 +22,22 @@ namespace LoveSeat
             settings.NullValueHandling = NullValueHandling.Ignore;
         }
 
+        public bool DefaultValueIfFailedSerialization = true;
+
         public T Deserialize<T>(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json, settings);
+            if (!DefaultValueIfFailedSerialization)
+                return JsonConvert.DeserializeObject<T>(json, settings);
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(json, settings);
+            }
+            catch (Exception ex)
+            {
+                //TODO: Build Logger Property and record exception   
+                Console.WriteLine(ex);
+            }
+            return default(T);
         }
 
         public string Serialize<T>(T obj)
