@@ -105,9 +105,9 @@ namespace LoveSeat
 
 
 
-    public class Document : IBaseObject
+    public class Document
     {
-        protected JObject jObject;
+        protected JObject jObject = new JObject();
         [JsonIgnore]
         public string Id
         {
