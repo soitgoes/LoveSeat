@@ -103,7 +103,7 @@ namespace LoveSeat
         {
             get
             {
-                return (JArray)Json["doc"];
+                return this.Rows.Select(x => x["doc"]);
             }
         }
 

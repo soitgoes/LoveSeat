@@ -7,6 +7,7 @@ using System.Net;
 using LoveSeat.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 using LoveSeat;
@@ -143,6 +144,20 @@ namespace LoveSeat.IntegrationTest
 			var doc = db.GetDocument("upload");
 			Assert.IsTrue(doc.GetAttachmentNames().Contains("martin.jpg"));
 		}
+
+        [Test]
+        public void Should_Return_Docs_On_View()
+        {
+            var db = client.GetDatabase(baseDatabase);
+            var jobj =
+                JObject.Parse(
+                    "{\"_id\": \"_design/Patient\",\"views\": {\"all\": {\"map\": \"function (doc) {\n                 emit(doc._id, null);\n             }\"}},\"type\": \"designdoc\"}");
+            db.CreateDocument(jobj.ToString());
+            var bunny = new Bunny {Name = "Roger"};
+            db.CreateDocument(new Document<Bunny>(bunny));
+            var result = db.View("all", new ViewOptions {IncludeDocs = true}, "Patient");
+            Assert.IsTrue(result.Docs.Any());
+        }
 
 		[Test]
 		public void Should_Create_Admin_User()
