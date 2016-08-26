@@ -54,13 +54,31 @@ namespace LoveSeat
             return
                 resp.GetJObject();
         }
-
-        public CouchResponseObject CreateDocument(IBaseObject doc)
+        
+        public CouchResponseObject CreateDocument(Document doc)
         {
-            var serialized = ObjectSerializer.Serialize(doc);
+            var serialized = ObjectSerializer.Serialize(doc.JObject);
             if (doc.Id != null)
             {
                 return CreateDocument(doc.Id, serialized);
+            }
+            return CreateDocument(serialized);
+        }
+        public CouchResponseObject CreateDocument<T>(Document<T> doc) where T:class, IBaseObject
+        {
+            var serialized = ObjectSerializer.Serialize(doc.JObject);
+            if (doc.Id != null)
+            {
+                return CreateDocument(doc.Id, serialized);
+            }
+            return CreateDocument(serialized);            
+        }
+        public CouchResponseObject CreateDocument<T>(T item) where T:class, IBaseObject
+        {
+            var serialized = ObjectSerializer.Serialize<T>(item);
+            if (item.Id != null)
+            {
+                return CreateDocument(item.Id, serialized);
             }
             return CreateDocument(serialized);
         }
