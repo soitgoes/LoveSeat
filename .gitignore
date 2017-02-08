@@ -29,3 +29,5 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 *.orig
 LoveSeat.IntegrationTest/LoveSeat.IntegrationTest.pidb
+/LoveSeat.Core.ConsoleApp
+/.vs
