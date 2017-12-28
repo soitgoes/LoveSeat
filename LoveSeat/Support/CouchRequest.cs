@@ -176,6 +176,7 @@ namespace LoveSeat.Support
         public CouchResponse GetCouchResponse()
         {
             bool failedAuth = false;
+
             try
             {
                 using (var response = (HttpWebResponse)request.GetResponse())
@@ -191,6 +192,7 @@ namespace LoveSeat.Support
                     {
                         throw new CouchException(request, response, response.GetResponseString() + "\n" + request.RequestUri);
                     }
+                   
 
                     return new CouchResponse(response);
                 }
@@ -204,7 +206,11 @@ namespace LoveSeat.Support
                 var response = (HttpWebResponse)webEx.Response;
                 if (response == null)
                     throw new HttpException("Request failed to receive a response", webEx);
-                
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    throw new CouchException(request, response, response.GetResponseString() + "\n" + request.RequestUri);
+                }
+
                 return new CouchResponse(response);
             }
             throw new HttpException("Request failed to receive a response");

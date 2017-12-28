@@ -27,23 +27,19 @@ namespace LoveSeat.DocUpdater
                 JObject obj = JObject.Parse(contents);
                 string hash = Sha1Util.Sha1HashStringForUtf8String(contents);
                 var doc = db.GetDocument<DesignDoc>(designId);
-                if (doc == null )
+                if (doc != null)
                 {
-                   var newDoc = new DesignDoc
-                        {
-                            Id = designId,
-                            Hash = hash,
-                            Views = obj
-                        };
-                    repo.Save(newDoc);
-                    return;
+                    db.DeleteDocument(doc.Id, doc.Rev);
                 }
-                var designDoc = doc.Item;
-
-                designDoc.Views = obj;
-                designDoc.Hash = hash;
-                repo.Save(designDoc);
-       }
+                var newDoc = new DesignDoc
+                {
+                    Id = designId,
+                    Hash = hash,
+                    Views = obj
+                };
+                repo.Save(newDoc);
+                return;
+            }
         }
     }
 }

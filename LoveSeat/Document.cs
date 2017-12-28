@@ -107,6 +107,7 @@ namespace LoveSeat
 
     public class Document
     {
+
         protected JObject jObject = new JObject();
         [JsonIgnore]
         public string Id
@@ -131,7 +132,7 @@ namespace LoveSeat
 
         public JObject JObject { get { return jObject; } set { jObject = value; } }
 
-        protected Document()
+        public Document()
         {
         }
         public Document(JObject jobj)

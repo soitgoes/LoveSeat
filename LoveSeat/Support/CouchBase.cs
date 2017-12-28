@@ -5,8 +5,8 @@ namespace LoveSeat.Support
 {
     public abstract class CouchBase
     {
-        protected readonly string username;
-        protected readonly string password;
+        protected string username;
+        protected string password;
         protected readonly AuthenticationType authType;
         protected string baseUri;
         private TtlDictionary<string, Cookie> cookiestore = new TtlDictionary<string, Cookie>();

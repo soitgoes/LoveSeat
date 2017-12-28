@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Web;
-using LoveSeat;
 using LoveSeat.Interfaces;
 using LoveSeat.Support;
 using Newtonsoft.Json;
@@ -33,6 +32,12 @@ namespace LoveSeat
         {
             this.baseUri = uri.AbsoluteUri.Replace(uri.AbsolutePath, "");
             this.databaseBaseUri = uri.AbsoluteUri;
+            if (uri.UserInfo.Contains(":"))
+            {
+                var userInfo = uri.UserInfo.Split(':');
+                this.username = userInfo[0];
+                this.password = userInfo[1];
+            }
         }
 
         /// <summary>
@@ -51,6 +56,7 @@ namespace LoveSeat
                 .Put().Json()
                 .Data(jobj.ToString(Formatting.None))
                 .GetCouchResponse();
+
             return
                 resp.GetJObject();
         }
@@ -94,11 +100,33 @@ namespace LoveSeat
                 GetRequest(databaseBaseUri + "/").Post().Json().Data(jsonForDocument).GetCouchResponse().GetJObject();
             return jobj;
         }
-        public CouchResponseObject DeleteDocument(string id, string rev)
+        /// <summary>
+        /// Deletes the document
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rev"></param>
+        /// <param name="soft"> Uses the _deleted method to delete</param>
+        /// <returns></returns>
+        public CouchResponseObject DeleteDocument(string id, string rev, bool soft = true)
         {
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(rev))
                 throw new Exception("Both id and rev must have a value that is not empty");
-            return GetRequest(databaseBaseUri + "/" + id + "?rev=" + rev).Delete().Form().GetCouchResponse().GetJObject();
+          if (!soft)
+          {
+              return
+                  GetRequest(databaseBaseUri + "/" + id + "?rev=" + rev).Delete().Json().GetCouchResponse().GetJObject();
+          }
+          else
+          {
+              var obj = new JObject();
+              obj["_deleted"] = true;
+              var doc = new Document {JObject = obj};
+              doc.Id = id;
+              doc.Rev = rev;
+
+              return SaveDocument(doc);
+          }
+            
         }
         /// <summary>
         /// Returns null if document is not found

@@ -29,3 +29,5 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 *.orig
 LoveSeat.IntegrationTest/LoveSeat.IntegrationTest.pidb
+packages/Castle.Core.3.3.3/*
+.vs/*
