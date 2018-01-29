@@ -31,3 +31,4 @@ _ReSharper*/
 LoveSeat.IntegrationTest/LoveSeat.IntegrationTest.pidb
 packages/Castle.Core.3.3.3/*
 .vs/*
+packages/*

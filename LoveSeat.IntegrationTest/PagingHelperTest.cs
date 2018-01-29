@@ -39,5 +39,15 @@ namespace LoveSeat.IntegrationTest
             model.UpdatePaging(options, result.Object);
             Assert.IsFalse(model.ShowNext);
         }
+
+        [Test]
+        public void ShouldGenerateProperKey()
+        {
+            var options = new ViewOptions();
+            options.StartKey.Add("DOGG");
+            options.EndKey.Add("DOGGZ");
+
+            Assert.AreEqual("?startkey=%22DOGG%22&endkey=%22DOGGZ%22", options.ToString());
+        }
     }
 }

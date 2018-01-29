@@ -25,7 +25,7 @@ namespace LoveSeat.Interfaces
         /// <returns>Returns the status from Couchdb as a JObject</returns>
         CouchResponseObject CreateDocument(string jsonForDocument);
 
-        CouchResponseObject DeleteDocument(string id, string rev);
+        CouchResponseObject DeleteDocument(string id, string rev, bool soft=true);
 
         /// <summary>
         /// Returns null if document is not found
