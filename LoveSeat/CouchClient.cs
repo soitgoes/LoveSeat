@@ -248,7 +248,7 @@ namespace LoveSeat
             var docResult = GetRequest(baseUri + "_users/org.couchdb.user:" + HttpUtility.UrlEncode(usernameToCreate))
                 .Put().Json().Data(user).GetCouchResponse();
 
-            if (docResult.StatusCode == HttpStatusCode.Created)
+            if (docResult.StatusCode == HttpStatusCode.Created || docResult.StatusCode == HttpStatusCode.Accepted)
             {
                 return docResult.GetJObject();
             }

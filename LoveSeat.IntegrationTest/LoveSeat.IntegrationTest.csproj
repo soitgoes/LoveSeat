@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CouchClientTest.cs" />
+    <Compile Include="CouchDatabaseTest.cs" />
     <Compile Include="DocUpdaterTest.cs" />
     <Compile Include="NewtonSoftTests.cs" />
     <Compile Include="PagingHelperTest.cs" />
