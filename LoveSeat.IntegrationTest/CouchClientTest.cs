@@ -15,33 +15,38 @@ using LoveSeat;
 namespace LoveSeat.IntegrationTest
 {
     [TestFixture]
-	public class CouchClientTest
-	{
-		private CouchClient client;
-		private const string baseDatabase = "love-seat-test-base";
+    public class CouchClientTest
+    {
+        private CouchClient client;
+        private const string baseDatabase = "love-seat-test-base";
         private const string replicateDatabase = "love-seat-test-repli";
+        private const string userDatabase = "_users";
 
-		private readonly string host = ConfigurationManager.AppSettings["Host"];
-		private readonly int port = int.Parse(ConfigurationManager.AppSettings["Port"]);
-		private readonly string username = ConfigurationManager.AppSettings["UserName"];
-		private readonly string password = ConfigurationManager.AppSettings["Password"];
+        private readonly string host = ConfigurationManager.AppSettings["Host"];
+        private readonly int port = int.Parse(ConfigurationManager.AppSettings["Port"]);
+        private readonly string username = ConfigurationManager.AppSettings["UserName"];
+        private readonly string password = ConfigurationManager.AppSettings["Password"];
 
-		[SetUp]
-		public void Setup()
-		{
-			client = new CouchClient(host, port, username, password, false,AuthenticationType.Cookie);
-			if (!client.HasDatabase(baseDatabase))
-			{
-				client.CreateDatabase(baseDatabase);
-			}
+        [SetUp]
+        public void Setup()
+        {
+            client = new CouchClient(host, port, username, password, false, AuthenticationType.Cookie);
+            if (!client.HasDatabase(baseDatabase))
+            {
+                client.CreateDatabase(baseDatabase);
+            }
             if (!client.HasDatabase(replicateDatabase))
             {
                 client.CreateDatabase(replicateDatabase);
             }
-		}
-		[TearDown]
-		public void TearDown()
-		{
+            if (!client.HasDatabase(userDatabase))
+            {
+                client.CreateDatabase(userDatabase);
+            }
+        }
+        [TearDown]
+        public void TearDown()
+        {
             //delete the test database
             if (client.HasDatabase(baseDatabase)) {
                 client.DeleteDatabase(baseDatabase);
@@ -52,15 +57,18 @@ namespace LoveSeat.IntegrationTest
             if (client.HasUser("Leela")) {
                 client.DeleteAdminUser("Leela");
             }
-		}
+            if (client.HasUser("Fry")) {
+                client.DeleteUser("Fry");
+            }
+        }
 
-		[Test]
-		public void Should_Trigger_Replication()
-		{
-			var obj  = client.TriggerReplication("http://Professor:Farnsworth@"+ host+":5984/" +replicateDatabase, baseDatabase);
-			Assert.IsTrue(obj != null);
-		}
-        public class Bunny : IBaseObject{
+        [Test]
+        public void Should_Trigger_Replication()
+        {
+            var obj = client.TriggerReplication("http://Professor:Farnsworth@" + host + ":5984/" + replicateDatabase, baseDatabase);
+            Assert.IsTrue(obj != null);
+        }
+        public class Bunny : IBaseObject {
             public Bunny() { }
             public string Name { get; set; }
             public string Id { get; set; }
@@ -78,15 +86,15 @@ namespace LoveSeat.IntegrationTest
             Assert.IsNotNull(savedDoc, "Saved doc should be able to be retrieved by the same id");
         }
 
-		[Test]
-		public void Should_Create_Document_From_String()
-		{
-			string obj = @"{""test"": ""prop""}";
-			var db = client.GetDatabase(baseDatabase);
-			var result = db.CreateDocument("fdas", obj);
-		    var document = db.GetDocument("fdas");
-			Assert.IsNotNull(document);
-		}
+        [Test]
+        public void Should_Create_Document_From_String()
+        {
+            string obj = @"{""test"": ""prop""}";
+            var db = client.GetDatabase(baseDatabase);
+            var result = db.CreateDocument("fdas", obj);
+            var document = db.GetDocument("fdas");
+            Assert.IsNotNull(document);
+        }
         [Test]
         public void Should_Save_Existing_Document()
         {
@@ -96,54 +104,54 @@ namespace LoveSeat.IntegrationTest
             var doc = db.GetDocument("fdas");
             doc.JObject["test"] = "newprop";
             db.SaveDocument(doc);
-            var newresult= db.GetDocument("fdas");
+            var newresult = db.GetDocument("fdas");
             Assert.AreEqual(newresult.JObject.Value<string>("test"), "newprop");
         }
 
-		[Test]
-		public void Should_Delete_Document()
-		{
-			var db = client.GetDatabase(baseDatabase);
-			db.CreateDocument("asdf", "{}");
-			var doc = db.GetDocument("asdf");
-			var result = 	db.DeleteDocument(doc.Id, doc.Rev);
-			Assert.IsNull(db.GetDocument("asdf"));
-		}
+        [Test]
+        public void Should_Delete_Document()
+        {
+            var db = client.GetDatabase(baseDatabase);
+            db.CreateDocument("asdf", "{}");
+            var doc = db.GetDocument("asdf");
+            var result = db.DeleteDocument(doc.Id, doc.Rev);
+            Assert.IsNull(db.GetDocument("asdf"));
+        }
         [Test]
         public void Should_Save_And_Retrieve_A_Document_With_Generics()
         {
             var id = Guid.NewGuid().ToString();
             var db = client.GetDatabase(baseDatabase);
-            var bunny = new Bunny {Id=id, Name = "Hippity Hop"};
+            var bunny = new Bunny { Id = id, Name = "Hippity Hop" };
             var doc = new Document<Bunny>(bunny);
 
             byte[] attachment = File.ReadAllBytes("../../Files/martin.jpg");
             doc.AddAttachment("martin.jpg", attachment);
             db.SaveDocument(doc);
-            var persistedBunny= db.GetDocument<Bunny>(id);
+            var persistedBunny = db.GetDocument<Bunny>(id);
             Assert.IsTrue(persistedBunny.HasAttachment);
         }
 
-		[Test]
-		public void Should_Determine_If_Doc_Has_Attachment()
-		{
-			var db = client.GetDatabase(baseDatabase);
-			db.CreateDocument(@"{""_id"":""fdsa""}");
-			byte[] attachment = File.ReadAllBytes("../../Files/martin.jpg");
-			db.AddAttachment("fdsa" , attachment,"martin.jpg", "image/jpeg");
-			var doc = db.GetDocument("fdsa");
-			Assert.IsTrue(doc.HasAttachment);
-		}
-		[Test]
-		public void Should_Return_Attachment_Names()
-		{
-			var db = client.GetDatabase(baseDatabase);
-			db.CreateDocument(@"{""_id"":""upload""}");
-			var attachment = File.ReadAllBytes("../../Files/martin.jpg");
-			db.AddAttachment("upload", attachment,  "martin.jpg", "image/jpeg");
-			var doc = db.GetDocument("upload");
-			Assert.IsTrue(doc.GetAttachmentNames().Contains("martin.jpg"));
-		}
+        [Test]
+        public void Should_Determine_If_Doc_Has_Attachment()
+        {
+            var db = client.GetDatabase(baseDatabase);
+            db.CreateDocument(@"{""_id"":""fdsa""}");
+            byte[] attachment = File.ReadAllBytes("../../Files/martin.jpg");
+            db.AddAttachment("fdsa", attachment, "martin.jpg", "image/jpeg");
+            var doc = db.GetDocument("fdsa");
+            Assert.IsTrue(doc.HasAttachment);
+        }
+        [Test]
+        public void Should_Return_Attachment_Names()
+        {
+            var db = client.GetDatabase(baseDatabase);
+            db.CreateDocument(@"{""_id"":""upload""}");
+            var attachment = File.ReadAllBytes("../../Files/martin.jpg");
+            db.AddAttachment("upload", attachment, "martin.jpg", "image/jpeg");
+            var doc = db.GetDocument("upload");
+            Assert.IsTrue(doc.GetAttachmentNames().Contains("martin.jpg"));
+        }
 
         [Test]
         public void Should_Return_Docs_On_View()
@@ -153,9 +161,9 @@ namespace LoveSeat.IntegrationTest
                 JObject.Parse(
                     "{\"_id\": \"_design/Patient\",\"views\": {\"all\": {\"map\": \"function (doc) {\n                 emit(doc._id, null);\n             }\"}},\"type\": \"designdoc\"}");
             db.CreateDocument(jobj.ToString());
-            var bunny = new Bunny {Name = "Roger"};
+            var bunny = new Bunny { Name = "Roger" };
             db.CreateDocument(new Document<Bunny>(bunny));
-            var result = db.View("all", new ViewOptions {IncludeDocs = true}, "Patient");
+            var result = db.View("all", new ViewOptions { IncludeDocs = true }, "Patient");
             Assert.IsTrue(result.Docs.Any());
         }
 
@@ -171,7 +179,21 @@ namespace LoveSeat.IntegrationTest
 			client.DeleteAdminUser("Leela");
 		}
 
-		[Test]
+        [Test]
+        public void Should_Create_User()
+        {
+            client.CreateUser("Fry", "Philip");
+        }
+
+        [Test]
+        public void Should_Delete_User()
+        {
+            client.CreateUser("Fry", "Philip");
+            client.DeleteUser("Fry");
+            Assert.IsFalse(client.HasUser("Fry"));
+        }
+
+        [Test]
 		public void Should_Get_Attachment()
 		{
 			var db = client.GetDatabase(baseDatabase);

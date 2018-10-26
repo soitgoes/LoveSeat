@@ -232,7 +232,7 @@ namespace LoveSeat
                 throw new System.Exception("Response returned null.");
             }
 
-            if (resp.StatusCode != HttpStatusCode.Created)
+            if (resp.StatusCode != HttpStatusCode.Created && resp.StatusCode != HttpStatusCode.Accepted)
             {
                 throw new System.Exception("Response returned with a HTTP status code of " + resp.StatusCode + " - " + resp.StatusDescription);
             }
